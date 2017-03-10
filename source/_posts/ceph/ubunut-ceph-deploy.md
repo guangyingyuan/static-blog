@@ -1,7 +1,7 @@
 ---
 layout: default
 title: 使用 ceph-deploy 工具部署 Ceph 叢集
-date: 2016-07-29 17:08:54
+date: 2016-01-20 17:08:54
 categories:
 - Ceph
 tags:

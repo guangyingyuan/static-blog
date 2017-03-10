@@ -1,14 +1,14 @@
 ---
 title: 使用 Flashcache 來加速硬碟
 layout: default
-date: 2016-12-27 16:23:01
+date: 2016-05-27 16:23:01
 categories:
 - Linux
 tags:
 - Linux
+- SSD
 - Storage
 ---
-# 簡介
 Flashcache 是 Facebook 的一個開源專案，主要被用於資料庫加速。基本結構為在硬碟（HDD）前面加了一層快取，即採用固態硬碟（SSD）裝置，把熱資料保存於快取中，寫入的過程也是先寫到 SSD，然後由 SSD 同步到傳統硬碟，最後的資料將保存於硬碟中，這樣可以不用擔心 SSD 損壞造成資料遺失問題，同時又可以有大容量、高效能的儲存。
 
 <!--more-->

@@ -12,11 +12,19 @@
     },
     "projects": [{
 		"name": "kubebox-ansible",
-		"image": "https://d13yacurqjgara.cloudfront.net/users/138819/screenshots/2578899/dribbble_800x600_01_1x.png",
+		"image": "https://static.vecteezy.com/system/resources/previews/000/126/160/non_2x/flat-tech-illustration-background-vector.jpg",
 		"tags": ["2017 年", "Kubernetes", "Ansible"],
 		"description": "Easy to deploy Kubernetes and Ceph on VBox, BareMetal and VM",
 		"link_text": "Github",
 		"link": "https://github.com/kairen/kubebox-ansible"
-	}],
+	}, {
+		"name": "Coffe-roast",
+		"image": "https://static.vecteezy.com/system/resources/previews/000/103/286/non_2x/free-flat-design-vector-background.jpg",
+		"tags": ["2014 年", "iOS"],
+		"description": "Coffee roasting client for iOS",
+		"link_text": "Github",
+		"link": "https://github.com/kairen/coffe-roast"
+	}
+],
 	"reward": []
 }

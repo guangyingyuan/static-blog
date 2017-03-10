@@ -9,7 +9,6 @@ tags:
 - Linux
 - Load Balancer
 ---
-# 簡介
 Keepalived 是一種基於 VRRP 協定實現的高可靠 Web 服務方案，用於防止單點故障問題。因此一個 Web 服務運作至少會擁有兩台伺服器執行 Keepalived，一台作為 master，一台作為 backup，並提供一個虛擬 IP（VIP），master 會定期發送特定訊息給 backup 伺服器，當 backup 沒收到 master 訊息時，表示 master 已故障，這時候 backup 會接管 VIP，繼續提供服務，來確保服務的高可靠性。
 
 <!--more-->

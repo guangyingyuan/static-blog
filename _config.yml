@@ -105,3 +105,8 @@ tag_generator:
   per_page: 0
 category_generator:
   per_page: 0
+
+# search engine
+search:
+  path: search.xml
+  field: all
