@@ -1,7 +1,7 @@
 ---
 title: 使用 Flashcache 來加速硬碟
 layout: default
-date: 2017-03-10 16:23:01
+date: 2016-12-27 16:23:01
 categories:
 - Linux
 tags:
@@ -75,7 +75,7 @@ Flashcache metadata will use 614MB of your 7950MB main memory
 $ sudo mount /dev/mapper/cachedev /mnt
 ```
 
-若要在開機時自動 mount 為 Flashcache 的快取固態硬碟，可以在```rc.local```加入以下內容：
+若要在開機時自動 mount 為 Flashcache 的快取固態硬碟，可以在`rc.local`加入以下內容：
 ```sh
 flashcache_load /dev/sdb
 mount /dev/mapper/cachedev /mnt
@@ -94,7 +94,7 @@ $ sudo dmsetup remove cachedev
 ```
 
 ### fio 測試
-這邊採用 fio 來進行測試，首先透過```apt-get```安裝套件：
+這邊採用 fio 來進行測試，首先透過`apt-get`安裝套件：
 ```sh
 $ sudo apt-get install fio
 ```
@@ -108,24 +108,24 @@ $ fio --filename=/dev/sdb --direct=1 \
 --group_reporting --name=4ktest
 ```
 > fio 測試工具 options 參數：
-> * ```--filename=/dev/sdb```：指定要測試的磁碟。
-> * ```--direct=1```：預設值為 0 ,必須設定為 1 才會測試到真實的 non-buffered I/O。
-> * ```--rw=randrw```：可以設定的參數如下 randrw 代表 random(隨機) 的 read(讀) write(寫),其他的請參考下面說明。
+> * `--filename=/dev/sdb`：指定要測試的磁碟。
+> * `--direct=1`：預設值為 0 ,必須設定為 1 才會測試到真實的 non-buffered I/O。
+> * `--rw=randrw`：可以設定的參數如下 randrw 代表 random(隨機) 的 read(讀) write(寫),其他的請參考下面說明。
 >  * **read** : Sequential reads. (循序讀)
 >  * **write** : Sequential writes. (循序寫)
 >  * **randread** : Random reads. (隨機讀)
 >  * **randwrite** : Random writes. (隨機寫)
 >  * **rw** : Mixed sequential reads and writes. (循序讀寫)
 >  * **randrw** : Mixed random reads and writes. (隨機讀寫)
-> * ```--ioengine=libaio```：定義如何跑 I/O 的方式, libaio 是 Linux 本身非同步(asynchronous) I/O 的方式. 其他還有 sync , psync , vsync , posixaio , mmap , splice , syslet-rw , sg , null , net , netsplice , cpuio , guasi , external。
-> * ```--bs=4k```：bs 或是 blocksize ,也就是檔案寫入大小,預設值為 4K。
-> * ```--rwmixread=100```： 當設定為 Mixed ,同一時間 read 的比例為多少,預設為 50%。
-> * ```--refill_buffers```：refill_buffers 為預設值,應該是跟 I/O Buffer 有關 (refill the IO buffers on every submit),把 Buffer 填滿就不會跑到 Buffer 的值。
-> * ```--iodepth=16```：同一時間有多少 I/O 在做存取,越多不代表存儲裝置表現會更好,通常是 RAID 時須要設大一點。
-> * ```--numjobs=16```：跟前面的 iodepth 類似,但不一樣,在 Linux 下每一個 job 可以生出不同的 processes/threads ,numjobs 就是在同一個 workload 同時提出多個 I/O 請求,通常負載這個會比較大.預設值為 1。
-> * ```--runtime=60```：這一測試所需的時間,單位為 秒。
-> * ```--group_reporting```：如果 numjobs 有指定,設定 group_reporting 報告會以 per-group 的顯示方式。
-> * ```--name=4ktest```：代表這是一個新的測試 Job。
+> * `--ioengine=libaio`：定義如何跑 I/O 的方式, libaio 是 Linux 本身非同步(asynchronous) I/O 的方式. 其他還有 sync , psync , vsync , posixaio , mmap , splice , syslet-rw , sg , null , net , netsplice , cpuio , guasi , external。
+> * `--bs=4k`：bs 或是 blocksize ,也就是檔案寫入大小,預設值為 4K。
+> * `--rwmixread=100`： 當設定為 Mixed ,同一時間 read 的比例為多少,預設為 50%。
+> * `--refill_buffers`：refill_buffers 為預設值,應該是跟 I/O Buffer 有關 (refill the IO buffers on every submit),把 Buffer 填滿就不會跑到 Buffer 的值。
+> * `--iodepth=16`：同一時間有多少 I/O 在做存取,越多不代表存儲裝置表現會更好,通常是 RAID 時須要設大一點。
+> * `--numjobs=16`：跟前面的 iodepth 類似,但不一樣,在 Linux 下每一個 job 可以生出不同的 processes/threads ,numjobs 就是在同一個 workload 同時提出多個 I/O 請求,通常負載這個會比較大.預設值為 1。
+> * `--runtime=60`：這一測試所需的時間,單位為 秒。
+> * `--group_reporting`：如果 numjobs 有指定,設定 group_reporting 報告會以 per-group 的顯示方式。
+> * `--name=4ktest`：代表這是一個新的測試 Job。
 
 ### 參考資料
 * [Fio – Flexible I/O Tester](http://benjr.tw/34632)
