@@ -1,0 +1,12 @@
+{
+    "social": {
+        "facebook-official": "https://www.facebook.com/kairen.bai.1",
+        "github": "https://github.com/kairen",
+		"rss": "/atom.xml"
+    },
+    "extern": {
+	    "imac-cloud": "https://github.com/imac-cloud",
+		"Gitbook": "https://www.gitbook.com/@kairen",
+        "NUTC i.m.a.c": "https://www.facebook.com/NUTCimac"
+    }
+}

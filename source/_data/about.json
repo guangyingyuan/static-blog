@@ -1,0 +1,22 @@
+{
+    "avatar": "https://avatars2.githubusercontent.com/u/4667563?v=3&u=cfebb19866a76b9f7e6e55a010f0fe96634168fd&s=400",
+    "name": "Kyle Bai",
+	"tag": "悲慘研替工陳屍",
+    "email": "kyle.b@inwinstack.com" ,
+    "desc": "Software Engineer @ inwinSTACK, NUTC i.m.a.c iOS and Cloud Team Leader @ 2011 - 2016.",
+    "skills": {
+        "Objective-C": 8,
+		"Python": 5,
+		"invisible-split-line-1": -1,
+		"OpenStack": 6
+    },
+    "projects": [{
+		"name": "kubebox-ansible",
+		"image": "https://d13yacurqjgara.cloudfront.net/users/138819/screenshots/2578899/dribbble_800x600_01_1x.png",
+		"tags": ["2017 年", "Kubernetes", "Ansible"],
+		"description": "Easy to deploy Kubernetes and Ceph on VBox, BareMetal and VM",
+		"link_text": "Github",
+		"link": "https://github.com/kairen/kubebox-ansible"
+	}],
+	"reward": []
+}
