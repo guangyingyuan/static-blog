@@ -1,27 +1,32 @@
 {
     "avatar": "https://avatars2.githubusercontent.com/u/4667563?v=3&u=cfebb19866a76b9f7e6e55a010f0fe96634168fd&s=400",
     "name": "Kyle Bai",
-	"tag": "悲慘研替工陳屍",
+	"tag": "悲慘研替攻陳屍中....",
     "email": "kyle.b@inwinstack.com" ,
     "desc": "Software Engineer @ inwinSTACK, NUTC i.m.a.c iOS and Cloud Team Leader @ 2011 - 2016.",
     "skills": {
         "Objective-C": 8,
-		"Python": 5,
-		"invisible-split-line-1": -1,
-		"OpenStack": 6
+        "Swift": 5,
+        "Java": 6,
+		"Python": 6,
+        "Go lang": 2,
+		"OpenStack": 6,
+        "Ceph": 7,
+        "Docker": 6,
+        "Kubernetes": 6
     },
     "projects": [{
 		"name": "kubebox-ansible",
 		"image": "https://static.vecteezy.com/system/resources/previews/000/126/160/non_2x/flat-tech-illustration-background-vector.jpg",
 		"tags": ["2017 年", "Kubernetes", "Ansible"],
-		"description": "Easy to deploy Kubernetes and Ceph on VBox, BareMetal and VM",
+		"description": "Easy to deploy Kubernetes and Ceph on VBox, Bare Metal and VM",
 		"link_text": "Github",
 		"link": "https://github.com/kairen/kubebox-ansible"
 	}, {
 		"name": "Coffe-roast",
 		"image": "https://static.vecteezy.com/system/resources/previews/000/103/286/non_2x/free-flat-design-vector-background.jpg",
-		"tags": ["2014 年", "iOS"],
-		"description": "Coffee roasting client for iOS",
+		"tags": ["2014 年", "Objc", "iOS"],
+		"description": "本作品為家用型咖啡烘焙系統結合平板電腦 App 來記錄咖啡烘焙曲線，並控制烘培機來烘培咖啡豆，利用遠端圖形化遙控操作將有效降學習困難。",
 		"link_text": "Github",
 		"link": "https://github.com/kairen/coffe-roast"
 	}
