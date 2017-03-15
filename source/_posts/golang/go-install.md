@@ -9,7 +9,6 @@ tags:
 - OS X
 - Linux
 ---
-# Go 語言入門教學
 Go 語言是 Google 開發的該世代 C 語言，延續 C 語言的一些優點，是一種靜態強刑別、編譯型，且具有並行機制與垃圾回收功能的語言。由於其`並行機制`讓 Go 在撰寫多執行緒與網路程式都非常容易。值得一提的是 Go 語言的設計者也包含過去設計 C 語言的 [Ken Thompson](https://en.wikipedia.org/wiki/Ken_Thompson)。目前 Go 語言基於 1.x 每半年發布一個版本。
 
 <!--more-->

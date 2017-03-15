@@ -16,12 +16,12 @@
         "Kubernetes": 6
     },
     "projects": [{
-		"name": "kubebox-ansible",
+		"name": "kube-ansible",
 		"image": "https://static.vecteezy.com/system/resources/previews/000/126/160/non_2x/flat-tech-illustration-background-vector.jpg",
 		"tags": ["2017 年", "Kubernetes", "Ansible"],
 		"description": "Easy to deploy Kubernetes and Ceph on VBox, Bare Metal and VM",
 		"link_text": "Github",
-		"link": "https://github.com/kairen/kubebox-ansible"
+		"link": "https://github.com/kairen/kube-ansible"
 	}, {
 		"name": "Coffe-roast",
 		"image": "https://static.vecteezy.com/system/resources/previews/000/103/286/non_2x/free-flat-design-vector-background.jpg",
