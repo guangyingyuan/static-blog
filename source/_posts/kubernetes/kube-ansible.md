@@ -45,7 +45,10 @@ Usage : setup-vagrant [options]
 
 這邊執行以下指令來建立三台 Master 與三台 Node 的環境：
 ```sh
-$ ./setup-vagrant --boss 3 --node 3
+$ ./setup-vagrant -b 3 -c 3
+Cluster Size: 3 master, 2 node.
+     VM Size: 3 vCPU, 1024 MB
+Start deploying?(y):
 ```
 > 預設 CPU 為 1vCPU，而 Memory 為 1024MB。
 
