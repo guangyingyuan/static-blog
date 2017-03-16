@@ -2,7 +2,7 @@
 title: CentOS 6.5 PXE 安裝與設定
 layout: default
 comments: true
-date: 2015-11-04 12:23:01
+date: 2015-10-03 12:23:01
 categories:
 - Linux
 tags:

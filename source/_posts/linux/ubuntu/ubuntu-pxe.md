@@ -2,7 +2,7 @@
 title: Ubuntu PXE 安裝與設定
 layout: default
 comments: true
-date: 2015-11-05 12:23:01
+date: 2015-10-11 12:23:01
 categories:
 - Linux
 tags:

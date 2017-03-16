@@ -1,12 +1,13 @@
 ---
 title: 利用 Pacemaker + Corosync 做服務 HA
 layout: default
-date: 2016-10-15 16:23:01
+date: 2016-5-26 16:23:01
 categories:
 - Linux
 tags:
 - Linux
 - Load Balancer
+- High Availability
 ---
 Pacemaker 與 Corosync 是 Linux 中現今較常用的高可靠性叢集系統組合。Pacemaker 自身提供了很多常用的應用管理功能，不過若要使用 Pacemaker 來管理自己實作的服務，或是一些特別的東西時，就必須要自己實作管理資源。
 

@@ -1,12 +1,11 @@
 ---
-title: Kubernetes 手動安裝教學
-date: 2017-1-14 17:08:54
+title: Kubernetes 手動安裝教學(已更新至 v1.5.4)
+date: 2016-12-16 17:08:54
 layout: page
 categories:
 - Kubernetes
 tags:
 - Kubernetes
-- Linux
 - Docker
 ---
 Kubernetes 提供了許多雲端平台與作業系統的安裝方式，本章將以`全手動安裝方式`來部署，主要是學習與了解 Kubernetes 建置流程。若想要瞭解更多平台的部署可以參考 [Picking the Right Solution](https://kubernetes.io/docs/getting-started-guides/)來選擇自己最喜歡的方式。
@@ -59,12 +58,12 @@ $ mkdir /etc/etcd
 $ cat <<EOF > /etc/etcd/etcd.conf
 ETCD_NAME=master1
 ETCD_DATA_DIR=/var/lib/etcd
-ETCD_INITIAL_ADVERTISE_PEER_URLS=http://172.16.35.12:2380
-ETCD_INITIAL_CLUSTER=master1=http://172.16.35.12:2380
+ETCD_INITIAL_ADVERTISE_PEER_URLS="http://172.16.35.12:2380"
+ETCD_INITIAL_CLUSTER=master1="http://172.16.35.12:2380"
 ETCD_INITIAL_CLUSTER_STATE=new
 ETCD_INITIAL_CLUSTER_TOKEN=etcd-k8s-cluster
-ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
-ETCD_ADVERTISE_CLIENT_URLS=http://172.16.35.12:2379
+ETCD_LISTEN_PEER_URLS="http://0.0.0.0:2380"
+ETCD_ADVERTISE_CLIENT_URLS="http://172.16.35.12:2379"
 ETCD_LISTEN_CLIENT_URLS="http://0.0.0.0:2379"
 ETCD_PROXY="off"
 EOF
@@ -89,8 +88,7 @@ Type=notify
 User=etcd
 PermissionsStartOnly=true
 ExecStart=/usr/bin/etcd \$DAEMON_ARGS
-Restart=on-abnormal
-#RestartSec=10s
+Restart=always
 LimitNOFILE=65536
 
 [Install]
@@ -158,7 +156,7 @@ Type=notify
 EnvironmentFile=/etc/default/flanneld
 ExecStart=/usr/bin/flanneld -etcd-endpoints=\${FLANNEL_ETCD_ENDPOINTS} -etcd-prefix=\${FLANNEL_ETCD_PREFIX} \${FLANNEL_OPTIONS}
 ExecStartPost=/usr/bin/mk-docker-opts.sh -d /run/flannel/docker
-Restart=on-failure
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
@@ -211,10 +209,10 @@ $ ip -4 a show docker0
        valid_lft forever preferred_lft forever
 ```
 
-最後在任一台節點去 Ping 其他節點的 docker0 網路。
+最後在任一台節點去 Ping 其他節點的 docker0 網路，若 Ping 的到表示部署沒問題。
 
 ## Kubernetes Master 安裝與設定
-Master 是 Kubernetes 的大總管，主要建置`API Server`、`Controller Manager Server`與`Scheduler`來元件管理所有 Node。首先加入取得 Packages 來源，並安裝：
+Master 是 Kubernetes 的大總管，主要建置`API Server`、`Controller Manager Server`與`Scheduler`來元件管理所有 Node。首先加入取得 Packages 來源並安裝：
 ```sh
 $ curl -s "https://packages.cloud.google.com/apt/doc/apt-key.gpg" | apt-key add -
 $ echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
@@ -334,9 +332,9 @@ NAME      STATUS         AGE
 master1   Ready,master   1m
 
 $ kubectl get po --all-namespaces
-kube-system   kube-apiserver-master1            1/1       Running   0          12m
-kube-system   kube-controller-manager-master1   1/1       Running   0          7m
-kube-system   kube-scheduler-master1            1/1       Running   0          12
+kube-system   kube-apiserver-master1            1/1  Running  0  12m
+kube-system   kube-controller-manager-master1   1/1  Running  0  7m
+kube-system   kube-scheduler-master1            1/1  Running  0  12
 ```
 
 ## Kubernetes Node 安裝與設定
@@ -382,7 +380,6 @@ openssl x509 -req -in ${DIR}/node.csr -CA ${DIR}/ca.pem -CAkey ${DIR}/ca-key.pem
 ```
 > 細節請參考[Cluster TLS using OpenSSL](https://coreos.com/kubernetes/docs/latest/openssl.html)。
 
-
 接著下載 Kubernetes 相關檔案至`/etc/kubernetes/`：
 ```sh
 $ cd /etc/kubernetes/
@@ -422,7 +419,7 @@ $ systemctl daemon-reload
 $ systemctl restart kubelet.service
 ```
 
-當所有節點都完成後，回到`master`透過簡單指令驗證：
+當所有節點都完成後，回到`master1`透過簡單指令驗證：
 ```sh
 $ kubectl get node
 
@@ -456,14 +453,14 @@ done
 ```sh
 $ kubectl get po --all-namespaces
 
-NAMESPACE     NAME                                    READY     STATUS    RESTARTS   AGE
-kube-system   heapster-v1.2.0-371757285-7qq02         1/1       Running   0          2m
-kube-system   influxdb-grafana-704917236-zdx0m        2/2       Running   0          2m
-kube-system   kube-dns-r5wx4                          3/3       Running   0          2m
-kube-system   kube-proxy-amd64-2ck40                  1/1       Running   0          2m
-kube-system   kube-proxy-amd64-lk0ql                  1/1       Running   0          2m
-kube-system   kube-proxy-amd64-rxgxz                  1/1       Running   0          2m
-kube-system   kubernetes-dashboard-3697905830-6nffv   1/1       Running   1          3m
+NAMESPACE    NAME                                   READY STATUS   RESTARTS AGE
+kube-system  heapster-v1.2.0-371757285-7qq02        1/1   Running  0        2m
+kube-system  influxdb-grafana-704917236-zdx0m       2/2   Running  0        2m
+kube-system  kube-dns-r5wx4                         3/3   Running  0        2m
+kube-system  kube-proxy-amd64-2ck40                 1/1   Running  0        2m
+kube-system  kube-proxy-amd64-lk0ql                 1/1   Running  0        2m
+kube-system  kube-proxy-amd64-rxgxz                 1/1   Running  0        2m
+kube-system  kubernetes-dashboard-3697905830-6nffv  1/1   Running  1        3m
 ```
 
 確定都啟動後，可以開啟 [Dashboard](http://172.16.35.12/) 來查看。
@@ -475,8 +472,8 @@ Kubernetes 可以選擇使用指令直接建立應用程式與服務，或者撰
 $ kubectl run nginx --image=nginx --replicas=1 --port=80
 $ kubectl get pods -o wide
 
-NAME                     READY     STATUS    RESTARTS   AGE       IP            NODE
-nginx-4087004473-9c161   1/1       Running   0          18m       172.20.19.2   node1
+NAME                     READY  STATUS  RESTARTS   AGE  IP            NODE
+nginx-4087004473-9c161   1/1    Running 0          18m  172.20.19.2   node1
 ```
 
 完成後要接著建立 svc(Service)，來提供外部網路存取應用程式，使用以下指令建立：
@@ -490,13 +487,14 @@ svc/nginx        192.160.57.181   ,172.16.35.12   80:32054/TCP   21s
 ```
 > 這邊`type`可以選擇 NodePort 與 LoadBalancer。
 
-確認沒問題後即可在瀏覽器存取 <EXTERNAL-IP>:32054。
+確認沒問題後即可在瀏覽器存取 {EXTERNAL-IP}:32054。
 
 ### 擴展服務數量
 若叢集`node`節點增加了，而想讓 Nginx 服務提供可靠性的話，可以透過以下方式來擴展服務的副本：
 ```sh
 $ kubectl scale deploy nginx --replicas=2
 
+$ kubectl get pods -o wide
 NAME                     READY     STATUS    RESTARTS   AGE       IP            NODE
 nginx-3449338310-9jsjx   1/1       Running   0          6m        172.20.19.2   node1
 nginx-3449338310-rnfs9   1/1       Running   0          20s       172.20.98.5   node2

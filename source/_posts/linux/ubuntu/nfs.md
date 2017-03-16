@@ -2,7 +2,7 @@
 title: NFS 簡單安裝與使用
 layout: default
 comments: true
-date: 2016-02-04 12:23:01
+date: 2015-11-24 12:23:01
 categories:
 - Linux
 tags:

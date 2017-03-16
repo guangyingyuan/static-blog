@@ -2,7 +2,7 @@
 title: Ubuntu Metal as a Service 安裝
 layout: default
 comments: true
-date: 2016-05-04 12:23:01
+date: 2015-12-04 12:23:01
 categories:
 - Linux
 tags:
