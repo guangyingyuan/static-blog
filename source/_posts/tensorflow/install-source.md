@@ -76,6 +76,23 @@ export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64
 ```sh
 $ source .bashrc
 $ sudo nvidia-smi
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 375.39                 Driver Version: 375.39                    |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|===============================+======================+======================|
+|   0  GeForce GTX 106...  Off  | 0000:01:00.0      On |                  N/A |
+| 28%   29C    P8     6W / 120W |    130MiB /  6069MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+
++-----------------------------------------------------------------------------+
+| Processes:                                                       GPU Memory |
+|  GPU       PID  Type  Process name                               Usage      |
+|=============================================================================|
+|    0      1165    G   /usr/lib/xorg/Xorg                              98MiB |
+|    0      1764    G   compiz                                          29MiB |
++-----------------------------------------------------------------------------+
 ```
 
 ## cuDNN 5.1 安裝
@@ -142,6 +159,15 @@ EOF
 
 $ python simple.py
 ...
+roperties:
+name: GeForce GTX 1060 6GB
+major: 6 minor: 1 memoryClockRate (GHz) 1.7845
+pciBusID 0000:01:00.0
+Total memory: 5.93GiB
+Free memory: 5.74GiB
+2017-03-12 21:43:56.477084: I tensorflow/core/common_runtime/gpu/gpu_device.cc:908] DMA: 0
+2017-03-12 21:43:56.477092: I tensorflow/core/common_runtime/gpu/gpu_device.cc:918] 0:   Y
+2017-03-12 21:43:56.503464: I tensorflow/core/common_runtime/gpu/gpu_device.cc:977] Creating TensorFlow device (/gpu:0) -> (device: 0, name: GeForce GTX 1060 6GB, pci bus id: 0000:01:00.0)
 Hello, TensorFlow!
 ```
 > `...`部分會顯示一些 GPU 使用狀態。
