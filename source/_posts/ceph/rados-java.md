@@ -15,7 +15,7 @@ tags:
 
 ## 環境準備
 在開始進行之前，需要滿足以下幾項要求：
-* 需要部署一個 Ceph 叢集，可以參考[Ceph Docker 部署](https://kairen.github.io/2016/03/15/ceph/ceph-docker/)。
+* 需要部署一個 Ceph 叢集，可以參考 [Ceph Docker 部署](https://kairen.github.io/2016/03/15/ceph/ceph-docker/)。
 * 執行 rados-java 程式的環境，要能夠與 Ceph 叢集溝通(ceph.conf、admin key)。
 * 需要安裝 Ceph 相關 library。可以透過以下方式安裝：
 > ```sh
@@ -31,34 +31,34 @@ $ sudo apt-get install -y software-properties-common
 $ sudo add-apt-repository -y ppa:webupd8team/java
 $ sudo apt-get update
 $ sudo apt-get -y install oracle-java8-installer git libjna-java
+$ sudo ln -s /usr/share/java/jna-4.2.2.jar /usr/lib/jvm/java-8-oracle/jre/lib/ext/
 ```
 
 接著安裝 maven 3.3.1 + 工具：
 ```sh
-$ wget "http://ftp.tc.edu.tw/pub/Apache/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz"
-$ tar -zxf apache-maven-3.3.9-bin.tar.gz
-$ sudo cp -R apache-maven-3.3.9 /usr/local/
-$ sudo ln -s /usr/local/apache-maven-3.3.9/bin/mvn /usr/bin/mvn
-$ mvn --version
+wget "http://ftp.tc.edu.tw/pub/Apache/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz"
+tar -zxf apache-maven-3.3.9-bin.tar.gz
+sudo cp -R apache-maven-3.3.9 /usr/local/
+sudo ln -s /usr/local/apache-maven-3.3.9/bin/mvn /usr/bin/mvn
+mvn --version
 ```
 
 然後透過 Git 取得 rados-java 原始碼：
 ```sh
 $ git clone "https://github.com/ceph/rados-java.git"
-$ cd rados-java && git checkout v0.1.3
-$ mvn
+$ cd rados-java && git checkout v0.3.0
+$ mvn clean install -Dmaven.test.skip=true
 ```
 
-完成後將 Jar 檔複製到`/usr/share/java/`底下，並設定 JAR 連結 JVM Class path：
+完成後將 rados-java Jar 檔複製到`/usr/share/java/`底下，並設定 JAR 連結 JVM Class path：
 ```sh
-$ sudo cp target/rados-0.1.3.jar /usr/share/java/
-$ sudo ln -s /usr/share/java/rados-0.1.3.jar /usr/lib/jvm/java-8-oracle/jre/lib/ext/
-$ sudo ln -s /usr/share/java/jna-4.2.2.jar /usr/lib/jvm/java-8-oracle/jre/lib/ext/
+$ sudo cp target/rados-0.3.0.jar /usr/share/java
+$ sudo ln -s /usr/share/java/rados-0.3.0.jar /usr/lib/jvm/java-8-oracle/jre/lib/ext/
 ```
 > 這邊也可以直接透過下載 Jar 檔來完成：
 ```sh
-$ wget "https://download.ceph.com/maven/com/ceph/rados/0.1.3/rados-0.1.3.jar"
-$ sudo cp rados-0.1.3.jar /usr/share/java/
+$ wget "http://central.maven.org/maven2/com/ceph/rados/0.3.0/rados-0.3.0.jar"
+$ sudo cp rados-0.3.0.jar /usr/share/java/
 ```
 
 最後就可以透過簡單範例程式存取 Ceph 了。
@@ -67,7 +67,7 @@ $ sudo cp rados-0.1.3.jar /usr/share/java/
 這邊透過 Java 程式連結到 Ceph 叢集，並且存取`data`儲存池來寫入物件，建立與編輯`Example.java`檔，加入以下程式內容：
 ```java
 import com.ceph.rados.Rados;
-import com.ceph.rados.RadosException;
+import com.ceph.rados.exceptions.RadosException;
 
 import java.io.File;
 import com.ceph.rados.IoCTX;

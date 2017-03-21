@@ -73,22 +73,18 @@ EOF
 ```sh
 $ cat <<EOF > /lib/systemd/system/etcd.service
 [Unit]
-Description=Etcd - Highly Available key value store
-Documentation=man:etcd
+Description=Etcd Service
 After=network.target
-Wants=network-online.target
 
 [Service]
-Environment=DAEMON_ARGS=
-Environment=ETCD_NAME=%H
 Environment=ETCD_DATA_DIR=/var/lib/etcd/default
-EnvironmentFile=-/etc/default/%p
 EnvironmentFile=-/etc/etcd/etcd.conf
 Type=notify
 User=etcd
 PermissionsStartOnly=true
-ExecStart=/usr/bin/etcd \$DAEMON_ARGS
+ExecStart=/usr/bin/etcd
 Restart=always
+RestartSec=10
 LimitNOFILE=65536
 
 [Install]
@@ -144,8 +140,7 @@ EOF
 ```sh
 $ cat <<EOF > /lib/systemd/system/flanneld.service
 [Unit]
-Description=Flanneld overlay address etcd agent
-After=network.target
+Description=Flanneld Service
 After=network-online.target
 Wants=network-online.target
 After=etcd.service

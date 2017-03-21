@@ -1,7 +1,7 @@
 ---
 layout: default
 title: 利用 Docker 快速部署 Ceph 測試叢集
-date: 2016-3-15 17:08:54
+date: 2016-2-11 17:08:54
 categories:
 - Ceph
 tags:
@@ -137,13 +137,13 @@ ceph/daemon rgw
 
 完成後，透過 curl 工具來測試是否正確部署：
 ```sh
-$ curl -H "Content-Type: application/json" http://127.0.0.1:8080
+$ curl -H "Content-Type: application/json" "http://127.0.0.1:8080"
 <?xml version="1.0" encoding="UTF-8"?><ListAllMyBucketsResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Owner><ID>anonymous</ID><DisplayName></DisplayName></Owner><Buckets></Buckets></ListAllMyBucketsResult>
 ```
 
 透過 Python Client 進行檔案儲存，首先下載程式：
 ```sh
-$ wget https://gist.githubusercontent.com/kairen/e0dec164fa6664f40784f303076233a5/raw/33add5a18cb7d6f18531d8d481562d017557747c/s3client
+$ wget "https://gist.githubusercontent.com/kairen/e0dec164fa6664f40784f303076233a5/raw/33add5a18cb7d6f18531d8d481562d017557747c/s3client"
 $ chmod u+x s3client
 $ sudo pip install boto
 ```
