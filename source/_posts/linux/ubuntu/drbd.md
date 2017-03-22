@@ -1,5 +1,5 @@
 ---
-title: 利用 DRBD 做區塊級儲存備份
+title: DRBD 進行跨節點的區塊儲存備份
 layout: default
 date: 2016-04-01 16:23:01
 categories:

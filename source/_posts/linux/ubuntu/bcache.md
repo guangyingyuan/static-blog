@@ -1,5 +1,5 @@
 ---
-title: 使用 Bcache 來加速硬碟
+title: 用 Bcache 來加速硬碟效能
 layout: default
 date: 2016-07-05 16:23:01
 categories:

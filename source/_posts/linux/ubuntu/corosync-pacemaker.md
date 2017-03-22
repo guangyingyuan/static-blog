@@ -1,5 +1,5 @@
 ---
-title: 利用 Pacemaker + Corosync 做服務 HA
+title: Pacemaker + Corosync 做服務 HA
 layout: default
 date: 2016-5-26 16:23:01
 categories:

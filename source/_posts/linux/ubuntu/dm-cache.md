@@ -1,5 +1,5 @@
 ---
-title: 使用 DM-cache 來加速硬碟
+title: DM-cache 建立混和區塊裝置
 layout: default
 date: 2016-04-21 16:23:01
 categories:

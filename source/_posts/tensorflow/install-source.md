@@ -96,7 +96,7 @@ $ sudo nvidia-smi
 ```
 
 ## cuDNN 5.1 安裝
-[NVIDIA cuDNN](https://developer.nvidia.com/rdp/cudnn-download) 是一個深度神經網路運算的 GPU 加速原函式庫，這邊需要下載`cuDNN v5.1 Library for Linux`檔案：
+[NVIDIA cuDNN](https://developer.nvidia.com/rdp/cudnn-download) 是一個深度神經網路運算的 GPU 加速原函式庫，這邊需要點選前面的連結，下載`cuDNN v5.1 Library for Linux`檔案：
 ```sh
 $ tar xvf cudnn-8.0-linux-x64-v5.1.tgz
 $ sudo cp cuda/include/cudnn.h /usr/local/cuda/include/
@@ -110,7 +110,7 @@ $ sudo add-apt-repository -y ppa:webupd8team/java
 $ sudo apt-get update
 $ sudo apt-get install -y libcupti-dev python-numpy python-dev python-setuptools python-pip python-wheel git oracle-java8-installer
 $ echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
-$ curl "https://storage.googleapis.com/bazel-apt/doc/apt-key.pub.gpg" | sudo apt-key add -
+$ curl -s "https://storage.googleapis.com/bazel-apt/doc/apt-key.pub.gpg" | sudo apt-key add -
 $ sudo apt-get update && sudo apt-get -y install bazel
 $ sudo apt-get upgrade -y bazel
 ```
@@ -128,8 +128,9 @@ Please specify the cuDNN version you want to use. [Leave empty to use system def
 Please note that each additional compute capability significantly increases your build time and binary size.
 [Default is: "3.5,5.2"]: 6.1
 ...
+Configuration finished
 ```
-> `6.1`為 GTX 10-series 系列顯卡。這邊除了上述特定要輸入外，其餘都是直接鍵盤`enter`。
+> `6.1`為 GTX 10-series 系列顯卡，其他可以查看 [CUDA GPUS](https://developer.nvidia.com/cuda-gpus)。這邊除了上述特定要輸入外，其餘都是直接鍵盤`enter`。
 
 當完成組態後，即可透過 bazel 進行建構 pip 套件腳本：
 ```sh
@@ -143,7 +144,7 @@ $ bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tf_pkg
 
 完成後，可以在`/tmp/tf_pkg`目錄底下找到安裝檔`tensorflow-1.0.1-py2-none-any.whl`，最後就可以透過 pip 來進行安裝了：
 ```sh
-$ sudo pip install /tmp/tf_pkg/tensorflow-1.0.1-py2-none-any.whl
+$ sudo pip install /tmp/tf_pkg/tensorflow-1.0.1-cp27-cp27mu-linux_x86_64.whl
 ```
 
 ## 測試安裝結果

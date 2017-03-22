@@ -1,5 +1,5 @@
 ---
-title: 使用 Flashcache 來加速硬碟
+title: 用 Flashcache 建立高容量與高效能儲存
 layout: default
 date: 2016-05-27 16:23:01
 categories:

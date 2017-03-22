@@ -1,5 +1,5 @@
 ---
-title: 使用 kube-ansible 快速部署 HA 測試環境
+title: ha-kube-ansible 快速部署 HA 測試環境
 date: 2017-2-17 17:08:54
 layout: page
 categories:
@@ -9,7 +9,7 @@ tags:
 - Docker
 - Ansible
 ---
-[kube-ansible](https://github.com/kairen/kube-ansible) 提供自動化部署 Kubernetes High Availability 叢集於虛擬機與實體機上，並且支援部署 Ceph 叢集於 Kubernetes 中提供共享式儲存系統給 Pod 應用程式使用。該專案最主要是想要快速建立測試環境來進行 Kubernetes 練習與驗證。
+[HA Kubernetes Ansible](https://github.com/kairen/ha-kube-ansible) 提供自動化部署 Kubernetes High Availability 叢集於虛擬機與實體機上，並且支援部署 Ceph 叢集於 Kubernetes 中提供共享式儲存系統給 Pod 應用程式使用。該專案最主要是想要快速建立測試環境來進行 Kubernetes 練習與驗證。
 
 <!--more-->
 
@@ -33,7 +33,8 @@ kube-ansible 支援了 Vagrant 腳本來快速提供 VirtualBox 環境，若想�
 
 當主機確認安裝完成後，即可透過 Git 下載最新版本程式，並使用`setup-vagrant`腳本：
 ```sh
-$ git clone "https://github.com/kairen/kube-ansible.git"
+$ git clone "https://github.com/kairen/ha-kube-ansible.git"
+$ cd ha-kube-ansible
 $ ./setup-vagrant -h
 Usage : setup-vagrant [options]
 

@@ -1,8 +1,7 @@
 {
     "new": {
         "selector": [
-            ".menu-home",
-            ".menu-search"
+            ".menu-home"
         ]
     }
 }

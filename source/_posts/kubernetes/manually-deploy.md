@@ -14,6 +14,7 @@ Kubernetes 提供了許多雲端平台與作業系統的安裝方式，本章將
 * Kubernetes v1.5.4
 * Etcd v3.1.1
 * Flannel v0.7.0
+* Docker v17.03.0-ce
 
 <!--more-->
 
@@ -30,9 +31,12 @@ Kubernetes 提供了許多雲端平台與作業系統的安裝方式，本章將
 
 首先安裝前要確認以下幾項都已將準備完成：
 * 所有節點彼此網路互通，並且不需要 SSH 密碼即可登入。
-* 在`所有`節點安裝 Docker engine：
+* 所有防火牆與 SELinux 已關閉。
+* 所有節點需要設定`/etc/host`解析到所有主機。
+* 所有節點需要安裝`Docker`或`rtk`引擎。安裝方式為以下：
 ```sh
-$ curl -fsSL https://get.docker.com/ | sh
+$ curl -fsSL "https://get.docker.com/" | sh
+$ sudo iptables -P FORWARD ACCEPT
 ```
 
 ## Etcd 安裝與設定
@@ -58,14 +62,14 @@ $ mkdir /etc/etcd
 $ cat <<EOF > /etc/etcd/etcd.conf
 ETCD_NAME=master1
 ETCD_DATA_DIR=/var/lib/etcd
-ETCD_INITIAL_ADVERTISE_PEER_URLS="http://172.16.35.12:2380"
-ETCD_INITIAL_CLUSTER=master1="http://172.16.35.12:2380"
+ETCD_INITIAL_ADVERTISE_PEER_URLS=http://172.16.35.12:2380
+ETCD_INITIAL_CLUSTER=master1=http://172.16.35.12:2380
 ETCD_INITIAL_CLUSTER_STATE=new
 ETCD_INITIAL_CLUSTER_TOKEN=etcd-k8s-cluster
-ETCD_LISTEN_PEER_URLS="http://0.0.0.0:2380"
-ETCD_ADVERTISE_CLIENT_URLS="http://172.16.35.12:2379"
-ETCD_LISTEN_CLIENT_URLS="http://0.0.0.0:2379"
-ETCD_PROXY="off"
+ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
+ETCD_ADVERTISE_CLIENT_URLS=http://172.16.35.12:2379
+ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+ETCD_PROXY=off
 EOF
 ```
 
@@ -96,8 +100,7 @@ EOF
 建立 var 存放資訊，然後啟動 Etcd 服務:
 ```sh
 $ mkdir -p /var/lib/etcd && chown etcd:etcd -R /var/lib/etcd
-$ systemctl enable etcd.service
-$ systemctl start etcd.service
+$ systemctl enable etcd.service && systemctl start etcd.service
 ```
 
 透過簡單指令驗證：
@@ -105,6 +108,20 @@ $ systemctl start etcd.service
 $ etcdctl cluster-health
 member 95b428c288413b46 is healthy: got healthy result from http://172.16.35.12:2379
 cluster is healthy
+```
+
+接著回到`master1`節點，新增一個`/tmp/flannel-config.json`檔，並加入以下內容：
+```sh
+$ cat <<EOF > /tmp/flannel-config.json
+{ "Network": "172.20.0.0/16", "SubnetLen": 24, "Backend": { "Type": "vxlan"}}
+EOF
+```
+
+然後將 Flannel 網路設定儲存到 etcd 中：
+```sh
+$ etcdctl --no-sync set /atomic.io/network/config < /tmp/flannel-config.json
+$ etcdctl ls /atomic.io/network/
+/atomic.io/network/config
 ```
 
 ## Flannel 安裝與設定
@@ -159,24 +176,9 @@ RequiredBy=docker.service
 EOF
 ```
 
-接著回到`master1`節點，新增一個`/tmp/flannel-config.json`檔，並加入以下內容：
-```sh
-$ cat <<EOF > /tmp/flannel-config.json
-{ "Network": "172.20.0.0/16", "SubnetLen": 24, "Backend": { "Type": "vxlan"}}
-EOF
-```
-
-然後將 Flannel 網路設定儲存到 etcd 中：
-```sh
-$ etcdctl --no-sync set /atomic.io/network/config < /tmp/flannel-config.json
-$ etcdctl ls /atomic.io/network/
-/atomic.io/network/config
-```
-
 之後到`每台`節點啟動 Flannel:
 ```sh
-$ systemctl enable flanneld.service
-$ systemctl start flanneld.service
+$ systemctl enable flanneld.service && systemctl start flanneld.service
 ```
 
 完成後透過以下指令簡單驗證：
@@ -195,8 +197,7 @@ ExecStart=/usr/bin/dockerd -H fd:// $DOCKER_OPTS
 
 重新啟動 Docker 來使用 Flannel：
 ```sh
-$ systemctl daemon-reload
-$ systemctl restart docker
+$ systemctl daemon-reload && systemctl restart docker
 $ ip -4 a show docker0
 
 4: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default
@@ -258,6 +259,8 @@ EOF
 
 建立 OpenSSL Keypairs 與 Certificate：
 ```sh
+DIR=/etc/kubernetes/pki
+
 openssl genrsa -out ${DIR}/ca-key.pem 2048
 openssl req -x509 -new -nodes -key ${DIR}/ca-key.pem -days 1000 -out ${DIR}/ca.pem -subj '/CN=kube-ca'
 openssl genrsa -out ${DIR}/admin-key.pem 2048
@@ -267,20 +270,19 @@ openssl genrsa -out ${DIR}/apiserver-key.pem 2048
 openssl req -new -key ${DIR}/apiserver-key.pem -out ${DIR}/apiserver.csr -subj '/CN=kube-apiserver' -config ${DIR}/openssl.conf
 openssl x509 -req -in ${DIR}/apiserver.csr -CA ${DIR}/ca.pem -CAkey ${DIR}/ca-key.pem -CAcreateserial -out ${DIR}/apiserver.pem -days 1000 -extensions v3_req -extfile ${DIR}/openssl.conf
 ```
-> 細節請參考[Cluster TLS using OpenSSL](https://coreos.com/kubernetes/docs/latest/openssl.html)。
-
+> 細節請參考 [Cluster TLS using OpenSSL](https://coreos.com/kubernetes/docs/latest/openssl.html)。
 
 接著下載 Kubernetes 相關檔案至`/etc/kubernetes`：
 ```sh
 $ cd /etc/kubernetes/
-$ URL="https://gist.githubusercontent.com/kairen/08077dff404e0bcd949cd97536c03595/raw/bbb3ae52d9e2504e61f932dfe6e59eee22acf97a/"
+$ URL="https://gist.githubusercontent.com/kairen/08077dff404e0bcd949cd97536c03595/raw/3fae8c89869abd0a3a8e8f806df1c5e85973e79d"
 $ wget ${URL}/kube-apiserver.json -O manifests/kube-apiserver.json
 $ wget ${URL}/kube-controller-manager.json -O manifests/kube-controller-manager.json
 $ wget ${URL}/kube-scheduler.json -O manifests/kube-scheduler.json
 $ wget ${URL}/admin.conf -O admin.conf
 $ wget ${URL}/kubelet -O kubelet
 ```
-> 若`IP`與教學設定不同的話，請記得修改。
+> 若`IP`與教學設定不同的話，請記得修改`kube-apiserver.json`、`kube-controller-manager.json`、`kube-scheduler.json`與`admin.conf`。
 
 新增`/lib/systemd/system/kubelet.service`來管理 kubelet：
 ```sh
@@ -307,13 +309,12 @@ EOF
 最後建立 var 存放資訊，然後啟動 kubelet 服務:
 ```sh
 $ mkdir -p /var/lib/kubelet
-$ systemctl daemon-reload
-$ systemctl restart kubelet.service
+$ systemctl daemon-reload && systemctl restart kubelet.service
 ```
 
-完成後會需要一段時間下載元件的 Docker image，可以用以下指令去檢查是否已啟動：
+完成後會需要一段時間來下載與啟動元件，可以利用該指令來監看：
 ```sh
-$ netstat -ntlp
+$ watch -n 1 netstat -ntlp
 tcp   0  0 127.0.0.1:10248  0.0.0.0:*  LISTEN  20613/kubelet
 tcp   0  0 127.0.0.1:10251  0.0.0.0:*  LISTEN  19968/kube-schedule
 tcp   0  0 127.0.0.1:10252  0.0.0.0:*  LISTEN  20815/kube-controll
@@ -358,7 +359,7 @@ IP.1=172.16.35.10
 DNS.1=node1
 EOF
 ```
-> P.S.這邊`IP.1`與`DNS.1`需要隨機器不同設定。細節請參考[Cluster TLS using OpenSSL](https://coreos.com/kubernetes/docs/latest/openssl.html)。
+> P.S.這邊`IP.1`與`DNS.1`需要隨機器不同設定。細節請參考 [Cluster TLS using OpenSSL](https://coreos.com/kubernetes/docs/latest/openssl.html)。
 
 將`master1`上的 OpenSSL key 複製到`/etc/kubernetes/pki`：
 ```sh
@@ -369,11 +370,13 @@ done
 
 建立 OpenSSL Keypairs 與 Certificate：
 ```sh
+DIR=/etc/kubernetes/pki
+
 openssl genrsa -out ${DIR}/node-key.pem 2048
 openssl req -new -key ${DIR}/node-key.pem -out ${DIR}/node.csr -subj '/CN=kube-node' -config ${DIR}/openssl.conf
 openssl x509 -req -in ${DIR}/node.csr -CA ${DIR}/ca.pem -CAkey ${DIR}/ca-key.pem -CAcreateserial -out ${DIR}/node.pem -days 1000 -extensions v3_req -extfile ${DIR}/openssl.conf
 ```
-> 細節請參考[Cluster TLS using OpenSSL](https://coreos.com/kubernetes/docs/latest/openssl.html)。
+> 細節請參考 [Cluster TLS using OpenSSL](https://coreos.com/kubernetes/docs/latest/openssl.html)。
 
 接著下載 Kubernetes 相關檔案至`/etc/kubernetes/`：
 ```sh
@@ -383,7 +386,7 @@ $ wget ${URL}/kubelet.conf -O kubelet.conf
 $ wget ${URL}/admin.conf -O admin.conf
 $ wget ${URL}/kubelet -O kubelet
 ```
-> 若`IP`與教學設定不同的話，請記得修改。
+> 若`IP`與教學設定不同的話，請記得修改`kubelet.conf`與`admin.conf`。
 
 新增`/lib/systemd/system/kubelet.service`來管理 kubelet：
 ```sh
@@ -410,8 +413,7 @@ EOF
 最後建立 var 存放資訊，然後啟動 kubelet 服務:
 ```sh
 $ mkdir -p /var/lib/kubelet
-$ systemctl daemon-reload
-$ systemctl restart kubelet.service
+$ systemctl daemon-reload && systemctl restart kubelet.service
 ```
 
 當所有節點都完成後，回到`master1`透過簡單指令驗證：

@@ -1,5 +1,5 @@
 ---
-title: 建立 Apache Kafka 叢集
+title: Apache Kafka 叢集
 date: 2015-10-13 17:08:54
 layout: page
 categories:

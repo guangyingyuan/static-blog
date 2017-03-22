@@ -1,6 +1,6 @@
 ---
 layout: default
-title: 利用 Docker 快速部署 Ceph 測試叢集
+title: Docker 快速部署 Ceph 測試叢集
 date: 2016-2-11 17:08:54
 categories:
 - Ceph
