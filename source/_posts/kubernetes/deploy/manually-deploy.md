@@ -461,7 +461,7 @@ kube-system  kubernetes-dashboard-3697905830-6nffv  1/1   Running  1        3m
 ```
 
 確定都啟動後，可以開啟 [Dashboard](http://172.16.35.12/) 來查看。
-![](/images/kube-dash-preview.png)
+![](/images/kube/dash-preview.png)
 
 ## 簡單部署 Nginx 服務
 Kubernetes 可以選擇使用指令直接建立應用程式與服務，或者撰寫 YAML 與 JSON 檔案來描述部署應用程式的配置，以下將建立一個簡單的 Nginx 服務：

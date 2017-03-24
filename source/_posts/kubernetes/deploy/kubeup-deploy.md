@@ -7,6 +7,7 @@ categories:
 tags:
 - Kubernetes
 - Docker
+- Ubuntu
 ---
 Kubernetes 提供了許多雲端平台與作業系統的安裝方式，本篇將使用官方腳本`kube-up.sh`來部署 Kubernetes 到 Ubuntu 14.04 系統上。其他更多平台的部署可以參考 [Creating a Kubernetes Cluster](https://kubernetes.io/docs/getting-started-guides/)。
 
