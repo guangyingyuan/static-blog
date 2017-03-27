@@ -1,12 +1,12 @@
 ---
-title: 簡單部署 DC/OS 於 CentOS 上 
+title: 簡單部署 DC/OS 於 CentOS 上
 date: 2016-08-17 17:08:54
 layout: page
 categories:
-- DC/OS
+- Spark
 tags:
+- Spark
 - DC/OS
-- Container
 - Mesos
 ---
 DC/OS(Data Center Operating System，資料中心作業系統)是 Mesosphere 公司開源的系統，該平台提供了諸多巨量資料處理框架與系統的建置，並以分散式系統 Mesos 作為核心，提供系統資源的隔離與調度，使用者可以根據需求與策略來應用系統資源。

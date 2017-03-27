@@ -15,7 +15,7 @@ tags:
 
 ## 環境準備
 在開始進行之前，需要滿足以下幾項要求：
-* 需要部署一個 Ceph 叢集，可以參考 [Ceph Docker 部署](https://kairen.github.io/2016/02/11/ceph/ceph-docker/)。
+* 需要部署一個 Ceph 叢集，可以參考 [Ceph Docker 部署](https://kairen.github.io/2016/02/11/ceph/deploy/ceph-docker/)。
 * 執行 rados-java 程式的環境，要能夠與 Ceph 叢集溝通(ceph.conf、admin key)。
 * 需要安裝 Ceph 相關 library。可以透過以下方式安裝：
 > ```sh
