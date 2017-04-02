@@ -1,5 +1,5 @@
 ---
-title: Docker 建立多節點 Kubernetes(已更新至 v1.5.5)
+title: Docker 建立多節點 Kubernetes
 date: 2016-01-14 17:08:54
 layout: page
 categories:

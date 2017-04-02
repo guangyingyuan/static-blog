@@ -11,18 +11,12 @@ tags:
 ---
 [HA Kubernetes Ansible](https://github.com/kairen/ha-kube-ansible) 提供自動化部署 Kubernetes High Availability 叢集於虛擬機與實體機上，並且支援部署 Ceph 叢集於 Kubernetes 中提供共享式儲存系統給 Pod 應用程式使用。該專案最主要是想要快速建立測試環境來進行 Kubernetes 練習與驗證。
 
-<!--more-->
-
 kube-ansible 提供了以下幾項功能：
-* Vagrant scripts.
-* Kubernetes cluster setup(v1.5.0+).
-* Kubernetes addons.
-    * Dashboard
-    * Kube-DNS
-    * Monitor
-    * Kube-Proxy
-* Kubernetes High Availability.
-* Ceph cluster on Kubernetes(v11.2.0+).
+* Kubernetes 1.4.0+.
+* Ceph on Kubernetes cluster.
+* Common addons.
+
+<!--more-->
 
 而在 OS 部分以支援`Ubuntu 16.x`及`CentOS 7.x`的虛擬機與實體機部署。未來會以 Python 工具形式來提供使用。
 

@@ -11,7 +11,11 @@ tags:
 ---
 [kubeadm](https://kubernetes.io/docs/getting-started-guides/kubeadm/)是 Kubernetes 官方推出的部署工具，該工具實作類似 Docker swarm 一樣的部署方式，透過初始化 Master 節點來提供給 Node 快速加入，kubeadm 目前屬於測試環境用階段，但隨著時間推移會越來越多功能被支援，這邊可以看 [kubeadm Roadmap for v1.6](https://github.com/kubernetes/kubeadm/milestone/1) 來更進一步知道功能發展狀態。
 
-本篇也將說明如何使用與部署 Kubernetes。
+本環境安裝資訊：
+* Kubernetes v1.6.0(2017/03/29 Update).
+* Etcd v3
+* Flannel v0.7.0
+* Docker v1.13.1
 
 <!--more-->
 
@@ -29,17 +33,15 @@ tags:
 ## 事前準備
 安裝前需要確認叢集滿足以下幾點：
 * 所有節點網路可以溝通。
-* 所有節點需要安裝`Docker`。安裝方式為以下：
+* 所有節點需要設定 APT 與 Yum Docker Repository：
 ```sh
 $ sudo apt-key adv --keyserver "hkp://p80.pool.sks-keyservers.net:80" --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-$ sudo apt-add-repository 'deb https://apt.dockerproject.org/repo ubuntu-xenial main'
-$ sudo apt-get update && sudo apt-get install -y docker-engine=1.13.1-0~ubuntu-xenial
+$ echo 'deb https://apt.dockerproject.org/repo ubuntu-xenial main' | sudo tee /etc/apt/sources.list.d/docker.list
 ```
 > `2017.3.1` Docker 更改了版本命名，變成 Docker v17.03.0-ce，而目前測試不支援，可能會在 Kubernetes v1.6 一起 Release。
 
 * 所有節點需要設定 APT 與 Yum Kubernetes Repository：
 ```sh
-$ sudo apt-get update && sudo apt-get install -y apt-transport-https
 $ curl -s "https://packages.cloud.google.com/apt/doc/apt-key.gpg" | apt-key add -
 $ echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 ```
@@ -57,12 +59,12 @@ gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
 EOF
 ```
 
-* 確認 SELinux 或 Firewall 關閉。
+* CentOS 7 要額外確認 SELinux 或 Firewall 關閉。
 
 ## Kubernetes Master 建立
 首先更新 APT 來源，並且安裝 Kubernetes 元件與工具：
 ```sh
-$ sudo apt-get update && sudo apt-get install -y kubelet kubeadm kubectl kubernetes-cni
+$ sudo apt-get update && sudo apt-get install -y kubelet kubeadm kubectl kubernetes-cni docker-engine=1.13.1-0~ubuntu-xenial
 ```
 
 完成後就可以開始進行初始化 Master，這邊需要進入`root`使用者執行以下指令：
@@ -73,7 +75,7 @@ b0f7b8.8d1767876297d85c
 
 $ kubeadm init --service-cidr 10.96.0.0/12 \
 --pod-network-cidr 10.244.0.0/16 \
---api-advertise-addresses 172.16.35.12 \
+--apiserver-advertise-address 172.16.35.12 \
 --token b0f7b8.8d1767876297d85c
 
 ...
@@ -120,7 +122,7 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 首先更新 APT 來源，並且安裝 Kubernetes 元件與工具：
 ```sh
 $ sudo apt-get update
-$ sudo apt-get install -y kubelet kubeadm kubernetes-cni
+$ sudo apt-get install -y kubelet kubeadm kubernetes-cni docker-engine=1.13.1-0~ubuntu-xenial
 ```
 
 完成後就可以開始加入 Node，這邊需要進入`root`使用者執行以下指令：

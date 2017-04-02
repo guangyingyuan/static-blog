@@ -1,5 +1,5 @@
 ---
-title: 透過官方 Ansible 部署 Kubernetes(已更新至 v1.5.2)
+title: 透過官方 Ansible 部署 Kubernetes
 date: 2016-2-24 17:08:54
 layout: page
 categories:

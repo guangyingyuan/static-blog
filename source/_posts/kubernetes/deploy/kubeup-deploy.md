@@ -1,5 +1,5 @@
 ---
-title: kube-up 腳本部署 Kubernetes 叢集(已更新至 v1.5.4)
+title: kube-up 腳本部署 Kubernetes 叢集
 date: 2016-01-16 17:08:54
 layout: page
 categories:

@@ -1,5 +1,5 @@
 ---
-title: Kubernetes 手動安裝教學(已更新至 v1.5.4)
+title: Kubernetes 全手動苦工安裝教學
 date: 2016-12-16 17:08:54
 layout: page
 categories:

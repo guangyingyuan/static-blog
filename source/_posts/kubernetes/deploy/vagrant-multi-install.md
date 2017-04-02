@@ -1,5 +1,5 @@
 ---
-title: Vagrant CoreOS 部署 Kubernetes 測試叢集(已更新至 v1.5.4)
+title: Vagrant CoreOS 部署 Kubernetes 測試叢集
 date: 2016-2-23 17:08:54
 layout: page
 categories:
@@ -11,6 +11,10 @@ tags:
 - Vagrant
 ---
 本節將透過 Vagrant 與 CoreOS 來部署單機多節點的 Kubernetes 虛擬叢集，並使用 Kubernetest CLI 工具與 API 進行溝通。
+
+本次安裝版本為：
+* CoreOS alpha.
+* Kubernetes v1.5.4.
 
 <!--more-->
 

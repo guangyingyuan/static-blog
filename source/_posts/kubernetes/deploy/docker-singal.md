@@ -1,5 +1,5 @@
 ---
-title: Docker 建立單機 Kubernetes(已更新至 v1.5.4)
+title: Docker 建立單機 Kubernetes
 date: 2016-01-13 17:08:54
 layout: page
 categories:
