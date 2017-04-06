@@ -12,7 +12,7 @@ tags:
 [kubeadm](https://kubernetes.io/docs/getting-started-guides/kubeadm/)是 Kubernetes 官方推出的部署工具，該工具實作類似 Docker swarm 一樣的部署方式，透過初始化 Master 節點來提供給 Node 快速加入，kubeadm 目前屬於測試環境用階段，但隨著時間推移會越來越多功能被支援，這邊可以看 [kubeadm Roadmap for v1.6](https://github.com/kubernetes/kubeadm/milestone/1) 來更進一步知道功能發展狀態。
 
 本環境安裝資訊：
-* Kubernetes v1.6.0(2017/03/29 Update).
+* Kubernetes v1.6.1(2017/04/03 Update).
 * Etcd v3
 * Flannel v0.7.0
 * Docker v1.13.1
@@ -85,8 +85,8 @@ kubeadm join --token=b0f7b8.8d1767876297d85c 172.16.35.12
 當出現如上面資訊後，表示 Master 初始化成功，不過這邊還是一樣透過 kubectl 測試一下：
 ```sh
 $ kubectl get node
-NAME      STATUS         AGE
-master1   Ready,master   6m
+NAME      STATUS         AGE       VERSION
+master1   Ready,master   1m        v1.6.1
 ```
 
 當執行正確後要接著部署網路，但要注意`一個叢集只能用一種網路`，這邊採用 Flannel：
@@ -135,10 +135,10 @@ Run 'kubectl get nodes' on the master to see this machine join.
 回到`master1`查看節點狀態：
 ```sh
 $ kubectl  get node
-NAME      STATUS         AGE
-master1   Ready,master   5m
-node1     Ready          3m
-node2     Ready          28s
+NAME      STATUS         AGE       VERSION
+master1   Ready,master   5m        v1.6.1
+node1     Ready          2m        v1.6.1
+node2     Ready          1m        v1.6.1
 ```
 
 ## Add-ons 建立

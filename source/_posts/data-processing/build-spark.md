@@ -5,7 +5,7 @@ layout: page
 categories:
 - Spark
 tags:
-- Apache Spark
+- Spark
 - Maven
 ---
 本節將說明如何透過 mvn 與 sbt 來建置 Spark 最新版的相關檔案，透過提供最新版本來觀看 API 的變動。

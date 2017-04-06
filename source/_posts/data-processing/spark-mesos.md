@@ -7,6 +7,7 @@ categories:
 tags:
 - Spark
 - Mesos
+- HDFS
 ---
 Spark + Mesos 叢集是由多個主節點與工作節點組合而成，它實作了兩層的排程（Scheduler）來提供粗/細粒度的排程。在 Mesos 中主節點（Master）主要負責資料的分配與排程，然而從節點（Slave）則是主要執行任務負載的角色。Mesos 也提供了高可靠的部署模式，可利用多個主節點的 ZooKeeper 來做服務發現。
 

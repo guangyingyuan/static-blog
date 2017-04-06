@@ -42,7 +42,7 @@ $ sudo apt-get install -y maas
 
 安裝完成後，建立一個 admin 使用者帳號：
 ```sh
-$ sudo maas-region-admin createadmin
+$ sudo maas-region createadmin
 ```
 > 這時候就可以登入 [MAAS](http://<maas.ip>/MAAS/)。
 

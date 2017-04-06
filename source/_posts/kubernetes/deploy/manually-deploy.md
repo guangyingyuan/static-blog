@@ -11,7 +11,7 @@ tags:
 Kubernetes 提供了許多雲端平台與作業系統的安裝方式，本章將以`全手動安裝方式`來部署，主要是學習與了解 Kubernetes 建置流程。若想要瞭解更多平台的部署可以參考 [Picking the Right Solution](https://kubernetes.io/docs/getting-started-guides/)來選擇自己最喜歡的方式。
 
 本次安裝版本為：
-* Kubernetes v1.5.4
+* Kubernetes v1.6.1
 * Etcd v3.1.1
 * Flannel v0.7.0
 * Docker v17.03.0-ce
@@ -37,6 +37,7 @@ Kubernetes 提供了許多雲端平台與作業系統的安裝方式，本章將
 ```sh
 $ curl -fsSL "https://get.docker.com/" | sh
 $ sudo iptables -P FORWARD ACCEPT
+$ sudo iptables-save
 ```
 
 ## Etcd 安裝與設定
@@ -284,6 +285,13 @@ $ wget ${URL}/kubelet -O kubelet
 ```
 > 若`IP`與教學設定不同的話，請記得修改`kube-apiserver.json`、`kube-controller-manager.json`、`kube-scheduler.json`與`admin.conf`。
 
+由於 Kubernetes 更新很快，而用 Package 安裝的 kubelet 預設是最新版本，因此要手動修改元件部署的映像檔版本：
+```sh
+$ for file in kube-apiserver.json kube-scheduler.json kube-controller-manager.json; do
+  sed -i 's/v1.6.1/v1.5.4/g' manifests/${file}
+done
+```
+
 新增`/lib/systemd/system/kubelet.service`來管理 kubelet：
 ```sh
 $ cat <<EOF > /lib/systemd/system/kubelet.service
@@ -435,6 +443,7 @@ $ wget ${URL}/proxy.yaml -O addons/proxy.yaml
 $ wget ${URL}/dns.yaml -O addons/dns.yaml
 $ wget ${URL}/dashboard.yaml -O addons/dashboard.yaml
 $ wget ${URL}/monitoring.yaml -O addons/monitoring.yaml
+$ sed -i 's/v1.5.1/v1.6.0/g' addons/dashboard.yaml
 ```
 > 若`IP`與教學設定不同的話，請記得修改。
 
