@@ -28,12 +28,14 @@ tags:
 ## 事前準備
 開始進行 TensorFlow on Docker 之前，需要確認環境已經安裝以下驅動與軟體等。
 * 系統安裝了 Docker Engine：
+
 ```sh
 $ curl -fsSL "https://get.docker.com/" | sh
 $ sudo iptables -P FORWARD ACCEPT
 ```
 
 * 安裝最新版本 NVIDIA Driver 軟體：
+
 ```sh
 $ sudo add-apt-repository -y ppa:graphics-drivers/ppa
 $ sudo apt-get update
@@ -43,6 +45,7 @@ $ sudo dpkg -l | grep nvidia-367
 ```
 
 * 編譯與安裝 nvidia-modprobe：
+
 ```sh
 $ sudo apt-get install -y m4
 $ git clone "https://github.com/NVIDIA/nvidia-modprobe.git"
@@ -52,6 +55,7 @@ $ sudo nvidia-modprobe -u -c=0
 ```
 
 * 安裝 Nvidia Docker Plugin:
+
 ```sh
 $ wget -P /tmp "https://github.com/NVIDIA/nvidia-docker/releases/download/v1.0.1/nvidia-docker_1.0.1-1_amd64.deb"
 $ sudo dpkg -i /tmp/nvidia-docker*.deb && rm /tmp/nvidia-docker*.deb

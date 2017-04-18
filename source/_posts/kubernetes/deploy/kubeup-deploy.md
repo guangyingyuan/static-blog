@@ -35,6 +35,7 @@ Kubernetes 提供了許多雲端平台與作業系統的安裝方式，本篇將
 * 目前官方只測試過 `Ubuntu 14.04`，官方說法是 15.x 也沒問題，但 16.04 上我測試無法自動完成，要自己補上各種服務的 Systemd 腳本。
 * 部署節點可以透過 SSH 與其他節點溝通，並且是無密碼登入，以及有 Sudoer 權限。
 * 所有節點需要安裝`Docker`或`rtk`引擎。安裝方式為以下：
+
 ```sh
 $ curl -fsSL "https://get.docker.com/" | sh
 $ sudo iptables -P FORWARD ACCEPT

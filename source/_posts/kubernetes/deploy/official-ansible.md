@@ -38,6 +38,7 @@ Kubernetes 提供了許多雲端平台與作業系統的安裝方式，本篇將
 * 所有主機擁有 Sudoer 權限。
 * 所有節點需要設定`/etc/host`解析到所有主機。
 * `master1`或部署節點需要安裝 Ansible 與相關套件：
+
 ```sh
 $ sudo yum install -y epel-release
 $ sudo yum install -y ansible python-netaddr git

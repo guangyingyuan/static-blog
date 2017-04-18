@@ -34,6 +34,7 @@ tags:
 安裝前需要確認叢集滿足以下幾點：
 * 所有節點網路可以溝通。
 * 所有節點需要設定 APT Docker Repository：
+
 ```sh
 $ sudo apt-key adv --keyserver "hkp://p80.pool.sks-keyservers.net:80" --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
 $ echo 'deb https://apt.dockerproject.org/repo ubuntu-xenial main' | sudo tee /etc/apt/sources.list.d/docker.list
@@ -44,6 +45,7 @@ $ sudo yum install -y epel-release
 ```
 
 * 所有節點需要設定 APT 與 Yum Kubernetes Repository：
+
 ```sh
 $ curl -s "https://packages.cloud.google.com/apt/doc/apt-key.gpg" | apt-key add -
 $ echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list

@@ -17,12 +17,14 @@ tags:
 ## 事前準備
 在開始安裝前，我們必須在部署的主機或虛擬機安裝與完成以下兩點：
 * 確認安裝 Docker Engine 於主機作業系統。
+
 ```sh
 $ curl -fsSL "https://get.docker.com/" | sh
 $ sudo iptables -P FORWARD ACCEPT
 ```
 
 * 定義要使用的 Kubernetes 版本，目前支援 1.2.0+ 版本。
+
 ```sh
 $ export K8S_VERSION="1.5.4"
 ```

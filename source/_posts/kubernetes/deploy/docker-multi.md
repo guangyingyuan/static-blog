@@ -32,6 +32,7 @@ tags:
 ## 事前準備
 安裝前需要確認叢集滿足以下幾點：
 * 所有節點需要安裝`Docker`或`rtk`引擎。安裝方式為以下：
+
 ```sh
 $ curl -fsSL "https://get.docker.com/" | sh
 $ sudo iptables -P FORWARD ACCEPT

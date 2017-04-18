@@ -34,6 +34,7 @@ Kubernetes 提供了許多雲端平台與作業系統的安裝方式，本章將
 * 所有防火牆與 SELinux 已關閉。
 * 所有節點需要設定`/etc/host`解析到所有主機。
 * 所有節點需要安裝`Docker`或`rtk`引擎。安裝方式為以下：
+
 ```sh
 $ curl -fsSL "https://get.docker.com/" | sh
 $ sudo iptables -P FORWARD ACCEPT

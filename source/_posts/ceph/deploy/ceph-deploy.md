@@ -150,9 +150,10 @@ cluster e2432059-e219-4555-8d37-c32d5b16e4a4
 ```
 > * 如果出現`ERROR: missing keyring, cannot use cephx for authentication`，請注意這個檔案`/etc/ceph/ceph.client.admin.keyring`是否有權限讀取。
 * 如果出現`too few PGs per`，修改`pg_num`與`pgp_num`。範例如下：
-```sh
-ceph osd pool set rbd pg_num 128
-ceph osd pool set rbd pgp_num 128
+> 
+```
+$ ceph osd pool set rbd pg_num 128
+$ ceph osd pool set rbd pgp_num 128
 ```
 
 若要檢查 mds 可以使用以下指令：
