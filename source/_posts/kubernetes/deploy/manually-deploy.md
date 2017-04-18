@@ -288,7 +288,7 @@ $ wget ${URL}/kubelet -O kubelet
 由於 Kubernetes 更新很快，而用 Package 安裝的 kubelet 預設是最新版本，因此要手動修改元件部署的映像檔版本：
 ```sh
 $ for file in kube-apiserver.json kube-scheduler.json kube-controller-manager.json; do
-  sed -i 's/v1.6.1/v1.5.4/g' manifests/${file}
+  sed -i 's/v1.5.4/v1.6.1/g' manifests/${file}
 done
 ```
 

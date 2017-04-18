@@ -11,6 +11,8 @@ tags:
 ---
 本篇說明如何安裝 Kraken 版本的 Ceph，並將 objectstore backend 修改成 Bluestore，過程包含建立 RBD 等操作。
 
+<!--more-->
+
 ## 硬體規格說明
 本安裝由於實體機器數量受到限制，故只進行一台 MON 與兩台 OSD，而 OSD 數量則總共兩顆，硬體規格如下所示：
 

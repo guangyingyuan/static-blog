@@ -15,7 +15,7 @@ tags:
 * Kubernetes v1.6.1(2017/04/03 Update).
 * Etcd v3
 * Flannel v0.7.0
-* Docker v1.13.1
+* Docker v17.04.0-ce
 
 <!--more-->
 
@@ -33,12 +33,15 @@ tags:
 ## 事前準備
 安裝前需要確認叢集滿足以下幾點：
 * 所有節點網路可以溝通。
-* 所有節點需要設定 APT 與 Yum Docker Repository：
+* 所有節點需要設定 APT Docker Repository：
 ```sh
 $ sudo apt-key adv --keyserver "hkp://p80.pool.sks-keyservers.net:80" --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
 $ echo 'deb https://apt.dockerproject.org/repo ubuntu-xenial main' | sudo tee /etc/apt/sources.list.d/docker.list
 ```
-> `2017.3.1` Docker 更改了版本命名，變成 Docker v17.03.0-ce，而目前測試不支援，可能會在 Kubernetes v1.6 一起 Release。
+> CentOS 7 EPEL 有支援 Docker Package:
+```sh
+$ sudo yum install -y epel-release
+```
 
 * 所有節點需要設定 APT 與 Yum Kubernetes Repository：
 ```sh
@@ -64,7 +67,8 @@ EOF
 ## Kubernetes Master 建立
 首先更新 APT 來源，並且安裝 Kubernetes 元件與工具：
 ```sh
-$ sudo apt-get update && sudo apt-get install -y kubelet kubeadm kubectl kubernetes-cni docker-engine=1.13.1-0~ubuntu-xenial
+$ sudo apt-get update && sudo apt-get install -y kubelet kubeadm kubectl kubernetes-cni docker-engine
+$ sudo iptables -P FORWARD ACCEPT && sudo iptables-save
 ```
 
 完成後就可以開始進行初始化 Master，這邊需要進入`root`使用者執行以下指令：
@@ -79,27 +83,25 @@ $ kubeadm init --service-cidr 10.96.0.0/12 \
 --token b0f7b8.8d1767876297d85c
 
 ...
-kubeadm join --token=b0f7b8.8d1767876297d85c 172.16.35.12
+kubeadm join --token b0f7b8.8d1767876297d85c 172.22.2.102:6443
 ```
 
 當出現如上面資訊後，表示 Master 初始化成功，不過這邊還是一樣透過 kubectl 測試一下：
 ```sh
+$ export KUBECONFIG=/etc/kubernetes/admin.conf
 $ kubectl get node
-NAME      STATUS         AGE       VERSION
-master1   Ready,master   1m        v1.6.1
+NAME      STATUS    AGE       VERSION
+master1   Ready     19m       v1.6.1
 ```
 
 當執行正確後要接著部署網路，但要注意`一個叢集只能用一種網路`，這邊採用 Flannel：
 ```sh
-$ curl -sSL "https://rawgit.com/coreos/flannel/master/Documentation/kube-flannel.yml" | kubectl create -f -
+$ kubectl create -f "https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel-rbac.yml"
+$ kubectl create -f "https://rawgit.com/coreos/flannel/master/Documentation/kube-flannel.yml"
 configmap "kube-flannel-cfg" created
 daemonset "kube-flannel-ds" created
 ```
-> 若要使用 Weave 則執行以下：
-```sh
-$ kubectl apply -f "https://git.io/weave-kube"
-```
-> 其他可以參考 [Networking and Network Policy](https://kubernetes.io/docs/admin/addons/)。
+> 由於 1.6.1 版本預設使用了 RBAC，因此需要建立相關授權。其他可以參考 [Networking and Network Policy](https://kubernetes.io/docs/admin/addons/)。
 
 確認 Flannel 部署正確：
 ```sh
@@ -121,30 +123,47 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 ## Kubernetes Node 建立
 首先更新 APT 來源，並且安裝 Kubernetes 元件與工具：
 ```sh
-$ sudo apt-get update
-$ sudo apt-get install -y kubelet kubeadm kubernetes-cni docker-engine=1.13.1-0~ubuntu-xenial
+$ sudo apt-get update && sudo apt-get install -y kubelet kubeadm kubernetes-cni docker-engine
+$ sudo iptables -P FORWARD ACCEPT && sudo iptables-save
 ```
 
 完成後就可以開始加入 Node，這邊需要進入`root`使用者執行以下指令：
 ```sh
-$ kubeadm join --token b0f7b8.8d1767876297d85c 172.16.35.12
+$ kubeadm join --token b0f7b8.8d1767876297d85c 172.22.2.102:6443
 ...
 Run 'kubectl get nodes' on the master to see this machine join.
 ```
 
 回到`master1`查看節點狀態：
 ```sh
+$ export KUBECONFIG=/etc/kubernetes/admin.conf
 $ kubectl  get node
-NAME      STATUS         AGE       VERSION
-master1   Ready,master   5m        v1.6.1
-node1     Ready          2m        v1.6.1
-node2     Ready          1m        v1.6.1
+NAME      STATUS    AGE       VERSION
+master1   Ready     19m       v1.6.1
+node1     Ready     9m        v1.6.1
+node2     Ready     5m        v1.6.1
 ```
 
 ## Add-ons 建立
 當完成後就可以建立一些 Addons，如 Dashboard。這邊執行以下指令進行建立：
 ```sh
-$ curl -sSL https://rawgit.com/kubernetes/dashboard/master/src/deploy/kubernetes-dashboard.yaml | kubectl create -f -
+$ cat <<EOF > kube-dashboard-rbac.yml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: dashboard-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: kube-system
+EOF
+
+$ kubectl create -f kube-dashboard-rbac.yml
+$ kubectl create -f "https://rawgit.com/kubernetes/dashboard/master/src/deploy/kubernetes-dashboard.yaml"
 ```
 
 確認沒問題後，透過 kubectl 查看：
@@ -171,3 +190,9 @@ $ kubectl get pods -n sock-shop
 ```
 
 最後存取 http://172.16.35.12:30001 即可看到服務的 Frontend。
+
+## 移除節點
+最後，若要將現有節點移除的話，kubeadm 已經有內建的指令來完成這件事，只要執行以下即可：
+```sh
+$ kubeadm reset
+```

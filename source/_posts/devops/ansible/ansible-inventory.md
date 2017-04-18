@@ -37,7 +37,6 @@ badwolf.example.com:5309
 ```
 > 雖然可以使用以上方式達到不同 Port 連接，但是還是建議使用預設 Port。
 
-
 假設只有靜態 IP，但又希望透過一些別名（aliases）來表示主機，或透過不同 Port 連接的話，可以表示如以下：
 ```
 jumper ansible_port=5555 ansible_host=192.168.1.50
@@ -147,7 +146,6 @@ db_user: widgetuser
 db_password: lastpassword
 redis_host: redis_stag.example.com.tw
 ```
-> 存取變數方式 => {{ db_primary_host }}
 
 也可以用 YAML 的方式定義：
 ```sh
@@ -166,9 +164,8 @@ redis:
     host: redis_stag.example.com.tw
     port: 6379
 ```
-> 存取變數方式 => {{ db["primary"]["host"] }}
 
-甚至可以在繼續細分，定義檔案`/home/vagrant/ansible/playbooks/group_vars/production/db`：
+甚至可以在繼續細分，定義檔案`../playbooks/group_vars/production/db`：
 ```sh
 ---
 db:
