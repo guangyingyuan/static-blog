@@ -80,12 +80,13 @@ $ kubeadm token generate
 b0f7b8.8d1767876297d85c
 
 $ kubeadm init --service-cidr 10.96.0.0/12 \
+--kubernetes-version v1.6.1 \
 --pod-network-cidr 10.244.0.0/16 \
 --apiserver-advertise-address 172.16.35.12 \
 --token b0f7b8.8d1767876297d85c
 
 ...
-kubeadm join --token b0f7b8.8d1767876297d85c 172.22.2.102:6443
+kubeadm join --token b0f7b8.8d1767876297d85c 172.16.35.12:6443
 ```
 
 當出現如上面資訊後，表示 Master 初始化成功，不過這邊還是一樣透過 kubectl 測試一下：
@@ -131,7 +132,7 @@ $ sudo iptables -P FORWARD ACCEPT && sudo iptables-save
 
 完成後就可以開始加入 Node，這邊需要進入`root`使用者執行以下指令：
 ```sh
-$ kubeadm join --token b0f7b8.8d1767876297d85c 172.22.2.102:6443
+$ kubeadm join --token b0f7b8.8d1767876297d85c 172.16.35.12:6443
 ...
 Run 'kubectl get nodes' on the master to see this machine join.
 ```
