@@ -47,7 +47,7 @@ $ sudo yum install -y epel-release
 * 所有節點需要設定 APT 與 Yum Kubernetes Repository：
 
 ```sh
-$ curl -s "https://packages.cloud.google.com/apt/doc/apt-key.gpg" | apt-key add -
+$ curl -s "https://packages.cloud.google.com/apt/doc/apt-key.gpg" | sudo apt-key add -
 $ echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 ```
 > 若是 CentOS 7 則執行以下方式：

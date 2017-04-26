@@ -22,8 +22,8 @@ kube-ansible 提供了以下幾項功能：
 
 ## 快速開始
 kube-ansible 支援了 Vagrant 腳本來快速提供 VirtualBox 環境，若想單一主機模擬 Kubernetes 叢集的話，主機需要安裝以下軟體工具：
-* Vagrant >= 1.7.0
-* VirtualBox >= 5.0.0
+* [Vagrant](https://www.vagrantup.com/downloads.html) >= 1.7.0
+* [VirtualBox](https://www.virtualbox.org/wiki/Downloads) >= 5.0.0
 
 當主機確認安裝完成後，即可透過 Git 下載最新版本程式，並使用`setup-vagrant`腳本：
 ```sh
@@ -32,10 +32,11 @@ $ cd ha-kube-ansible
 $ ./setup-vagrant -h
 Usage : setup-vagrant [options]
 
- -b|--boss        This option is launch master count.
- -n|--node        This option is launch node count.
- -c|--cpu         This option is vbox vcpu.
- -m|--memory      This option is vbox memory.
+ -b|--boss        Launch number of master.
+ -n|--node        Launch number of node.
+ -c|--cpu         Setting number of cores per CPU in a virtual machine.
+ -m|--memory      Setting number of memory in a virtual machine.
+ -i|--interface   Setting network policys to bind to interfaces.
 ```
 
 這邊執行以下指令來建立三台 Master 與三台 Node 的環境：
