@@ -11,10 +11,10 @@ tags:
 ---
 [Kargo](https://github.com/kubernetes-incubator/kargo) 是 Kubernetes incubator 中的專案，目標是提供 Production Ready Kubernetes 部署方案，該專案基礎是透過 Ansible Playbook 來定義系統與 Kubernetes 叢集部署的任務，目前 Kargo 有以下幾個特點：
 
-* 可以部署在 AWS, GCE, Azure, OpenStack 或者 Baremetal
-* 部署 High Available Kubernetes 叢集
-* 可組合性(Composable)，可自行選擇 Network Plugin (flannel, calico, canal, weave) 來部署
-* 支援多種 Linux distributions(CoreOS, Debian Jessie, Ubuntu 16.04, CentOS/RHEL7)
+* 可以部署在 AWS, GCE, Azure, OpenStack 或者 Baremetal.
+* 部署 High Available Kubernetes 叢集.
+* 可組合性(Composable)，可自行選擇 Network Plugin (flannel, calico, canal, weave) 來部署.
+* 支援多種 Linux distributions(CoreOS, Debian Jessie, Ubuntu 16.04, CentOS/RHEL7).
 
 本篇將說明如何透過 Kargo 部署 Kubernetes 至實體機器節點，安裝版本如下所示：
 
