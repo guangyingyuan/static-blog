@@ -46,7 +46,7 @@ $ sudo apt-get -y install oracle-java7-installer
 首先我們須先將 Hadoop YARN 安裝完成，詳細步驟如下所示。
 下載Hadoop 2.6.0 or laster version：
 ```sh
-$ curl -s "http://files.imaclouds.com/packages/hadoop/hadoop-2.6.0.tar.gz" | sudo tar -xz -C /opt/
+$ curl -s "https://archive.apache.org/dist/hadoop/core/hadoop-2.6.0/hadoop-2.6.0.tar.gz" | sudo tar -xz -C /opt/
 $ sudo mv /opt/hadoop-2.6.0 /opt/hadoop
 ```
 > 若要下載不同版本可以到官方查看。
@@ -193,7 +193,7 @@ $ hadoop jar hadoop-mapreduce-examples-2.6.0.jar wordcount /example/words.txt /e
 
 首先下載 Spark，並修改權限：
 ```sh
-$ curl -s http://files.imaclouds.com/packages/spark/spark-1.5.2-bin-hadoop2.6.tgz | sudo tar -xz -C /opt/
+$ curl -s https://d3kbcqa49mib13.cloudfront.net/spark-1.5.2-bin-hadoop2.6.tgz | sudo tar -xz -C /opt/
 $ sudo mv /opt/spark-1.5.2-bin-hadoop2.6 /opt/spark
 $ sudo chown $USER:$USER -R /opt/spark
 ```

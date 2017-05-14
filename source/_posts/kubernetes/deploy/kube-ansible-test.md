@@ -1,5 +1,5 @@
 ---
-title: HA Kubernetes Ansible 快速部署 HA 測試環境
+title: 自製 Kubernetes Ansible 快速部署 HA 測試環境
 date: 2017-2-17 17:08:54
 layout: page
 categories:
@@ -9,7 +9,7 @@ tags:
 - Docker
 - Ansible
 ---
-[HA Kubernetes Ansible](https://github.com/kairen/ha-kube-ansible) 提供自動化部署 Kubernetes High Availability 叢集於虛擬機與實體機上，並且支援部署 Ceph 叢集於 Kubernetes 中提供共享式儲存系統給 Pod 應用程式使用。該專案最主要是想要快速建立測試環境來進行 Kubernetes 練習與驗證。
+[KaiRen Kubernetes Ansible](https://github.com/kairen/kube-ansible) 提供自動化部署 Kubernetes High Availability 叢集於虛擬機與實體機上，並且支援部署 Ceph 叢集於 Kubernetes 中提供共享式儲存系統給 Pod 應用程式使用。該專案最主要是想要快速建立測試環境來進行 Kubernetes 練習與驗證。
 
 kube-ansible 提供了以下幾項功能：
 * Kubernetes 1.4.0+.
@@ -27,16 +27,18 @@ kube-ansible 支援了 Vagrant 腳本來快速提供 VirtualBox 環境，若想�
 
 當主機確認安裝完成後，即可透過 Git 下載最新版本程式，並使用`setup-vagrant`腳本：
 ```sh
-$ git clone "https://github.com/kairen/ha-kube-ansible.git"
-$ cd ha-kube-ansible
+$ git clone "https://github.com/kairen/kube-ansible.git"
+$ cd kube-ansible
 $ ./setup-vagrant -h
 Usage : setup-vagrant [options]
 
- -b|--boss        Launch number of master.
- -n|--node        Launch number of node.
- -c|--cpu         Setting number of cores per CPU in a virtual machine.
- -m|--memory      Setting number of memory in a virtual machine.
- -i|--interface   Setting network policys to bind to interfaces.
+ -b|--boss        Set number of master.
+ -n|--node        Set number of node.
+ -c|--cpu         Set number of cores per vm.
+ -m|--memory      Set memory size per vm.
+ -p|--provider    Set virtual machine provider(virtualbox, libvirt).
+ -o|--os-image    Set virtual machine operation system(ubuntu16, centos7).
+ -i|--interface   Set the network bind interface.
 ```
 
 這邊執行以下指令來建立三台 Master 與三台 Node 的環境：
@@ -44,7 +46,8 @@ Usage : setup-vagrant [options]
 $ ./setup-vagrant -b 3 -c 3
 Cluster Size: 3 master, 2 node.
      VM Size: 3 vCPU, 1024 MB
-Start deploying?(y):
+     VM Info: ubuntu16, virtualbox
+Start deploying?(y): y
 ```
 > 預設 CPU 為 1vCPU，而 Memory 為 1024MB。
 

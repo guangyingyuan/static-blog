@@ -1,5 +1,5 @@
 ---
-title: HA Kubernetes Ansible 快速部署實體機 HA 叢集
+title: 自製 Kubernetes Ansible 快速部署實體機 HA 叢集
 date: 2017-02-19 17:08:54
 layout: page
 categories:
@@ -9,7 +9,7 @@ tags:
 - Docker
 - Ansible
 ---
-本篇說明如何透過 [HA Kubernetes Ansible](https://github.com/kairen/ha-kube-ansible) 部署多節點實體機 Kubernetes 叢集。
+本篇說明如何透過 [KaiRen Kubernetes Ansible](https://github.com/kairen/kube-ansible) 部署多節點實體機 Kubernetes 叢集。
 
 本安裝各軟體版本如下：
 * Kubernetes v1.6.2
@@ -61,8 +61,8 @@ $ sudo yum -y install ansible cowsay
 ## 部署 Kubernetes 叢集
 首先透過 Git 取得 HA Kubernetes Ansible 的專案：
 ```sh
-$ git clone "https://github.com/kairen/ha-kube-ansible.git" -b dev
-$ cd ha-kube-ansible
+$ git clone "https://github.com/kairen/kube-ansible.git" -b dev
+$ cd kube-ansible
 ```
 
 然後編輯`inventory`檔案，來加入要部署的節點角色：
@@ -89,6 +89,10 @@ nodes
 # Kubernetes component version
 kube_version: 1.6.2
 
+# Network plugin
+network: flannel
+pod_network_cidr: "10.244.0.0/16"
+
 # Kubernetes service 內部網路 IP range(預設即可)
 cluster_subnet: 192.160.0
 kubernetes_service_ip: "{{ cluster_subnet }}.1"
@@ -100,27 +104,17 @@ lb_vip_address: 172.20.3.90
 lb_api_url: "https://{{ lb_vip_address }}"
 api_secure_port: 5443
 
-sslcert_create: true
+sslcert_enable: true
 
 # 額外認證方式
 extra_auth:
   basic:
-    enable: true
-    password: "p@ssw0rd"
-    user: admin
-    uid: admin
-  token:
-    enable: false
-    value: "022f7e19-3d8e-492f-93e6-3d6bc1c11174"
-    user: admin
-    uid: admin
+    accounts:
+    - 'p@ssw0rd,admin,admin'
 
 # 若有內部 registry 則需要設定
 insecure_registrys:
 # - "gcr.io"
-
-# Network Policy 設定
-networking: flannel
 
 # Kubernetes Addons 設定
 kube_dash: true  # Dashboard 服務

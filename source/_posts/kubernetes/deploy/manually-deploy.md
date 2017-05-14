@@ -23,7 +23,7 @@ Kubernetes 提供了許多雲端平台與作業系統的安裝方式，本章將
 
 | IP Address  |   Role   |   CPU    |   Memory   |
 |-------------|----------|----------|------------|
-|172.16.35.12 |  master1 |    1     |     2G     |
+|172.16.35.12 |  master  |    1     |     2G     |
 |172.16.35.10 |  node1   |    1     |     2G     |
 |172.16.35.11 |  node2   |    1     |     2G     |
 
@@ -38,7 +38,6 @@ Kubernetes 提供了許多雲端平台與作業系統的安裝方式，本章將
 ```sh
 $ curl -fsSL "https://get.docker.com/" | sh
 $ sudo iptables -P FORWARD ACCEPT
-$ sudo iptables-save
 ```
 
 ## Etcd 安裝與設定
@@ -62,10 +61,10 @@ $ mkdir /etc/etcd
 新增`/etc/etcd/etcd.conf`檔案，加入以下內容：
 ```sh
 $ cat <<EOF > /etc/etcd/etcd.conf
-ETCD_NAME=master1
+ETCD_NAME=master
 ETCD_DATA_DIR=/var/lib/etcd
 ETCD_INITIAL_ADVERTISE_PEER_URLS=http://172.16.35.12:2380
-ETCD_INITIAL_CLUSTER=master1=http://172.16.35.12:2380
+ETCD_INITIAL_CLUSTER=master=http://172.16.35.12:2380
 ETCD_INITIAL_CLUSTER_STATE=new
 ETCD_INITIAL_CLUSTER_TOKEN=etcd-k8s-cluster
 ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
@@ -95,7 +94,6 @@ LimitNOFILE=65536
 
 [Install]
 WantedBy=multi-user.target
-Alias=etcd2.service
 EOF
 ```
 
@@ -112,7 +110,7 @@ member 95b428c288413b46 is healthy: got healthy result from http://172.16.35.12:
 cluster is healthy
 ```
 
-接著回到`master1`節點，新增一個`/tmp/flannel-config.json`檔，並加入以下內容：
+接著回到`master`節點，新增一個`/tmp/flannel-config.json`檔，並加入以下內容：
 ```sh
 $ cat <<EOF > /tmp/flannel-config.json
 { "Network": "172.20.0.0/16", "SubnetLen": 24, "Backend": { "Type": "vxlan"}}
@@ -235,26 +233,8 @@ DNS.1 = kubernetes
 DNS.2 = kubernetes.default
 DNS.3 = kubernetes.default.svc
 DNS.4 = kubernetes.default.svc.cluster.local
-DNS.5 = test.com
 IP.1 = 192.160.0.1
 IP.2 = 172.16.35.12
-EOF
-
-$ cat <<EOF > ${DIR}/openssl-etcd.conf
-[req]
-req_extensions = v3_req
-distinguished_name = req_distinguished_name
-[req_distinguished_name]
-[ v3_req ]
-extendedKeyUsage = clientAuth,serverAuth
-basicConstraints = CA:FALSE
-keyUsage = nonRepudiation, digitalSignature, keyEncipherment
-subjectAltName = @alt_names
-[alt_names]
-DNS.1 = test.com
-IP.1 = 172.16.35.12
-IP.2 = 172.16.35.10
-IP.3 = 172.16.35.11
 EOF
 ```
 > 細節請參考[Cluster TLS using OpenSSL](https://coreos.com/kubernetes/docs/latest/openssl.html)。
@@ -334,12 +314,12 @@ tcp6  0  0 :::8080          :::*       LISTEN  20333/kube-apiserve
 ```sh
 $ kubectl get node
 NAME      STATUS         AGE
-master1   Ready,master   1m
+master   Ready,master   1m
 
 $ kubectl get po --all-namespaces
-kube-system   kube-apiserver-master1            1/1  Running  0  12m
-kube-system   kube-controller-manager-master1   1/1  Running  0  7m
-kube-system   kube-scheduler-master1            1/1  Running  0  12
+kube-system   kube-apiserver-master            1/1  Running  0  12m
+kube-system   kube-controller-manager-master   1/1  Running  0  7m
+kube-system   kube-scheduler-master            1/1  Running  0  12
 ```
 
 ## Kubernetes Node 安裝與設定
@@ -370,10 +350,10 @@ EOF
 ```
 > P.S.這邊`IP.1`與`DNS.1`需要隨機器不同設定。細節請參考 [Cluster TLS using OpenSSL](https://coreos.com/kubernetes/docs/latest/openssl.html)。
 
-將`master1`上的 OpenSSL key 複製到`/etc/kubernetes/pki`：
+將`master`上的 OpenSSL key 複製到`/etc/kubernetes/pki`：
 ```sh
 for file in ca-key.pem ca.pem admin.pem admin-key.pem; do
-  scp master1:/etc/kubernetes/pki/${file} /etc/kubernetes/pki/
+  scp master:/etc/kubernetes/pki/${file} /etc/kubernetes/pki/
 done
 ```
 
@@ -425,18 +405,18 @@ $ mkdir -p /var/lib/kubelet
 $ systemctl daemon-reload && systemctl restart kubelet.service
 ```
 
-當所有節點都完成後，回到`master1`透過簡單指令驗證：
+當所有節點都完成後，回到`master`透過簡單指令驗證：
 ```sh
 $ kubectl get node
 
 NAME      STATUS         AGE
-master1   Ready,master   10m
+master   Ready,master   10m
 node1     Ready          4m
 node2     Ready          1m
 ```
 
 ## Kubernetes Addons 部署
-當環境都建置完成後，就可以進行部署附加元件，首先到`master1`，並進入`/etc/kubernetes/`目錄下載 Addons 檔案：
+當環境都建置完成後，就可以進行部署附加元件，首先到`master`，並進入`/etc/kubernetes/`目錄下載 Addons 檔案：
 ```sh
 $ cd /etc/kubernetes/ && mkdir addons
 $ URL="https://gist.githubusercontent.com/kairen/815886f6fcdebe48c798ee4c8f812f7b/raw/fe20323fa040a8d2cd12b94d909d4d4ff6fdfdb4/"

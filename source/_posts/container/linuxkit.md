@@ -3,12 +3,11 @@ title: 品嚐 Moby LinuxKit 的 Linux 作業系統
 date: 2017-4-23 17:08:54
 layout: page
 categories:
+- Container
+tags:
+- Linux
 - Docker
 - Moby
-tags:
-- Container
-- Docker
-- Linux
 - Microkernel
 ---
 [LinuxKit](https://github.com/linuxkit/linuxkit) 是 [DockerCon 2017](http://www.nebulaworks.com/blog/2017/04/22/docker-captains-dockercon-2017-review/) 中推出的工具之一，其主要是以 Container 來建立最小、不可變的 Linux 作業系統映像檔框架，Docker 公司一直透過 LinuxKit 來建立相關產品，如 Docker for Mac 等。由於要最快的了解功能，因此這邊透過建立簡單的映像檔來學習。
