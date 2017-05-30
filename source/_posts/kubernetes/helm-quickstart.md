@@ -58,7 +58,7 @@ $HELM_HOME has been configured at /root/.helm.
 Tiller (the helm server side component) has been installed into your Kubernetes Cluster.
 Happy Helming!
 ```
-> 在預設下的 Helm
+> 若之前只用舊版想要更新可以透過以下指令`helm init --upgrade`來達到效果。
 
 完成後，就可以透過 kubectl 來查看 Tiller Server 是否被建立：
 ```sh
@@ -80,16 +80,23 @@ Server: &version.Version{SemVer:"v2.4.2", GitCommit:"82d8e9498d96535cc6787a6a919
 ```
 
 ## 部署 Chart Release 實例
-當完成初始化後，就可以透過 helm ctl 來管理與部署 Chart Release，我們可以到 [KubeApps](https://kubeapps.com/) 查找想要部署的 Chart，如 Jenkins：
+當完成初始化後，就可以透過 helm ctl 來管理與部署 Chart Release，我們可以到 [KubeApps](https://kubeapps.com/) 查找想要部署的 Chart，如以下快速部屬 Jenkins　範例，首先先透過搜尋來查看目前應用程式版本：
 ```sh
-$ helm install stable/jenkins --version 0.6.3
-$ helm inspect stable/jenkins
 $ helm search jenkins
 NAME          	VERSION	DESCRIPTION
 stable/jenkins	0.6.3  	Open source continuous integration server. It s...
 ```
 
-首先該 Jenkins Chart 需要建立一個 PVC 來提供儲存，這邊我們自己手動建立`jenkins-pv-pvc.yml`檔案：
+接著透過`inspect`指令查看該 Chart 的參數資訊：
+```sh
+$ helm inspect stable/jenkins
+...
+Persistence:
+  Enabled: true
+```
+> 從中我們會發現需要建立一個 PVC 來提供持久性儲存。
+
+因此需要建立一個 PVC 提供給 Jenkins Chart 來儲存使用，這邊我們自己手動建立`jenkins-pv-pvc.yml`檔案：
 ```yaml
 apiVersion: v1
 kind: PersistentVolume
@@ -164,6 +171,21 @@ NAME          CLUSTER-IP       EXTERNAL-IP  PORT(S)                         AGE
 demo-jenkins  192.169.143.140  <pending>    8080:30152/TCP,50000:31806/TCP  1s
 ...
 ```
+> P.S. `install` 指令可以安裝來至`Chart repository`、`壓縮檔 Chart`、`一個 Chart 目錄`與`Chart URL`。
+
+> 這邊 install 可以額外透過以下兩種方式來覆寫參數，在這之前可以先透過`helm inspect values <chart>`來取得使用的變數。
+* **--values**：指定一個 YAML 檔案來覆寫設定。
+
+>```sh
+$ echo -e 'Master:\n  AdminPassword: r00tme' > config.yaml
+$ helm install -f config.yaml stable/jenkins
+```
+
+> * **--sets**：指定一對 Key/value 指令來覆寫。
+
+> ```sh
+$ helm install --set Master.AdminPassword=r00tme stable/jenkins
+```
 
 完成後就可以透過 helm 與 kubectl 來查看建立狀態：
 ```sh
@@ -196,7 +218,7 @@ demo-jenkins   192.169.143.140   ,172.20.3.90   8080:30152/TCP,50000:31806/TCP  
 ```
 > 這時候就可以透過 http://172.20.3.90:8080 連進去 Jenkins 了，其預設帳號為 `admin`。
 
-最後透過以下指令來取得 Jenkins admin 密碼：
+透過以下指令來取得 Jenkins admin 密碼：
 ```sh
 $ printf $(kubectl get secret --namespace default demo-jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode);echo
 buQ1ik2Q7x
@@ -204,6 +226,23 @@ buQ1ik2Q7x
 > 該 Chart 會產生亂數密碼存放到 secret 中。
 
 ![](/images/kube/helm-jenkins.png)
+
+最後我們也可以透過`upgrade`指令來更新已經 Release 的 Chart：
+```sh
+$ helm upgrade --set Master.AdminPassword=r00tme --set Persistence.ExistingClaim=jenkins-pvc demo stable/jenkins
+Release "demo" has been upgraded. Happy Helming!
+
+$ helm get values demo
+Master:
+  AdminPassword: r00tme
+Persistence:
+  ExistingClaim: jenkins-pvc
+
+$ helm ls
+NAME    REVISION        UPDATED                         STATUS          CHART           NAMESPACE
+demo    2               Tue May 30 21:18:43 2017        DEPLOYED        jenkins-0.6.3   default
+```
+> 這邊會看到`REVISION`會 +1，這可以用來做 rollback 的版本號使用。
 
 ## 刪除 Release
 Helm 除了基本的建立功能外，其還包含了整個 Release 的生命週期管理功能，如我們不需要該 Release 時，就可以透過以下方式刪除：
@@ -216,15 +255,18 @@ STATUS: DELETED
 當刪除後，該 Release 並沒有真的被刪除，我們可以透過 helm ls 來查看被刪除的 Release：
 ```sh
 $ helm ls --all
-NAME	REVISION	UPDATED                 	STATUS  	CHART        	NAMESPACE
-demo	5       	Fri May 26 00:46:25 2017	DELETED	  jenkins-0.6.3	default
+NAME    REVISION        UPDATED                         STATUS  CHART           NAMESPACE
+demo    2               Tue May 30 21:18:43 2017        DELETED jenkins-0.6.3   default
 ```
 > 當執行 `helm ls` 指令為加入 `--all` 時，表示只列出`DEPLOYED`狀態的 Release。
 
 而當 Release 處於 `DELETED` 狀態時，我們可以進行一些操作，如 Roll back 或完全刪除 Release：
 ```sh
-$ helm rollback demo 5
+$ helm rollback demo 1
 Rollback was a success! Happy Helming!
+
+$ printf $(kubectl get secret --namespace default demo-jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode);echo
+BIsLlQTN9l
 
 $ helm del demo --purge
 release "demo" deleted
