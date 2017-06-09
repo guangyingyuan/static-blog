@@ -11,10 +11,10 @@ tags:
 Kubernetes 提供了許多雲端平台與作業系統的安裝方式，本章將以`全手動安裝方式`來部署，主要是學習與了解 Kubernetes 建置流程。若想要瞭解更多平台的部署可以參考 [Picking the Right Solution](https://kubernetes.io/docs/getting-started-guides/)來選擇自己最喜歡的方式。
 
 本次安裝版本為：
-* Kubernetes v1.6.1
-* Etcd v3.1.1
-* Flannel v0.7.0
-* Docker v17.03.0-ce
+* Kubernetes v1.6.4
+* Etcd v3.1.6
+* Flannel v0.7.1
+* Docker v17.05.0-ce
 
 <!--more-->
 
@@ -31,13 +31,23 @@ Kubernetes 提供了許多雲端平台與作業系統的安裝方式，本章將
 
 首先安裝前要確認以下幾項都已將準備完成：
 * 所有節點彼此網路互通，並且不需要 SSH 密碼即可登入。
-* 所有防火牆與 SELinux 已關閉。
+* 所有防火牆與 SELinux 已關閉。如 CentOS：
+
+```sh
+$ systemctl stop firewalld && systemctl disable firewalld
+$ setenforce 0
+```
+
 * 所有節點需要設定`/etc/host`解析到所有主機。
-* 所有節點需要安裝`Docker`或`rtk`引擎。安裝方式為以下：
+* 所有節點需要安裝`Docker`或`rtk`引擎。這邊採用`Docker`來當作容器引擎，安裝方式如下：
 
 ```sh
 $ curl -fsSL "https://get.docker.com/" | sh
-$ sudo iptables -P FORWARD ACCEPT
+```
+> 不管是在 `Ubuntu` 或 `CentOS` 都只需要執行該指令就會自動安裝最新版 Docker。
+> CentOS 安裝完成後，需要再執行以下指令：
+```sh
+$ systemctl enable docker && systemctl start docker
 ```
 
 ## Etcd 安裝與設定
@@ -46,8 +56,8 @@ $ sudo iptables -P FORWARD ACCEPT
 首先在`master`節點下載 Etcd，並解壓縮放到 /opt 底下與安裝：
 ```sh
 $ cd /opt
-$ wget -qO- "https://github.com/coreos/etcd/releases/download/v3.1.1/etcd-v3.1.1-linux-amd64.tar.gz" | tar -zx
-$ mv etcd-v3.1.1-linux-amd64 etcd
+$ wget -qO- "https://github.com/coreos/etcd/releases/download/v3.1.6/etcd-v3.1.6-linux-amd64.tar.gz" | tar -zx
+$ mv etcd-v3.1.6-linux-amd64 etcd
 $ cd etcd/ && ln etcd /usr/bin/ && ln etcdctl /usr/bin/
 ```
 
@@ -73,6 +83,7 @@ ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
 ETCD_PROXY=off
 EOF
 ```
+> P.S. 若與該教學 IP 不同的話，請用自己 IP 取代`172.16.35.12`。
 
 新增`/lib/systemd/system/etcd.service`來管理 Etcd，並加入以下內容：
 ```sh
@@ -113,7 +124,7 @@ cluster is healthy
 接著回到`master`節點，新增一個`/tmp/flannel-config.json`檔，並加入以下內容：
 ```sh
 $ cat <<EOF > /tmp/flannel-config.json
-{ "Network": "172.20.0.0/16", "SubnetLen": 24, "Backend": { "Type": "vxlan"}}
+{ "Network": "10.244.0.0/16", "SubnetLen": 24, "Backend": { "Type": "vxlan" } }
 EOF
 ```
 
@@ -130,7 +141,7 @@ Flannel 是 CoreOS 團隊針對 Kubernetes 設計的一個`覆蓋網絡(Overlay 
 首先在`所有`節點下載 Flannel，並執行以下步驟。首先解壓縮放到 /opt 底下與安裝：
 ```sh
 $ cd /opt && mkdir flannel
-$ wget -qO- "https://github.com/coreos/flannel/releases/download/v0.7.0/flannel-v0.7.0-linux-amd64.tar.gz" | tar -zxC flannel/
+$ wget -qO- "https://github.com/coreos/flannel/releases/download/v0.7.1/flannel-v0.7.1-linux-amd64.tar.gz" | tar -zxC flannel/
 $ cd flannel/ && ln flanneld /usr/bin/ && ln mk-docker-opts.sh /usr/bin/
 ```
 
@@ -151,6 +162,7 @@ FLANNEL_ETCD_PREFIX="/atomic.io/network"
 FLANNEL_OPTIONS="--iface=enp0s8"
 EOF
 ```
+> `FLANNEL_ETCD_ENDPOINTS` 請修改成自己的 `master` IP。
 > `FLANNEL_OPTIONS`可以依據需求加入，這邊主要指定 flannel 使用的網卡。
 
 新增`/lib/systemd/system/flanneld.service`來管理 Flannel：
@@ -186,14 +198,16 @@ $ systemctl enable flanneld.service && systemctl start flanneld.service
 $ ip -4 addr show flannel.1
 
 5: flannel.1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UNKNOWN group default
-    inet 172.20.96.0/32 scope global flannel.1
+    inet 10.244.11.0/32 scope global flannel.1
        valid_lft forever preferred_lft forever
 ```
 
 確認有網路後，修改`/lib/systemd/system/docker.service`檔案以下內容：
 ```
+ExecStartPost=/sbin/iptables -I FORWARD -s 0.0.0.0/0 -j ACCEPT
 ExecStart=/usr/bin/dockerd -H fd:// $DOCKER_OPTS
 ```
+> 若是 CentOS 7 則不需要加入 `-H fd://`。
 
 重新啟動 Docker 來使用 Flannel：
 ```sh
@@ -201,7 +215,7 @@ $ systemctl daemon-reload && systemctl restart docker
 $ ip -4 a show docker0
 
 4: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default
-    inet 172.20.96.1/24 scope global docker0
+    inet 10.244.11.1/24 scope global docker0
        valid_lft forever preferred_lft forever
 ```
 
@@ -213,6 +227,20 @@ Master 是 Kubernetes 的大總管，主要建置`API Server`、`Controller Mana
 $ curl -s "https://packages.cloud.google.com/apt/doc/apt-key.gpg" | apt-key add -
 $ echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
 $ apt-get update && apt-get install -y kubectl kubelet kubernetes-cni
+```
+> CentOS 7 則使用以下指令安裝：
+```sh
+$ cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=http://yum.kubernetes.io/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
+       https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+EOF
+$ yum install -y kubelet kubectl kubernetes-cni
 ```
 
 然後準備 OpenSSL 的設定檔資訊：
@@ -237,6 +265,7 @@ IP.1 = 192.160.0.1
 IP.2 = 172.16.35.12
 EOF
 ```
+> `IP.2` 請修改成自己的`master` IP。
 > 細節請參考[Cluster TLS using OpenSSL](https://coreos.com/kubernetes/docs/latest/openssl.html)。
 
 建立 OpenSSL Keypairs 與 Certificate：
@@ -257,21 +286,17 @@ openssl x509 -req -in ${DIR}/apiserver.csr -CA ${DIR}/ca.pem -CAkey ${DIR}/ca-ke
 接著下載 Kubernetes 相關檔案至`/etc/kubernetes`：
 ```sh
 $ cd /etc/kubernetes/
-$ URL="https://gist.githubusercontent.com/kairen/08077dff404e0bcd949cd97536c03595/raw/3fae8c89869abd0a3a8e8f806df1c5e85973e79d"
-$ wget ${URL}/kube-apiserver.json -O manifests/kube-apiserver.json
-$ wget ${URL}/kube-controller-manager.json -O manifests/kube-controller-manager.json
-$ wget ${URL}/kube-scheduler.json -O manifests/kube-scheduler.json
+$ URL="https://kairen.github.io/files/manual/master"
+$ wget ${URL}/kube-apiserver.conf -O manifests/kube-apiserver.yml
+$ wget ${URL}/kube-controller-manager.conf -O manifests/kube-controller-manager.yml
+$ wget ${URL}/kube-scheduler.conf -O manifests/kube-scheduler.yml
 $ wget ${URL}/admin.conf -O admin.conf
-$ wget ${URL}/kubelet -O kubelet
+$ wget ${URL}/kubelet.conf -O kubelet
+$ cat <<EOF > /etc/kubernetes/user.csv
+p@ssw0rd,admin,admin
+EOF
 ```
-> 若`IP`與教學設定不同的話，請記得修改`kube-apiserver.json`、`kube-controller-manager.json`、`kube-scheduler.json`與`admin.conf`。
-
-由於 Kubernetes 更新很快，而用 Package 安裝的 kubelet 預設是最新版本，因此要手動修改元件部署的映像檔版本：
-```sh
-$ for file in kube-apiserver.json kube-scheduler.json kube-controller-manager.json; do
-  sed -i 's/v1.5.4/v1.6.1/g' manifests/${file}
-done
-```
+> 若`IP`與教學設定不同的話，請記得修改`kube-apiserver.yml`、`kube-controller-manager.yml`、`kube-scheduler.yml`與`admin.yml`。
 
 新增`/lib/systemd/system/kubelet.service`來管理 kubelet：
 ```sh
@@ -294,6 +319,7 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 ```
+> 若作業系統為`CentOS 7`，請修改路徑為`/etc/systemd/system/kubelet.service`。
 
 最後建立 var 存放資訊，然後啟動 kubelet 服務:
 ```sh
@@ -309,6 +335,7 @@ tcp   0  0 127.0.0.1:10251  0.0.0.0:*  LISTEN  19968/kube-schedule
 tcp   0  0 127.0.0.1:10252  0.0.0.0:*  LISTEN  20815/kube-controll
 tcp6  0  0 :::8080          :::*       LISTEN  20333/kube-apiserve
 ```
+> 若看到以上已經被 binding 後，就可以透過瀏覽器存取 https://172.16.35.12:6443/，並輸入帳號`admin`與密碼`p@ssw0rd`。
 
 透過簡單指令驗證：
 ```sh
@@ -317,9 +344,10 @@ NAME      STATUS         AGE
 master   Ready,master   1m
 
 $ kubectl get po --all-namespaces
-kube-system   kube-apiserver-master            1/1  Running  0  12m
-kube-system   kube-controller-manager-master   1/1  Running  0  7m
-kube-system   kube-scheduler-master            1/1  Running  0  12
+NAMESPACE     NAME                              READY     STATUS    RESTARTS   AGE
+kube-system   kube-apiserver-master1            1/1       Running   0          3m
+kube-system   kube-controller-manager-master1   1/1       Running   0          2m
+kube-system   kube-scheduler-master1            1/1       Running   0          2m
 ```
 
 ## Kubernetes Node 安裝與設定
@@ -328,6 +356,20 @@ Node 是主要的工作節點，上面將運行許多容器應用。到所有`no
 $ curl -s "https://packages.cloud.google.com/apt/doc/apt-key.gpg" | apt-key add -
 $ echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
 $ apt-get update && apt-get install -y kubelet kubernetes-cni
+```
+> CentOS 7 則使用以下指令安裝：
+```sh
+$ cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=http://yum.kubernetes.io/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
+       https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+EOF
+$ yum install -y kubelet kubernetes-cni
 ```
 
 然後準備 OpenSSL 的設定檔資訊：
@@ -348,14 +390,15 @@ IP.1=172.16.35.10
 DNS.1=node1
 EOF
 ```
-> P.S.這邊`IP.1`與`DNS.1`需要隨機器不同設定。細節請參考 [Cluster TLS using OpenSSL](https://coreos.com/kubernetes/docs/latest/openssl.html)。
+> P.S. 這邊`IP.1`與`DNS.1`需要隨機器不同設定。細節請參考 [Cluster TLS using OpenSSL](https://coreos.com/kubernetes/docs/latest/openssl.html)。
 
-將`master`上的 OpenSSL key 複製到`/etc/kubernetes/pki`：
+將`master1`上的 OpenSSL key 複製到`/etc/kubernetes/pki`：
 ```sh
 for file in ca-key.pem ca.pem admin.pem admin-key.pem; do
-  scp master:/etc/kubernetes/pki/${file} /etc/kubernetes/pki/
+  scp /etc/kubernetes/pki/${file} <NODE>:/etc/kubernetes/pki/
 done
 ```
+> P.S. 該操作在`master1`執行。並記得修改`<NODE>`為所有工作節點。
 
 建立 OpenSSL Keypairs 與 Certificate：
 ```sh
@@ -370,10 +413,10 @@ openssl x509 -req -in ${DIR}/node.csr -CA ${DIR}/ca.pem -CAkey ${DIR}/ca-key.pem
 接著下載 Kubernetes 相關檔案至`/etc/kubernetes/`：
 ```sh
 $ cd /etc/kubernetes/
-$ URL="https://gist.githubusercontent.com/kairen/bd51f31d12cb7c2acc7f5e0a4b4fde49/raw/974d4d3a295658d92b1805558448fd38d61d76cc/"
-$ wget ${URL}/kubelet.conf -O kubelet.conf
+$ URL="https://kairen.github.io/files/manual/node"
+$ wget ${URL}/kubelet-user.conf -O kubelet-user.conf
 $ wget ${URL}/admin.conf -O admin.conf
-$ wget ${URL}/kubelet -O kubelet
+$ wget ${URL}/kubelet.conf -O kubelet
 ```
 > 若`IP`與教學設定不同的話，請記得修改`kubelet.conf`與`admin.conf`。
 
@@ -398,6 +441,7 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 ```
+> 若作業系統為`CentOS 7`，請修改路徑為`/etc/systemd/system/kubelet.service`。
 
 最後建立 var 存放資訊，然後啟動 kubelet 服務:
 ```sh
@@ -408,49 +452,49 @@ $ systemctl daemon-reload && systemctl restart kubelet.service
 當所有節點都完成後，回到`master`透過簡單指令驗證：
 ```sh
 $ kubectl get node
-
-NAME      STATUS         AGE
-master   Ready,master   10m
-node1     Ready          4m
-node2     Ready          1m
+NAME      STATUS         AGE       VERSION
+master1   Ready,master   17m       v1.6.4
+node1     Ready          20s       v1.6.4
+node2     Ready          18s       v1.6.4
 ```
 
 ## Kubernetes Addons 部署
-當環境都建置完成後，就可以進行部署附加元件，首先到`master`，並進入`/etc/kubernetes/`目錄下載 Addons 檔案：
+當環境都建置完成後，就可以進行部署附加元件，首先到`master1`，並進入`/etc/kubernetes/`目錄下載 Addon 檔案：
 ```sh
-$ cd /etc/kubernetes/ && mkdir addons
-$ URL="https://gist.githubusercontent.com/kairen/815886f6fcdebe48c798ee4c8f812f7b/raw/fe20323fa040a8d2cd12b94d909d4d4ff6fdfdb4/"
-$ wget ${URL}/proxy.yaml -O addons/proxy.yaml
-$ wget ${URL}/dns.yaml -O addons/dns.yaml
-$ wget ${URL}/dashboard.yaml -O addons/dashboard.yaml
-$ wget ${URL}/monitoring.yaml -O addons/monitoring.yaml
-$ sed -i 's/v1.5.1/v1.6.0/g' addons/dashboard.yaml
+$ cd /etc/kubernetes/ && mkdir addon
+$ URL="https://kairen.github.io/files/manual/addon"
+$ wget ${URL}/kube-proxy.conf -O addon/kube-proxy.yml
+$ wget ${URL}/kube-dns.conf -O addon/kube-dns.yml
+$ wget ${URL}/kube-dash.conf -O addon/kube-dash.yml
+$ wget ${URL}/kube-monitor.conf -O addon/kube-monitor.yml
+$ sed -i 's/172.16.35.12/<YOUR_MASTER_IP>' addon/kube-monitor.yml
+$ sed -i 's/172.16.35.12/<YOUR_MASTER_IP>' addon/kube-proxy.yml
 ```
-> 若`IP`與教學設定不同的話，請記得修改。
+> 若`IP`與教學設定不同的話，請記得修改`<YOUR_MASTER_IP>`。
 
 接著透過 kubectl 來指定檔案建立附加元件：
 ```sh
-for file in proxy.yaml dns.yaml dashboard.yaml monitoring.yaml; do
-  kubectl create -f addons/${file}
-done
+$ kubectl apply -f addon/
 ```
-> 若想要刪除則將`create`改成`delete`即可。
+> 若想要刪除則將`apply`改成`delete`即可。
 
 透過以下指令來驗證部署是否有效：
 ```sh
-$ kubectl get po --all-namespaces
-
-NAMESPACE    NAME                                   READY STATUS   RESTARTS AGE
-kube-system  heapster-v1.2.0-371757285-7qq02        1/1   Running  0        2m
-kube-system  influxdb-grafana-704917236-zdx0m       2/2   Running  0        2m
-kube-system  kube-dns-r5wx4                         3/3   Running  0        2m
-kube-system  kube-proxy-amd64-2ck40                 1/1   Running  0        2m
-kube-system  kube-proxy-amd64-lk0ql                 1/1   Running  0        2m
-kube-system  kube-proxy-amd64-rxgxz                 1/1   Running  0        2m
-kube-system  kubernetes-dashboard-3697905830-6nffv  1/1   Running  1        3m
+$ kubectl get po -n kube-system
+NAME                                   READY     STATUS    RESTARTS   AGE
+heapster-v1.2.0-1753406648-wsb3z       1/1       Running   0          2m
+influxdb-grafana-42195489-vtmnl        2/2       Running   0          2m
+kube-apiserver-master1                 1/1       Running   0          33m
+kube-controller-manager-master1        1/1       Running   0          33m
+kube-dns-3701766129-0p28b              3/3       Running   0          2m
+kube-proxy-amd64-44rft                 1/1       Running   0          2m
+kube-proxy-amd64-fz77b                 1/1       Running   0          2m
+kube-proxy-amd64-gqq2p                 1/1       Running   0          2m
+kube-scheduler-master1                 1/1       Running   0          33m
+kubernetes-dashboard-210558060-zw814   1/1       Running   2          2m
 ```
 
-確定都啟動後，可以開啟 [Dashboard](http://172.16.35.12/) 來查看。
+確定都啟動後，可以開啟 https://172.16.35.12:6443/ui 來查看。
 ![](/images/kube/dash-preview.png)
 
 ## 簡單部署 Nginx 服務
@@ -458,9 +502,8 @@ Kubernetes 可以選擇使用指令直接建立應用程式與服務，或者撰
 ```sh
 $ kubectl run nginx --image=nginx --replicas=1 --port=80
 $ kubectl get pods -o wide
-
-NAME                     READY  STATUS  RESTARTS   AGE  IP            NODE
-nginx-4087004473-9c161   1/1    Running 0          18m  172.20.19.2   node1
+NAME                    READY     STATUS    RESTARTS   AGE       IP            NODE
+nginx-158599303-k7cbt   1/1       Running   0          14s       10.244.24.3   node1
 ```
 
 完成後要接著建立 svc(Service)，來提供外部網路存取應用程式，使用以下指令建立：
@@ -472,9 +515,9 @@ NAME             CLUSTER-IP       EXTERNAL-IP     PORT(S)        AGE
 svc/kubernetes   192.160.0.1      <none>          443/TCP        2h
 svc/nginx        192.160.57.181   ,172.16.35.12   80:32054/TCP   21s
 ```
-> 這邊`type`可以選擇 NodePort 與 LoadBalancer。
+> 這邊`type`可以選擇 NodePort 與 LoadBalancer。另外需隨機器 IP 不同而修改 `external-ip`。
 
-確認沒問題後即可在瀏覽器存取 {EXTERNAL-IP}:32054。
+確認沒問題後即可在瀏覽器存取 http://172.16.35.12/。
 
 ### 擴展服務數量
 若叢集`node`節點增加了，而想讓 Nginx 服務提供可靠性的話，可以透過以下方式來擴展服務的副本：
@@ -482,7 +525,7 @@ svc/nginx        192.160.57.181   ,172.16.35.12   80:32054/TCP   21s
 $ kubectl scale deploy nginx --replicas=2
 
 $ kubectl get pods -o wide
-NAME                     READY     STATUS    RESTARTS   AGE       IP            NODE
-nginx-3449338310-9jsjx   1/1       Running   0          6m        172.20.19.2   node1
-nginx-3449338310-rnfs9   1/1       Running   0          20s       172.20.98.5   node2
+NAME                    READY     STATUS    RESTARTS   AGE       IP             NODE
+nginx-158599303-0h9lr   1/1       Running   0          25s       10.244.100.5   node2
+nginx-158599303-k7cbt   1/1       Running   0          1m        10.244.24.3    node1
 ```
