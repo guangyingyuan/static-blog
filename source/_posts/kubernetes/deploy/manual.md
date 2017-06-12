@@ -285,7 +285,7 @@ openssl x509 -req -in ${DIR}/apiserver.csr -CA ${DIR}/ca.pem -CAkey ${DIR}/ca-ke
 
 接著下載 Kubernetes 相關檔案至`/etc/kubernetes`：
 ```sh
-$ cd /etc/kubernetes/
+$ cd /etc/kubernetes/ && mkdir manifests
 $ URL="https://kairen.github.io/files/manual/master"
 $ wget ${URL}/kube-apiserver.conf -O manifests/kube-apiserver.yml
 $ wget ${URL}/kube-controller-manager.conf -O manifests/kube-controller-manager.yml
@@ -412,7 +412,7 @@ openssl x509 -req -in ${DIR}/node.csr -CA ${DIR}/ca.pem -CAkey ${DIR}/ca-key.pem
 
 接著下載 Kubernetes 相關檔案至`/etc/kubernetes/`：
 ```sh
-$ cd /etc/kubernetes/
+$ cd /etc/kubernetes/ && mkdir manifests
 $ URL="https://kairen.github.io/files/manual/node"
 $ wget ${URL}/kubelet-user.conf -O kubelet-user.conf
 $ wget ${URL}/admin.conf -O admin.conf
