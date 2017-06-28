@@ -285,14 +285,14 @@ openssl x509 -req -in ${DIR}/apiserver.csr -CA ${DIR}/ca.pem -CAkey ${DIR}/ca-ke
 
 接著下載 Kubernetes 相關檔案至`/etc/kubernetes`：
 ```sh
-$ cd /etc/kubernetes/ && mkdir manifests
-$ URL="https://kairen.github.io/files/manual/master"
-$ wget ${URL}/kube-apiserver.conf -O manifests/kube-apiserver.yml
-$ wget ${URL}/kube-controller-manager.conf -O manifests/kube-controller-manager.yml
-$ wget ${URL}/kube-scheduler.conf -O manifests/kube-scheduler.yml
-$ wget ${URL}/admin.conf -O admin.conf
-$ wget ${URL}/kubelet.conf -O kubelet
-$ cat <<EOF > /etc/kubernetes/user.csv
+cd /etc/kubernetes/
+URL="https://kairen.github.io/files/manual/master"
+wget ${URL}/kube-apiserver.conf -O manifests/kube-apiserver.yml
+wget ${URL}/kube-controller-manager.conf -O manifests/kube-controller-manager.yml
+wget ${URL}/kube-scheduler.conf -O manifests/kube-scheduler.yml
+wget ${URL}/admin.conf -O admin.conf
+wget ${URL}/kubelet.conf -O kubelet
+cat <<EOF > /etc/kubernetes/user.csv
 p@ssw0rd,admin,admin
 EOF
 ```
@@ -310,7 +310,7 @@ Requires=docker.service
 WorkingDirectory=/var/lib/kubelet
 EnvironmentFile=-/etc/kubernetes/kubelet
 ExecStart=/usr/bin/kubelet \$KUBELET_ADDRESS \$KUBELET_POD_INFRA_CONTAINER \
-\$KUBELET_ARGS \$KUBE_NODE_LABEL $KUBE_LOGTOSTDERR \
+\$KUBELET_ARGS \$KUBE_NODE_LABEL \$KUBE_LOGTOSTDERR \
 \$KUBE_ALLOW_PRIV \$KUBELET_NETWORK_ARGS \
 \$KUBELET_DNS_ARGS
 Restart=always
@@ -319,7 +319,7 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 ```
-> 若作業系統為`CentOS 7`，請修改路徑為`/etc/systemd/system/kubelet.service`。
+> `/etc/systemd/system/kubelet.service`為`CentOS 7`使用的路徑。
 
 最後建立 var 存放資訊，然後啟動 kubelet 服務:
 ```sh
@@ -335,7 +335,7 @@ tcp   0  0 127.0.0.1:10251  0.0.0.0:*  LISTEN  19968/kube-schedule
 tcp   0  0 127.0.0.1:10252  0.0.0.0:*  LISTEN  20815/kube-controll
 tcp6  0  0 :::8080          :::*       LISTEN  20333/kube-apiserve
 ```
-> 若看到以上已經被 binding 後，就可以透過瀏覽器存取 https://172.16.35.12:6443/，並輸入帳號`admin`與密碼`p@ssw0rd`。
+> 若看到以上已經被 binding 後，就可以透過瀏覽器存取 [API Service](https://172.16.35.12:6443/)，並輸入帳號`admin`與密碼`p@ssw0rd`。
 
 透過簡單指令驗證：
 ```sh
@@ -412,11 +412,11 @@ openssl x509 -req -in ${DIR}/node.csr -CA ${DIR}/ca.pem -CAkey ${DIR}/ca-key.pem
 
 接著下載 Kubernetes 相關檔案至`/etc/kubernetes/`：
 ```sh
-$ cd /etc/kubernetes/ && mkdir manifests
-$ URL="https://kairen.github.io/files/manual/node"
-$ wget ${URL}/kubelet-user.conf -O kubelet-user.conf
-$ wget ${URL}/admin.conf -O admin.conf
-$ wget ${URL}/kubelet.conf -O kubelet
+cd /etc/kubernetes/
+URL="https://kairen.github.io/files/manual/node"
+wget ${URL}/kubelet-user.conf -O kubelet-user.conf
+wget ${URL}/admin.conf -O admin.conf
+wget ${URL}/kubelet.conf -O kubelet
 ```
 > 若`IP`與教學設定不同的話，請記得修改`kubelet.conf`與`admin.conf`。
 
@@ -441,7 +441,7 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 ```
-> 若作業系統為`CentOS 7`，請修改路徑為`/etc/systemd/system/kubelet.service`。
+> `/etc/systemd/system/kubelet.service`為`CentOS 7`使用的路徑。
 
 最後建立 var 存放資訊，然後啟動 kubelet 服務:
 ```sh
@@ -461,16 +461,18 @@ node2     Ready          18s       v1.6.4
 ## Kubernetes Addons 部署
 當環境都建置完成後，就可以進行部署附加元件，首先到`master1`，並進入`/etc/kubernetes/`目錄下載 Addon 檔案：
 ```sh
-$ cd /etc/kubernetes/ && mkdir addon
-$ URL="https://kairen.github.io/files/manual/addon"
-$ wget ${URL}/kube-proxy.conf -O addon/kube-proxy.yml
-$ wget ${URL}/kube-dns.conf -O addon/kube-dns.yml
-$ wget ${URL}/kube-dash.conf -O addon/kube-dash.yml
-$ wget ${URL}/kube-monitor.conf -O addon/kube-monitor.yml
-$ sed -i 's/172.16.35.12/<YOUR_MASTER_IP>' addon/kube-monitor.yml
-$ sed -i 's/172.16.35.12/<YOUR_MASTER_IP>' addon/kube-proxy.yml
+cd /etc/kubernetes/ && mkdir addon
+URL="https://kairen.github.io/files/manual/addon"
+wget ${URL}/kube-proxy.conf -O addon/kube-proxy.yml
+wget ${URL}/kube-dns.conf -O addon/kube-dns.yml
+wget ${URL}/kube-dash.conf -O addon/kube-dash.yml
+wget ${URL}/kube-monitor.conf -O addon/kube-monitor.yml
 ```
 > 若`IP`與教學設定不同的話，請記得修改`<YOUR_MASTER_IP>`。
+```sh
+$ sed -i 's/172.16.35.12/<YOUR_MASTER_IP>/g' addon/kube-monitor.yml
+$ sed -i 's/172.16.35.12/<YOUR_MASTER_IP>/g' addon/kube-proxy.yml
+```
 
 接著透過 kubectl 來指定檔案建立附加元件：
 ```sh
