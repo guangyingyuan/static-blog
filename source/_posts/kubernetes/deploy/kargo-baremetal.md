@@ -1,5 +1,5 @@
 ---
-title: Kargo 部署實體機 Kubernetes v1.6 叢集
+title: Kubespray 部署實體機 Kubernetes v1.6 叢集
 date: 2017-3-17 17:08:54
 layout: page
 categories:
@@ -9,16 +9,16 @@ tags:
 - Docker
 - Ansible
 ---
-[Kargo](https://github.com/kubernetes-incubator/kargo) 是 Kubernetes incubator 中的專案，目標是提供 Production Ready Kubernetes 部署方案，該專案基礎是透過 Ansible Playbook 來定義系統與 Kubernetes 叢集部署的任務，目前 Kargo 有以下幾個特點：
+[Kubespray](https://github.com/kubernetes-incubator/kubespray) 是 Kubernetes incubator 中的專案，目標是提供 Production Ready Kubernetes 部署方案，該專案基礎是透過 Ansible Playbook 來定義系統與 Kubernetes 叢集部署的任務，目前 Kubespray 有以下幾個特點：
 
 * 可以部署在 AWS, GCE, Azure, OpenStack 或者 Baremetal.
 * 部署 High Available Kubernetes 叢集.
 * 可組合性(Composable)，可自行選擇 Network Plugin (flannel, calico, canal, weave) 來部署.
 * 支援多種 Linux distributions(CoreOS, Debian Jessie, Ubuntu 16.04, CentOS/RHEL7).
 
-本篇將說明如何透過 Kargo 部署 Kubernetes 至實體機器節點，安裝版本如下所示：
+本篇將說明如何透過 Kubespray 部署 Kubernetes 至實體機器節點，安裝版本如下所示：
 
-* Kubernetes v1.6.1
+* Kubernetes v1.6.4
 * Etcd v3.1.6
 * Flannel v0.7.1
 * Docker v17.04.0-ce
@@ -50,7 +50,7 @@ tags:
 $ echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf
 ```
 
-* `部署節點(這邊為 master1)`需要安裝 Ansible > 2.2.0。
+* `部署節點(這邊為 master1)`需要安裝 Ansible > 2.3.0。
 
 Ubuntu 16.04 安裝最新版 Ansible:
 ```sh
@@ -60,32 +60,32 @@ $ sudo apt-add-repository -y ppa:ansible/ansible
 $ sudo apt-get update && sudo apt-get install -y ansible git cowsay python-pip python-netaddr libssl-dev
 ```
 
-## 安裝 Kargo 與準備部署資訊
-首先透過 pypi 安裝 kargo-cli，雖然官方說已經改成 Go 語言版本的工具，但是根本沒在更新，所以目前暫時用 pypi 版本：
+## 安裝 Kubespray 與準備部署資訊
+首先透過 pypi 安裝 kubespray-cli，雖然官方說已經改成 Go 語言版本的工具，但是根本沒在更新，所以目前暫時用 pypi 版本：
 ```sh
-$ sudo pip install -U kargo
+$ sudo pip install -U kubespray
 ```
 
-安裝完成後，新增設定檔`/etc/kargo/kargo.yml`，並加入以下內容：
+安裝完成後，新增設定檔`/etc/kubespray/kubespray.yml`，並加入以下內容：
 ```sh
-$ mkdir /etc/kargo
-$ cat <<EOF > /etc/kargo/kargo.yml
-kargo_git_repo: "https://github.com/kubernetes-incubator/kargo.git"
+$ mkdir /etc/kubespray
+$ cat <<EOF > /etc/kubespray/kubespray.yml
+kubespray_git_repo: "https://github.com/kubernetes-incubator/kubespray.git"
 # Logging options
 loglevel: "info"
 EOF
 ```
 
-接著用 kargo cli 來產生 inventory 檔案：
+接著用 kubespray cli 來產生 inventory 檔案：
 ```sh
-$ kargo prepare --masters master1 --etcds master1 --nodes node1 node2 node3
-$ cat ~/.kargo/inventory/inventory.cfg
+$ kubespray prepare --masters master1 --etcds master1 --nodes node1 node2 node3
+$ cat ~/.kubespray/inventory/inventory.cfg
 ```
 > 也可以自己建立`inventory`來描述部署節點。
 
 完成後就可以透過以下指令進行部署 Kubernetes 叢集：
 ```sh
-$ time kargo deploy --verbose -u root -k .ssh/id_rsa -n flannel
+$ time kubespray deploy --verbose -u root -k .ssh/id_rsa -n flannel
 Run kubernetes cluster deployment with the above command ? [Y/n]y
 ...
 master1                    : ok=368  changed=89   unreachable=0    failed=0
@@ -101,18 +101,18 @@ Kubernetes deployed successfuly
 當 Ansible 執行完成後，若沒發生錯誤就可以開始進行操作 Kubernetes，如取得版本資訊：
 ```sh
 $ kubectl version
-Client Version: version.Info{Major:"1", Minor:"6", GitVersion:"v1.6.1+coreos.0", GitCommit:"9212f77ed8c169a0afa02e58dce87913c6387b3e", GitTreeState:"clean", BuildDate:"2017-04-04T00:32:53Z", GoVersion:"go1.7.5", Compiler:"gc", Platform:"linux/amd64"}
-Server Version: version.Info{Major:"1", Minor:"6", GitVersion:"v1.6.1+coreos.0", GitCommit:"9212f77ed8c169a0afa02e58dce87913c6387b3e", GitTreeState:"clean", BuildDate:"2017-04-04T00:32:53Z", GoVersion:"go1.7.5", Compiler:"gc", Platform:"linux/amd64"}
+Client Version: version.Info{Major:"1", Minor:"6", GitVersion:"v1.6.4+coreos.0", GitCommit:"9212f77ed8c169a0afa02e58dce87913c6387b3e", GitTreeState:"clean", BuildDate:"2017-04-04T00:32:53Z", GoVersion:"go1.7.5", Compiler:"gc", Platform:"linux/amd64"}
+Server Version: version.Info{Major:"1", Minor:"6", GitVersion:"v1.6.4+coreos.0", GitCommit:"9212f77ed8c169a0afa02e58dce87913c6387b3e", GitTreeState:"clean", BuildDate:"2017-04-04T00:32:53Z", GoVersion:"go1.7.5", Compiler:"gc", Platform:"linux/amd64"}
 ```
 
 取得目前節點狀態：
 ```sh
 $ kubectl get node
 NAME      STATUS                     AGE       VERSION
-master1   Ready,SchedulingDisabled   11m       v1.6.1+coreos.0
-node1     Ready                      11m       v1.6.1+coreos.0
-node2     Ready                      11m       v1.6.1+coreos.0
-node3     Ready                      11m       v1.6.1+coreos.
+master1   Ready,SchedulingDisabled   11m       v1.6.4+coreos.0
+node1     Ready                      11m       v1.6.4+coreos.0
+node2     Ready                      11m       v1.6.4+coreos.0
+node3     Ready                      11m       v1.6.4+coreos.0
 ```
 
 查看目前系統 Pod 狀態：
