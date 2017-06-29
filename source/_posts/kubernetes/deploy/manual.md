@@ -418,7 +418,7 @@ wget ${URL}/kubelet-user.conf -O kubelet-user.conf
 wget ${URL}/admin.conf -O admin.conf
 wget ${URL}/kubelet.conf -O kubelet
 ```
-> 若`IP`與教學設定不同的話，請記得修改`kubelet.conf`與`admin.conf`。
+> 若`IP`與教學設定不同的話，請記得修改`kubelet-user.conf`與`admin.conf`。
 
 新增`/lib/systemd/system/kubelet.service`來管理 kubelet：
 ```sh
