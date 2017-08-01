@@ -1,6 +1,6 @@
 ---
-title: Go Ethereum 私有測試鏈
-date: 2016-05-26 17:08:54
+title: 建立 Go Ethereum 私有網路鏈
+date: 2017-05-25 17:08:54
 layout: page
 categories:
 - Blockchain
@@ -27,22 +27,35 @@ Ethereum 專案是以區塊鏈原理，並進一步增加容納值、儲存資�
 
 首先在每個節點安裝 Ethereum 最新版本，可以依照官方透過以下方式快速安裝：
 ```sh
-$ bash <(curl -L https://install-geth.ethereum.org)  
+$ sudo apt-get install -y software-properties-common
+$ sudo add-apt-repository -y ppa:ethereum/ethereum
+$ sudo apt-get update && sudo apt-get install ethereum
 ```
 
 在每個節點建立一個`private.json`檔案來定義起源區塊(Genesis Block)，內容如下：
-```
+```json
 {
-    "nonce": "0x0000000000000042",
-    "mixhash": "0x0000000000000000000000000000000000000000000000000000000000000000",
-    "difficulty": "0x4000",
-    "alloc": {},
-    "coinbase": "0x0000000000000000000000000000000000000000",
-    "timestamp": "0x00",
-    "parentHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
-    "extraData": "Custem Ethereum Genesis Block",
-    "gasLimit": "0xffffffff"
+  "coinbase" : "0x0000000000000000000000000000000000000000",
+  "difficulty" : "0x40000",
+  "extraData" : "Custem Ethereum Genesis Block",
+  "gasLimit" : "0xffffffff",
+  "nonce" : "0x0000000000000042",
+  "mixhash" : "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "parentHash" : "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "timestamp" : "0x00",
+  "config": {
+		"chainId": 123,
+		"homesteadBlock": 0,
+		"eip155Block": 0,
+		"eip158Block": 0
+	},
+	"alloc": { }
 }
+```
+
+初始化創世區塊：
+```sh
+$ geth init --datadir=data/ private.json
 ```
 
 在每個節點新增一名稱為`geth-private.sh`的腳本程式，將用於啟動 geth，並放置背景：
@@ -55,13 +68,13 @@ $ bash <(curl -L https://install-geth.ethereum.org)
 #
 echo "Starting private geth"
 screen -dmS geth /usr/bin/geth \
-            --genesis private.json \
             --datadir data/ \
             --networkid 123 \
             --nodiscover \
             --maxpeers 5 \
             --port 30301 \
-            --rpc --rpcaddr "0.0.0.0" \
+            --rpc \
+            --rpcaddr "0.0.0.0" \
             --rpcport "8545" \
             --rpcapi "admin,db,eth,debug,miner,net,shh,txpool,personal,web3" \
             --rpccorsdomain "*" \
@@ -105,11 +118,19 @@ $ geth attach ipc:data/geth.ipc
 
 上面沒問題後，接著進入到`geth-2`節點，然後透過以下指令開啟 console：
 ```sh
-$ geth --datadir data/ --genesis private.json \
---networkid 123 --ipcdisable \
---rpc --rpcport 8545 --nodiscover \
---port 30301 --verbosity 6 \
-console
+$ geth init --datadir=data/ private.json
+$ geth --datadir data/ \
+       --networkid 123 \
+       --nodiscover \
+       --maxpeers 5 \
+       --port 30301 \
+       --rpc \
+       --rpcaddr "0.0.0.0" \
+       --rpcport "8545" \
+       --rpcapi "admin,db,eth,debug,miner,net,shh,txpool,personal,web3" \
+      --rpccorsdomain "*" \
+      -verbosity 6 \
+       console
 ```
 > 也可以透過上一個節點的方式將服務放到背景，在 attach。
 
