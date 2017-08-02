@@ -14,6 +14,8 @@ Browser Solidity 是一個 Web-based 的 Solidity 編譯器與 IDE。本節將�
 
 這邊可以連結官方的 https://ethereum.github.io/browser-solidity 來使用; 該網站會是該專案的最新版本預覽。
 
+<!--more-->
+
 ###  Ubuntu Server 手動安裝
 首先安裝 Browser Solidity 要使用到的相關套件：
 ```sh

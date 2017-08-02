@@ -13,6 +13,8 @@ Ethereum 提供了一個 Web-based 的監控儀表板，可以部署該儀表板
 
 這邊可以連結官方的 https://ethstats.net/ 來查看主節點網路的狀態。
 
+<!--more-->
+
 ###  Ubuntu Server 手動安裝
 本部分說明如何手動安裝 eth-netstats 服務，其中會包含以下兩個部分：
 
