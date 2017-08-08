@@ -8,9 +8,9 @@
         "Objective-C": 8,
         "Swift": 5,
         "Java": 6,
-		"Python": 6,
-        "Go lang": 2,
-		"OpenStack": 6,
+		    "Python": 6,
+        "Go lang": 4,
+		    "OpenStack": 6,
         "Ceph": 7,
         "Docker": 6,
         "Kubernetes": 6
