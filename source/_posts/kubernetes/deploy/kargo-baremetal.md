@@ -66,10 +66,10 @@ $ sudo apt-get update && sudo apt-get install -y ansible git cowsay python-pip p
 $ sudo pip install -U kubespray
 ```
 
-安裝完成後，新增設定檔`/etc/kubespray/kubespray.yml`，並加入以下內容：
+安裝完成後，新增設定檔`~/.kubespray.yml`，並加入以下內容：
 ```sh
 $ mkdir /etc/kubespray
-$ cat <<EOF > /etc/kubespray/kubespray.yml
+$ cat <<EOF > ~/.kubespray.yml
 kubespray_git_repo: "https://github.com/kubernetes-incubator/kubespray.git"
 # Logging options
 loglevel: "info"
