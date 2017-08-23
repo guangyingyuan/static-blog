@@ -18,9 +18,10 @@ tags:
 * DevStack Pike
 * Pike Pike Pike ....
 
-![](/images/openstack/openstack-ironic.png)
-
 <!--more-->
+
+![](/images/openstack/openstack-ironic.png)
+> P.S. 這邊因為我的 Manage net 已經有 MAAS 的服務，所以才用其他張網卡進行部署。
 
 ## 節點資訊
 本次安裝作業系統採用`Ubuntu 16.04 Server`，測試環境為實體主機：
@@ -387,7 +388,7 @@ $ openstack server list
 +--------------------------------------+--------+--------+---------------------------+-------+-----------------+
 | ID                                   | Name   | Status | Networks                  | Image | Flavor          |
 +--------------------------------------+--------+--------+---------------------------+-------+-----------------+
-| a40e5cb1-dfc6-44d5-b638-648e8c0975fb | k8s-01 | ACTIVE | sharednet1=172.22.132.184 | k8s   | baremetal.large |
+| a40e5cb1-dfc6-44d5-b638-648e8c0975fb | k8s-01 | ACTIVE | sharednet1=172.22.132.187 | k8s   | baremetal.large |
 +--------------------------------------+--------+--------+---------------------------+-------+-----------------+
 
 $ openstack baremetal list
