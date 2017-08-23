@@ -6,8 +6,8 @@
 		"rss": "/atom.xml"
     },
     "extern": {
-	    "imac-cloud": "https://github.com/imac-cloud",
-		"My gitbook": "https://www.gitbook.com/@kairen",
-        "NUTC i.m.a.c": "https://www.facebook.com/NUTCimac"
+	    "OSE-Lab": "https://github.com/OSE-Lab",
+		  "GitBook": "https://www.gitbook.com/@kairen",
+      "NUTC i.m.a.c": "https://www.facebook.com/NUTCimac"
     }
 }
