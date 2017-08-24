@@ -314,7 +314,7 @@ $ ironic node-create -d agent_ipmitool \
 ```
 > 若使用 Console 的話，要加入`-i ipmi_terminal_port=9000`，可參考 [Configuring Web or Serial Console](https://docs.openstack.org/ironic/latest/admin/console.html)。
 
-接著更新機器資訊，由於這邊也可以使用 inspector 來取得：h
+接著更新機器資訊，這邊透過手動方式來更新資訊：
 ```sh
 $ export NODE_UUID=$(ironic node-list | awk '/bare-node-1/ { print $2 }')
 $ ironic node-update $NODE_UUID add \
@@ -325,7 +325,21 @@ $ ironic node-update $NODE_UUID add \
                      properties/cpu_arch=x86_64
 ```
 
-然後透過 port create 來把 Node 的所有網路資訊進行註冊：
+(option)也可以使用 inspector 來識別裸機機器的硬體資訊，但需要修改`/etc/ironic-inspector/dnsmasq.conf`修改一下：
+```
+no-daemon
+port=0
+interface=eth1
+bind-interfaces
+dhcp-range=172.22.132.200,172.22.132.210
+dhcp-match=ipxe,175
+dhcp-boot=tag:!ipxe,undionly.kpxe
+dhcp-boot=tag:ipxe,http://172.22.132.93:3928/ironic-inspector.ipxe
+dhcp-sequential-ip
+```
+> 完成後，透過 systemctl 重新啟動背景服務`devstack@ironic-inspector-dhcp.service`與`devstack@ironic-inspector.service`。
+
+透過 port create 來把 Node 的所有網路資訊進行註冊：
 ```sh
 $ ironic port-create -n $NODE_UUID -a NODE_MAC_ADDRESS
 ```
@@ -337,10 +351,10 @@ $ ironic node-validate $NODE_UUID
 +------------+--------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | Interface  | Result | Reason                                                                                                                                                                                                |
 +------------+--------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| boot       | False  | Cannot validate image information for node 0c20cf7d-0a36-46f4-ac38-721ff8bfb646 because one or more parameters are missing from its instance_info. Missing are: ['ramdisk', 'kernel', 'image_source'] |
-| console    | True   |                                                                                                                                                                                                       |
-| deploy     | False  | Cannot validate image information for node 0c20cf7d-0a36-46f4-ac38-721ff8bfb646 because one or more parameters are missing from its instance_info. Missing are: ['ramdisk', 'kernel', 'image_source'] |
-| inspect    | None   | not supported                                                                                                                                                                                         |
+| boot       | False  | Cannot validate image information for node 8e6fd86a-8eed-4e24-a510-3f5ebb0a336a because one or more parameters are missing from its instance_info. Missing are: ['ramdisk', 'kernel', 'image_source'] |
+| console    | False  | Missing 'ipmi_terminal_port' parameter in node\'s driver_info.                                                                                                                                         |
+| deploy     | False  | Cannot validate image information for node 8e6fd86a-8eed-4e24-a510-3f5ebb0a336a because one or more parameters are missing from its instance_info. Missing are: ['ramdisk', 'kernel', 'image_source'] |
+| inspect    | True   |                                                                                                                                                                                                       |
 | management | True   |                                                                                                                                                                                                       |
 | network    | True   |                                                                                                                                                                                                       |
 | power      | True   |                                                                                                                                                                                                       |

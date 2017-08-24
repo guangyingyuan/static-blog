@@ -29,10 +29,13 @@ $ openstack subnet create \
 ```
 
 ```sh
-$ openstack security group create --project k8s_cluster_project \
-    service_pod_access_sg
-    
-$ openstack --project k8s_cluster_project security group rule create \
-    --remote-ip cidr_of_service_subnet --ethertype IPv4 --protocol tcp \
-    service_pod_access_sg
+$ openstack security group create \
+    --project admin service_pod_access
+
+$ openstack security group rule create \
+      --project admin \
+      --remote-ip 192.160.0.0/12 \
+      --ethertype IPv4 \
+      --protocol tcp \
+      service_pod_access
 ```
