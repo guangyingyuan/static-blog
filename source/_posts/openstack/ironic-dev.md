@@ -106,7 +106,7 @@ $ openstack user list
 
 測試 ironic 是否正常運行：
 ```sh
-$ ironic node-list
+$ ironic driver-list
 +---------------------+----------------+
 | Supported driver(s) | Active host(s) |
 +---------------------+----------------+
