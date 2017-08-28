@@ -27,7 +27,7 @@ $ chmod +x kubectl && sudo mv kubectl /usr/local/bin/
 ```
 > 如果是 Linux 使用者則使用下面 URL 取得：
 ```sh
-$ curl -O "https://storage.googleapis.com/kubernetes-release/release/v1.6.0//bin/linux/amd64/kubectl"
+$ curl -O "https://storage.googleapis.com/kubernetes-release/release/v1.6.0/bin/linux/amd64/kubectl"
 $ chmod +x kubectl && sudo mv kubectl /usr/bin/
 ```
 
