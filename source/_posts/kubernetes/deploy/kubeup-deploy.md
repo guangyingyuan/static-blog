@@ -1,5 +1,5 @@
 ---
-title: kube-up 腳本部署 Kubernetes 叢集
+title: kube-up 腳本部署 Kubernetes 叢集(Deprecated)
 date: 2016-01-16 17:08:54
 layout: page
 categories:
