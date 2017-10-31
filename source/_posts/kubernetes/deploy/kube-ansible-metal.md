@@ -1,5 +1,5 @@
 ---
-title: 自製 Kubernetes Ansible 快速部署實體機 HA 叢集
+title: kube-ansible 快速部署實體機 HA 叢集
 date: 2017-02-19 17:08:54
 layout: page
 categories:
@@ -9,13 +9,13 @@ tags:
 - Docker
 - Ansible
 ---
-本篇說明如何透過 [KaiRen Kubernetes Ansible](https://github.com/kairen/kube-ansible) 部署多節點實體機 Kubernetes 叢集。
+本篇說明如何透過 [kube-ansible](https://github.com/kairen/kube-ansible) 部署多節點實體機 Kubernetes 叢集。
 
 本安裝各軟體版本如下：
-* Kubernetes v1.6.2
-* Etcd v3.1.6
-* Flannel v0.7.1
-* Docker v17.04.0-ce
+* Kubernetes v1.7.9
+* Etcd v3.2.8
+* Flannel v0.9.0
+* Docker v1.13.0+(latest on v17.10.0-ce)
 
 <!--more-->
 
@@ -61,7 +61,7 @@ $ sudo yum -y install ansible cowsay
 ## 部署 Kubernetes 叢集
 首先透過 Git 取得 HA Kubernetes Ansible 的專案：
 ```sh
-$ git clone "https://github.com/kairen/kube-ansible.git" -b dev
+$ git clone "https://github.com/kairen/kube-ansible.git"
 $ cd kube-ansible
 ```
 
@@ -85,47 +85,45 @@ nodes
 ```
 
 完成後接著編輯`group_vars/all.yml`，來根據需求設定參數，範例如下：
-```
+```yml
 # Kubernetes component version
-kube_version: 1.6.2
+kube_version: 1.7.9
 
-# Network plugin
-network: flannel
+# Network plugin implementation('flannel', 'calico', 'canal', 'weave', 'router')
+network: calico
 pod_network_cidr: "10.244.0.0/16"
 
-# Kubernetes service 內部網路 IP range(預設即可)
-cluster_subnet: 192.160.0
+# Kubernetes cluster network
+cluster_subnet: 10.96.0
 kubernetes_service_ip: "{{ cluster_subnet }}.1"
 service_ip_range: "{{ cluster_subnet }}.0/12"
 service_node_port_range: 30000-32767
 
 # apiserver lb 與 vip
 lb_vip_address: 172.20.3.90
-lb_api_url: "https://{{ lb_vip_address }}"
-api_secure_port: 5443
-
-sslcert_enable: true
-
-# 額外認證方式
-extra_auth:
-  basic:
-    accounts:
-    - 'p@ssw0rd,admin,admin'
+lb_secure_port: 6443
+lb_api_url: "https://{{ lb_vip_address }}:{{ lb_secure_port }}"
 
 # 若有內部 registry 則需要設定
 insecure_registrys:
 # - "gcr.io"
 
-# Kubernetes Addons 設定
-kube_dash: true  # Dashboard 服務
+# Core addons (Strongly recommend)
+kube_dns: true
+dns_name: cluster.local # cluster dns name
+dns_ip: "{{ cluster_subnet }}.10"
 
-kube_dns: true # DNS 服務
+kube_proxy: true
+kube_proxy_mode: iptables # "ipvs(1.8+)", "iptables" or "userspace".
 
-kube_proxy: true # Kubernetes proxy 元件
-kube_proxy_mode: iptables # 如果要部署 Ceph on Kubernetes 需要改成 'userspace'
+# Extra addons
+kube_dashboard: true # Kubenetes dasobhard console.
+kube_logging: false # EFK stack for Kubernetes
+kube_monitoring: true # Grafana + Infuxdb + Heapster monitoring
 
-kube_logging: true # EFK 服務
-kube_monitoring: true # Heapster + Influxdb + Grafana 服務
+# Ingress controller
+ingress: true
+ingress_type: nginx # 'nginx', 'haproxy', 'traefik'
 ```
 
 確認`group_vars/all.yml`完成後，透過 ansible ping 來檢查叢集狀態：
@@ -162,11 +160,6 @@ node5     Ready             1m
 $ ansible-playbook addons.yml
 ```
 
-若想要更新特定元件可以使用以下方式：
-```sh
-$ ansible-playbook cluster.yml --tags etcd
-```
-
 ## 驗證叢集
 當完成上述步驟後，就可以在任一台`master`節點進行操作 Kubernetes：
 ```sh
@@ -175,7 +168,7 @@ NAME                                    READY     STATUS    RESTARTS   AGE
 ...
 kubernetes-dashboard-1765530275-rxbkw   1/1       Running   0          1m
 ```
-> 確認都是`Running`後，就可以進入 [Dashboard](https://172.20.3.90/ui)，輸入 admin 與 p@ssw0rd 來登入。
+> 確認都是`Running`後，就可以進入 [Dashboard](https://172.20.3.90:6443/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/)。
 
 接著透過 Etcd 來查看目前 Leader 狀態：
 ```sh
@@ -188,5 +181,5 @@ af31edd02fc70872: name=master3 peerURLs=http://172.20.3.93:2380 clientURLs=http:
 ## 重置叢集
 若想要將整個叢集進行重置的話，可以使用以下方式：
 ```sh
-$ ansible-playbook playbooks/reset.yml
+$ ansible-playbook reset.yml
 ```

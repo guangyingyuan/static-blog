@@ -1,5 +1,5 @@
 ---
-title: Docker 建立多節點 Kubernetes
+title: hyperkube 建立多節點 Kubernetes(Unrecommended)
 date: 2016-01-14 17:08:54
 layout: page
 categories:

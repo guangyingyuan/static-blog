@@ -128,7 +128,7 @@ NOVNCPROXY_URL="http://$SERVICE_HOST:6080/vnc_auto.html"
 VNCSERVER_LISTEN=$HOST_IP
 VNCSERVER_PROXYCLIENT_ADDRESS=$VNCSERVER_LISTEN
 ```
-> [color=#fc9fca]Tips:
+> Tips:
 > 修改 HOST_IP 為自己的主機位置。
 > 修改 SERVICE_HOST 為 Master 的IP位置。
 
@@ -200,7 +200,7 @@ node1     Ready          2m        v1.7.4
 - "--insecure-bind-address=0.0.0.0"
 - "--insecure-port=8080"
 ```
-> [color=#fc9fca]Tips:
+> Tips:
 > 將 insecure 綁定到 0.0.0.0 之上，以及開啟 8080 Port。
 
 

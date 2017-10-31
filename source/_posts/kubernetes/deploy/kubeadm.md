@@ -9,13 +9,14 @@ tags:
 - Ubuntu
 - CentOS
 ---
-[kubeadm](https://kubernetes.io/docs/getting-started-guides/kubeadm/)是 Kubernetes 官方推出的部署工具，該工具實作類似 Docker swarm 一樣的部署方式，透過初始化 Master 節點來提供給 Node 快速加入，kubeadm 目前屬於測試環境用階段，但隨著時間推移會越來越多功能被支援，這邊可以看 [kubeadm Roadmap for v1.6](https://github.com/kubernetes/kubeadm/milestone/1) 來更進一步知道功能發展狀態。
+[kubeadm](https://kubernetes.io/docs/setup/independent/install-kubeadm/)是 Kubernetes 官方推出的部署工具，該工具實作類似 Docker swarm 一樣的部署方式，透過初始化 Master 節點來提供給 Node 快速加入，kubeadm 目前屬於測試環境用階段，但隨著時間推移會越來越多功能被支援，這邊可以看 [kubeadm Roadmap](https://github.com/kubernetes/kubeadm) 來更進一步知道功能發展狀態。
+> 若想利用 Ansible 安裝的話，可以參考這邊 [kubeadm-ansible](https://github.com/kairen/kubeadm-ansible)。
 
 本環境安裝資訊：
-* Kubernetes v1.6.1(2017/04/03 Update).
+* Kubernetes v1.8.2
 * Etcd v3
-* Flannel v0.7.0
-* Docker v17.04.0-ce
+* Flannel v0.9.0
+* Docker v17.10.0-ce
 
 <!--more-->
 
@@ -65,52 +66,77 @@ EOF
 ```
 
 * CentOS 7 要額外確認 SELinux 或 Firewall 關閉。
+* Kubernetes v1.8 要求關閉系統 Swap，若不關閉則需要修改 kubelet 設定參數，這邊可以利用以下指令關閉：
+
+```sh
+$ swapoff -a
+$ sysctl -w vm.swappiness=0
+```
+> 記得`/etc/fstab`也要註解掉`SWAP`掛載。
 
 ## Kubernetes Master 建立
 首先更新 APT 來源，並且安裝 Kubernetes 元件與工具：
 ```sh
 $ sudo apt-get update && sudo apt-get install -y kubelet kubeadm kubectl kubernetes-cni docker-engine
-$ sudo iptables -P FORWARD ACCEPT && sudo iptables-save
 ```
 
-完成後就可以開始進行初始化 Master，這邊需要進入`root`使用者執行以下指令：
+接著需要修改`/etc/systemd/system/kubelet.service.d/10-kubeadm.conf`加入以下內容：
+```
+...
+Environment="KUBELET_EXTRA_ARGS=--fail-swap-on=false"
+...
+ExecStart=/usr/bin/kubelet ... $KUBELET_EXTRA_ARGS
+```
+> `...`為已存在參數與環境變數，請不要刪除。
+
+完成後 Reload daemon：
+```sh
+$ systemctl daemon-reload
+```
+
+進行初始化 Master，這邊需要進入`root`使用者執行以下指令：
 ```sh
 $ sudo su -
 $ kubeadm token generate
 b0f7b8.8d1767876297d85c
 
 $ kubeadm init --service-cidr 10.96.0.0/12 \
---kubernetes-version v1.6.1 \
---pod-network-cidr 10.244.0.0/16 \
---apiserver-advertise-address 172.16.35.12 \
---token b0f7b8.8d1767876297d85c
-
+               --kubernetes-version v1.8.2 \
+               --pod-network-cidr 10.244.0.0/16 \
+               --apiserver-advertise-address 172.16.35.12 \
+               --token b0f7b8.8d1767876297d85c
+# output               
 ...
 kubeadm join --token b0f7b8.8d1767876297d85c 172.16.35.12:6443
 ```
 
 當出現如上面資訊後，表示 Master 初始化成功，不過這邊還是一樣透過 kubectl 測試一下：
 ```sh
-$ export KUBECONFIG=/etc/kubernetes/admin.conf
+$ cp /etc/kubernetes/admin.conf ~/.kube/config
 $ kubectl get node
-NAME      STATUS    AGE       VERSION
-master1   Ready     19m       v1.6.1
+NAME      STATUS    ROLES     AGE       VERSION
+master1   Ready     master    10m       v1.8.2
 ```
 
 當執行正確後要接著部署網路，但要注意`一個叢集只能用一種網路`，這邊採用 Flannel：
 ```sh
-$ kubectl create -f "https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel-rbac.yml"
-$ kubectl create -f "https://rawgit.com/coreos/flannel/master/Documentation/kube-flannel.yml"
-configmap "kube-flannel-cfg" created
-daemonset "kube-flannel-ds" created
+$ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.9.0/Documentation/kube-flannel.yml
+clusterrole "flannel" created
+clusterrolebinding "flannel" created
+serviceaccount "flannel" configured
+configmap "kube-flannel-cfg" configured
+daemonset "kube-flannel-ds" configured
 ```
-> 由於 1.6.1 版本預設使用了 RBAC，因此需要建立相關授權。其他可以參考 [Networking and Network Policy](https://kubernetes.io/docs/admin/addons/)。
+> 需要注意這邊若`--pod-network-cidr=10.244.0.0/16`改變時，在`kube-flannel.yml`也不需修改`net-conf.json`。
 
 確認 Flannel 部署正確：
 ```sh
-$ kubectl get po
-NAME                    READY     STATUS    RESTARTS   AGE
-kube-flannel-ds-lx4ww   2/2       Running   0          2m
+$ kubectl get po -n kube-system
+NAME                                         READY     STATUS    RESTARTS   AGE
+kube-flannel-ds-3b66l                        1/1       Running   0          9s
+kube-flannel-ds-m6874                        1/1       Running   0          9s
+kube-flannel-ds-vmb38                        1/1       Running   0          9s
+...
 
 $ ip -4 a show flannel.1
 5: flannel.1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UNKNOWN group default
@@ -127,47 +153,46 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 首先更新 APT 來源，並且安裝 Kubernetes 元件與工具：
 ```sh
 $ sudo apt-get update && sudo apt-get install -y kubelet kubeadm kubernetes-cni docker-engine
-$ sudo iptables -P FORWARD ACCEPT && sudo iptables-save
+```
+
+接著需要修改`/etc/systemd/system/kubelet.service.d/10-kubeadm.conf`加入以下內容：
+```
+...
+Environment="KUBELET_EXTRA_ARGS=--fail-swap-on=false"
+...
+ExecStart=/usr/bin/kubelet ... $KUBELET_EXTRA_ARGS
+```
+> `...`為已存在參數與環境變數，請不要刪除。
+
+完成後 Reload daemon：
+```sh
+$ systemctl daemon-reload
 ```
 
 完成後就可以開始加入 Node，這邊需要進入`root`使用者執行以下指令：
 ```sh
 $ kubeadm join --token b0f7b8.8d1767876297d85c 172.16.35.12:6443
+# output
 ...
 Run 'kubectl get nodes' on the master to see this machine join.
 ```
 
 回到`master1`查看節點狀態：
 ```sh
-$ export KUBECONFIG=/etc/kubernetes/admin.conf
-$ kubectl  get node
-NAME      STATUS    AGE       VERSION
-master1   Ready     19m       v1.6.1
-node1     Ready     9m        v1.6.1
-node2     Ready     5m        v1.6.1
+$ kubectl get node
+NAME      STATUS    ROLES     AGE       VERSION
+master1   Ready     master    10m       v1.8.2
+node1     Ready     <none>    9m        v1.8.2
+node2     Ready     <none>    9m        v1.8.2
 ```
 
 ## Add-ons 建立
 當完成後就可以建立一些 Addons，如 Dashboard。這邊執行以下指令進行建立：
 ```sh
-$ cat <<EOF > kube-dashboard-rbac.yml
-kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
-metadata:
-  name: dashboard-admin
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cluster-admin
-subjects:
-- kind: ServiceAccount
-  name: default
-  namespace: kube-system
-EOF
-
-$ kubectl create -f kube-dashboard-rbac.yml
-$ kubectl create -f "https://rawgit.com/kubernetes/dashboard/master/src/deploy/kubernetes-dashboard.yaml"
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
 ```
+> Dashboard 1.7.x 版本有做一些改變，會用到 SSL Cert，可參考這邊 [Installation](https://github.com/kubernetes/dashboard/wiki/Installation)。
+
 
 確認沒問題後，透過 kubectl 查看：
 ```sh
@@ -177,10 +202,10 @@ kube-dns               10.96.0.10       <none>        53/UDP,53/TCP   36m
 kubernetes-dashboard   10.111.162.184   <nodes>       80:32546/TCP    33s
 ```
 
-最後就可以存取 [Kube Dashboard](http://172.16.35.12:32546)
+最後就可以存取 [Kube Dashboard](https://172.16.35.12:6443/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/)。
 
-## 簡單部署一個微服務
-這邊利用 Weave 公司提供的微服務來驗證系統，透過以下方式建立：
+## 簡單部署一個服務
+這邊利用 Weave 公司提供的服務來驗證系統，透過以下方式建立：
 ```sh
 $ kubectl create namespace sock-shop
 $ kubectl apply -n sock-shop -f "https://github.com/microservices-demo/microservices-demo/blob/master/deploy/kubernetes/complete-demo.yaml?raw=true"
