@@ -65,7 +65,7 @@ $ systemctl enable docker && systemctl start docker
 
 編輯`/lib/systemd/system/docker.service`，在`ExecStart=..`上面加入：
 ```
-ExecStartPost=/sbin/iptables -I FORWARD -s 0.0.0.0/0 -j ACCEPT
+ExecStartPost=/sbin/iptables -A FORWARD -s 0.0.0.0/0 -j ACCEPT
 ```
 > 完成後，重新啟動 docker 服務：
 ```sh
@@ -233,7 +233,7 @@ apiserver-key.pem  apiserver.pem
 > 若節點 IP 不同，需要修改`apiserver-csr.json`的`hosts`。
 
 #### Front proxy certificate
-下載`front-proxy-ca-csr.json`檔案，並產生 Front proxy CA 金鑰：
+下載`front-proxy-ca-csr.json`檔案，並產生 Front proxy CA 金鑰，Front proxy 主要是用在 API aggregator 上:
 ```sh
 $ wget "${PKI_URL}/front-proxy-ca-csr.json"
 $ cfssl gencert \
@@ -258,9 +258,9 @@ front-proxy-client-key.pem  front-proxy-client.pem
 ```
 
 #### Bootstrap Token
-由於透過手動建立 CA 方式太過繁雜，只適合少量機器，因為每次證書時都需要綁定 Node IP，隨機器增加會帶來很多困擾，因此這邊使用 TLS 認證，再由 apiserver 自動給符合條件的 Node 證書來授權加入叢集。具體作法可以參考 [TLS bootstrapping](https://kubernetes.io/docs/admin/kubelet-tls-bootstrapping/)。
+由於透過手動建立 CA 方式太過繁雜，只適合少量機器，因為每次簽證時都需要綁定 Node IP，隨機器增加會帶來很多困擾，因此這邊使用 TLS Bootstrapping 方式進行授權，由 apiserver 自動給符合條件的 Node 發送證書來授權加入叢集。
 
-主要做法是 kubelet 啟動時，向 kube-apiserver 傳送 TLS Bootstrapping 請求，而 kube-apiserver 驗證 kubelet 請求的 token 是否與設定的一樣，若一樣就自動產生 kubelet 證書與金鑰。
+主要做法是 kubelet 啟動時，向 kube-apiserver 傳送 TLS Bootstrapping 請求，而 kube-apiserver 驗證 kubelet 請求的 token 是否與設定的一樣，若一樣就自動產生 kubelet 證書與金鑰。具體作法可以參考 [TLS bootstrapping](https://kubernetes.io/docs/admin/kubelet-tls-bootstrapping/)。
 
 首先建立一個變數來產生`BOOTSTRAP_TOKEN`，並建立 `bootstrap.conf` 的 kubeconfig 檔：
 ```sh
@@ -304,7 +304,7 @@ $ cfssl gencert \
   admin-csr.json | cfssljson -bare admin
 
 $ ls admin*.pem
-admin-key.pem  admint.pem
+admin-key.pem  admin.pem
 ```
 
 接著透過以下指令產生名稱為 `admin.conf` 的 kubeconfig 檔：
@@ -428,7 +428,7 @@ $ cfssl gencert \
   -ca=ca.pem \
   -ca-key=ca-key.pem \
   -config=ca-config.json \
-  -hostname=master1,172.16.35.12,172.16.35.12 \
+  -hostname=master1,172.16.35.12 \
   -profile=kubernetes \
   kubelet-csr.json | cfssljson -bare kubelet
 
@@ -489,7 +489,7 @@ admin.pem      apiserver.pem      ca.pem      controller-manager.pem      front-
 ```
 
 ### 安裝 Kubernetes 核心元件
-首先下載 Kubernetes 核心元件 YAML 檔案，這邊我們不透過 Binary 方案來建立 Mater 核心元件，而是採用 Self-hosted 方式來達成，因此需要下載所有核心元件的`Static Pod`檔案到`/etc/kubernetes/manifests`目錄：
+首先下載 Kubernetes 核心元件 YAML 檔案，這邊我們不透過 Binary 方案來建立 Master 核心元件，而是利用 Kubernetes Static Pod 來達成，因此需下載所有核心元件的`Static Pod`檔案到`/etc/kubernetes/manifests`目錄：
 ```sh
 $ export CORE_URL="https://kairen.github.io/files/manual-v1.8/master"
 $ mkdir -p /etc/kubernetes/manifests && cd /etc/kubernetes/manifests
@@ -522,7 +522,7 @@ resources:
       - identity: {}
 EOF
 ```
-> Etcd 資料加入可參考這篇 [Encrypting data at rest](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/)。
+> Etcd 資料加密可參考這篇 [Encrypting data at rest](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/)。
 
 在`/etc/kubernetes/`目錄下，建立`audit-policy.yml`的進階稽核策略 YAML 檔：
 ```sh
@@ -549,7 +549,7 @@ $ mkdir -p /var/lib/kubelet /var/log/kubernetes
 $ systemctl enable kubelet.service && systemctl start kubelet.service
 ```
 
-完成後會需要一段時間來下載與啟動元件，可以利用該指令來監看：
+完成後會需要一段時間來下載映像檔與啟動元件，可以利用該指令來監看：
 ```sh
 $ watch netstat -ntlp
 tcp        0      0 127.0.0.1:10248         0.0.0.0:*               LISTEN      23012/kubelet
@@ -584,7 +584,7 @@ kube-scheduler-master1            1/1       Running   0          4m
 $ kubectl -n kube-system logs -f kube-scheduler-master1
 Error from server (Forbidden): Forbidden (user=kube-apiserver, verb=get, resource=nodes, subresource=proxy) ( pods/log kube-apiserver-master1)
 ```
-> 這邊會發現出現 403 Forbidden 問題，這是因為`kube-apiserver` user 並沒有 nodes 的資源權限，屬於正常。
+> 這邊會發現出現 403 Forbidden 問題，這是因為 `kube-apiserver` user 並沒有 nodes 的資源權限，屬於正常。
 
 由於上述權限問題，我們必需建立一個 `apiserver-to-kubelet-rbac.yml` 來定義權限，以供我們執行 logs、exec 等指令：
 ```sh
@@ -648,7 +648,7 @@ $ systemctl enable kubelet.service && systemctl start kubelet.service
 ```
 > P.S. 重複一樣動作來完成其他節點。
 
-### 授權 Kubernetes node
+### 授權 Kubernetes Node
 當所有節點都完成後，在`master`節點，因為我們採用 TLS Bootstrapping，所需要建立一個 ClusterRoleBinding：
 ```sh
 $ kubectl create clusterrolebinding kubelet-bootstrap \
@@ -688,7 +688,7 @@ node2     NotReady   <none>    6s        v1.8.2
 ### Kube-proxy addon
 [Kube-proxy](https://github.com/kubernetes/kubernetes/tree/master/cluster/addons/kube-proxy) 是實現 Service 的關鍵元件，kube-proxy 會在每台節點上執行，然後監聽 API Server 的 Service 與 Endpoint 資源物件的改變，然後來依據變化執行 iptables 來實現網路的轉發。這邊我們會需要建議一個 DaemonSet 來執行，並且建立一些需要的 certificate。
 
-首先下載`kube-proxy-csr.json`檔案，並產生 kube-proxy certificate 證書：
+首先在`master1`下載`kube-proxy-csr.json`檔案，並產生 kube-proxy certificate 證書：
 ```sh
 $ export PKI_URL="https://kairen.github.io/files/manual-v1.8/pki"
 $ cd /etc/kubernetes/pki
@@ -779,7 +779,7 @@ kube-dns-6cb549f55f-h4zr5   0/3       Pending   0          40s
 ```
 
 ## Calico Network 安裝與設定
-Calico 是一款純 Layer 3 的資料中心網路方案(不需要 Overlay 網路)，Calico 好處是他已與各種雲原生平台有良好的整合，而 Calico 在每一個節點利用 Linux Kernel 實現高效的 vRouter 來負責資料的轉發，而當資料複雜度增加時，可以用 BGP route reflector 來達成。
+Calico 是一款純 Layer 3 的資料中心網路方案(不需要 Overlay 網路)，Calico 好處是他已與各種雲原生平台有良好的整合，而 Calico 在每一個節點利用 Linux Kernel 實現高效的 vRouter 來負責資料的轉發，而當資料中心複雜度增加時，可以用 BGP route reflector 來達成。
 
 首先在`master1`透過 kubectl 建立 Calico policy controller：
 ```sh
@@ -882,7 +882,7 @@ po/kubernetes-dashboard-747c4f7cf-md5m8   1/1       Running   0          56s
 NAME                       TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
 svc/kubernetes-dashboard   ClusterIP   10.98.120.209   <none>        443/TCP   56s
 ```
-> P.S. 這邊會額外建立一個名稱為`anonymous-open-door` Cluster Role Binding，這僅作為測試時使用，在一般情況下不要開啟，不然就會直接被存取所有 API。
+> P.S. 這邊會額外建立一個名稱為`anonymous-open-door` Cluster Role Binding，這僅作為方便測試時使用，在一般情況下不要開啟，不然就會直接被存取所有 API。
 
 完成後，就可以透過瀏覽器存取 [Dashboard](https://172.16.35.12:6443/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/)。
 
