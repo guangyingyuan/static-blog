@@ -113,7 +113,7 @@ $ ls etcd-ca*.pem
 etcd-ca-key.pem  etcd-ca.pem
 ```
 
-下載`etcd-csr.json`檔案，並產生 kube-apiserver certificate 證書：
+下載`etcd-csr.json`檔案，並產生 etcd certificate 證書：
 ```sh
 $ wget "${PKI_URL}/etcd-csr.json"
 $ cfssl gencert \
@@ -124,7 +124,7 @@ $ cfssl gencert \
   etcd-csr.json | cfssljson -bare etcd
 
 $ ls etcd*.pem
-etcd-ca-key.pem  etcd-ca.pem  etcd-key.pem  etcd.pe
+etcd-ca-key.pem  etcd-ca.pem  etcd-key.pem  etcd.pem
 ```
 > 若節點 IP 不同，需要修改`etcd-csr.json`的`hosts`。
 

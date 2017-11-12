@@ -12,8 +12,8 @@ tags:
 本篇說明如何透過 [kube-ansible](https://github.com/kairen/kube-ansible) 部署多節點實體機 Kubernetes 叢集。
 
 本安裝各軟體版本如下：
-* Kubernetes v1.7.9
-* Etcd v3.2.8
+* Kubernetes v1.8.2
+* Etcd v3.2.9
 * Flannel v0.9.0
 * Docker v1.13.0+(latest on v17.10.0-ce)
 
@@ -67,31 +67,33 @@ $ cd kube-ansible
 
 然後編輯`inventory`檔案，來加入要部署的節點角色：
 ```
-[etcd]
+[etcds]
 172.20.3.[91:93]
 
 [masters]
 172.20.3.[91:93]
 
-[sslhost]
-172.20.3.91
-
 [nodes]
 172.20.3.[94:98]
 
-[cluster:children]
+[kube-cluster:children]
 masters
 nodes
 ```
 
 完成後接著編輯`group_vars/all.yml`，來根據需求設定參數，範例如下：
 ```yml
-# Kubernetes component version
-kube_version: 1.7.9
+# Kubenrtes version, only support 1.8.0+.
+kube_version: 1.8.2
 
-# Network plugin implementation('flannel', 'calico', 'canal', 'weave', 'router')
+# CRI plugin,
+# Supported runtime: docker, containerd.
+cri_plugin: docker
+
+# CNI plugin,
+# Supported network: flannel, calico, canal, weave or router.
 network: calico
-pod_network_cidr: "10.244.0.0/16"
+pod_network_cidr: 10.244.0.0/16
 
 # Kubernetes cluster network
 cluster_subnet: 10.96.0
@@ -172,7 +174,14 @@ kubernetes-dashboard-1765530275-rxbkw   1/1       Running   0          1m
 
 接著透過 Etcd 來查看目前 Leader 狀態：
 ```sh
-$ etcdctl member list
+$ export CA="/etc/etcd/ssl"
+$ ETCDCTL_API=3 etcdctl \
+    --cacert=${CA}/etcd-ca.pem \
+    --cert=${CA}/etcd.pem \
+    --key=${CA}/etcd-key.pem \
+    --endpoints="https://172.20.3.91:2379" \
+    etcdctl member list
+
 2de3b0eee054a36f: name=master1 peerURLs=http://172.20.3.91:2380 clientURLs=http://172.20.3.91:2379 isLeader=false
 75809e2ee8d8d4b4: name=master2 peerURLs=http://172.20.3.92:2380 clientURLs=http://172.20.3.92:2379 isLeader=false
 af31edd02fc70872: name=master3 peerURLs=http://172.20.3.93:2380 clientURLs=http://172.20.3.93:2379 isLeader=true

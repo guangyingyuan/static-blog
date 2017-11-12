@@ -123,7 +123,7 @@ $ /opt/kafka/bin/kafka-topics.sh --describe --zookeeper localhost:2181 --topic t
 
 # 會看到類似以下資訊
 Topic:test	PartitionCount:1	ReplicationFactor:3	Configs:
-	Topic: test2	Partition: 0	Leader: 2	Replicas: 2,0,1	Isr: 2,0,1
+	Topic: test	Partition: 0	Leader: 2	Replicas: 2,0,1	Isr: 2,0,1
 ```
 
 接下來透過 Publish 來傳送訊息：
@@ -140,12 +140,12 @@ ggeeder
 接著就要讀取訊息，透過 Subscribe 來訂閱收取資料：
 ```sh
 $ /opt/kafka/bin/kafka-console-consumer.sh \
---zookeeper 172.17.0.2:2181,172.17.0.3:2181 \
+--zookeeper 172.17.0.2:2181,172.17.0.3:2181,172.17.0.4:2181 \
 --topic test \
 --from-beginning
 ```
 
-測試 replication 是否有正確運作，我們可以看到上面範例 Leader 為 2，這時透過手動方式關閉該 broker：
+這時透過手動方式關閉該 broker，來測試 replication 是否有正確運作：
 ```sh
 $ jps
 83 Kafka

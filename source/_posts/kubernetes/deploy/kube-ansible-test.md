@@ -45,51 +45,36 @@ Usage : setup-vagrant [options]
 
 這邊執行以下指令來建立三台 Master 與三台 Node 的環境：
 ```sh
-$ /setup-vagrant -b 3 -m 2048 -w 3 -n flannel
-Cluster Size: 3 master, 3 worker.
+$ ./tools/setup -m 2048 -n calico -i eth1
+Cluster Size: 1 master, 2 worker.
      VM Size: 1 vCPU, 2048 MB
      VM Info: ubuntu16, virtualbox
-         CNI: flannel
-Start deploying?(y):
+         CNI: calico, Binding iface: eth1
+Start deploying?(y):y
 ```
-> 預設 CPU 為 1vCPU，而 Memory 為 1024MB。
 
 執行後需要等一點時間，當完成後就可以進入任何一台 Master 進行操作：
 ```sh
-$ kubectl get node
-NAME      STATUS            AGE
-master1   Ready,master      1m
-master2   Ready,master      1m
-master3   Ready,master      1m
-node1     Ready             1m
-node2     Ready             1m
-node3     Ready             1m
-```
-
-確認節點沒問題後就可以查看 Pod 狀態：
-```sh
-$ kubectl get po --all-namespaces -o wide
-NAMESPACE     NAME                                    READY     STATUS    RESTARTS   AGE       IP             NODE
-kube-system   haproxy-master1                         1/1       Running   0          6m        172.16.35.13   master1
-kube-system   haproxy-master2                         1/1       Running   1          3m        172.16.35.14   master2
-kube-system   haproxy-master3                         1/1       Running   0          6m        172.16.35.15   master3
-kube-system   kube-apiserver-master1                  1/1       Running   0          6m        172.16.35.13   master1
-kube-system   kube-apiserver-master2                  1/1       Running   1          3m        172.16.35.14   master2
-kube-system   kube-apiserver-master3                  1/1       Running   0          5m        172.16.35.15   master3
-kube-system   kube-controller-manager-master1         1/1       Running   0          6m        172.16.35.13   master1
-kube-system   kube-controller-manager-master2         1/1       Running   1          3m        172.16.35.14   master2
-kube-system   kube-controller-manager-master3         1/1       Running   0          6m        172.16.35.15   master3
-kube-system   kube-dns-v20-0wkl3                      3/3       Running   0          6m        172.20.8.2     node3
-kube-system   kube-proxy-amd64-5dlqg                  1/1       Running   0          6m        172.16.35.14   master2
-kube-system   kube-proxy-amd64-f20xg                  1/1       Running   0          6m        172.16.35.10   node1
-kube-system   kube-proxy-amd64-g095q                  1/1       Running   0          6m        172.16.35.13   master1
-kube-system   kube-proxy-amd64-kf2d9                  1/1       Running   0          6m        172.16.35.12   node3
-kube-system   kube-proxy-amd64-r180j                  1/1       Running   0          6m        172.16.35.15   master3
-kube-system   kube-proxy-amd64-r9sk0                  1/1       Running   0          6m        172.16.35.11   node2
-kube-system   kube-scheduler-master1                  1/1       Running   0          6m        172.16.35.13   master1
-kube-system   kube-scheduler-master2                  1/1       Running   1          3m        172.16.35.14   master2
-kube-system   kube-scheduler-master3                  1/1       Running   1          5m        172.16.35.15   master3
-kube-system   kubernetes-dashboard-3697905830-bnvfd   1/1       Running   0          6m        172.20.85.2    node1
+$ kubectl -n kube-system get po
+NAME                                        READY     STATUS    RESTARTS   AGE
+calico-node-657hv                           2/2       Running   0          57s
+calico-node-gmd8b                           2/2       Running   0          57s
+calico-node-w7nj8                           2/2       Running   0          57s
+calico-policy-controller-55dfcd9c69-t8s8z   1/1       Running   0          57s
+haproxy-master1                             1/1       Running   0          22s
+haproxy-node2                               1/1       Running   0          1m
+keepalived-master1                          1/1       Running   0          30s
+keepalived-node2                            1/1       Running   0          1m
+kube-apiserver-master1                      1/1       Running   0          23s
+kube-apiserver-node2                        1/1       Running   0          1m
+kube-controller-manager-master1             1/1       Running   0          17s
+kube-controller-manager-node2               1/1       Running   0          1m
+kube-dns-6cb549f55f-8mgsd                   3/3       Running   0          46s
+kube-proxy-l54d7                            1/1       Running   0          1m
+kube-proxy-rm4nn                            1/1       Running   0          1m
+kube-proxy-tvfs7                            1/1       Running   0          1m
+kube-scheduler-master1                      1/1       Running   0          39s
+kube-scheduler-node2                        1/1       Running   0          1m
 ```
 
 這樣一個 HA 叢集就部署完成了，可以試著將一台 Master 關閉來驗證可靠性，若 Master 是三台的話，即表示可容忍最多一台故障。
@@ -149,32 +134,4 @@ nginx-service   192.173.165.220   <nodes>       80:30000/TCP   11s
 
 由於範例使用 NodePort 的類型，所以任何一台節點都可以透過 TCP 30000 Port 來存取服務，包含 VIP 172.16.35.9 也可以存取。
 
-## 驗證 Master HA 功能
-最後我們針對 Kubernetes Master HA 進行功能驗證，首先我們先取得目前 kube-scheduler 與 kube-controller-manager 的 Leader：
-```sh
-$ etcdctl member list
-2de3b0eee054a36f: name=master1 peerURLs=http://172.16.35.13:2380 clientURLs=http://172.16.35.13:2379 isLeader=false
-75809e2ee8d8d4b4: name=master2 peerURLs=http://172.16.35.14:2380 clientURLs=http://172.16.35.14:2379 isLeader=false
-af31edd02fc70872: name=master3 peerURLs=http://172.16.35.15:2380 clientURLs=http://172.16.35.15:2379 isLeader=true
-```
-> 這邊可以看到 master3 為 Leader。
-
-當確認 Leader 後，即可關閉該節點進行測試，進入到其他 master:
-```sh
-master3# sudo poweroff
-master1# etcdctl member list
-2de3b0eee054a36f: name=master1 peerURLs=http://172.16.35.13:2380 clientURLs=http://172.16.35.13:2379 isLeader=true
-75809e2ee8d8d4b4: name=master2 peerURLs=http://172.16.35.14:2380 clientURLs=http://172.16.35.14:2379 isLeader=false
-af31edd02fc70872: name=master3 peerURLs=http://172.16.35.15:2380 clientURLs=http://172.16.35.15:2379 isLeader=false
-
-master1# kubectl get node
-NAME      STATUS            AGE
-master1   Ready,master      1h
-master2   Ready,master      1h
-master3   NotReady,master   1h
-node1     Ready             1h
-node2     Ready             1h
-node3     Ready             1h
-```
-
-上面可以看到 master3 已經掛掉，並且 Leader 已經換人了，這邊可以進一步操作 Kubernetes 其他指令來驗證。最後若在關閉一台將會發生 Etcd 叢集錯誤，造成 Kubernetes 功能無法正常。
+最後，我們可以關閉 master1 來測試是否有 HA 效果。
