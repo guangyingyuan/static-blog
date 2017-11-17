@@ -12,7 +12,7 @@ tags:
 本篇說明如何透過 [kube-ansible](https://github.com/kairen/kube-ansible) 部署多節點實體機 Kubernetes 叢集。
 
 本安裝各軟體版本如下：
-* Kubernetes v1.8.2
+* Kubernetes v1.8.3
 * Etcd v3.2.9
 * Flannel v0.9.0
 * Docker v1.13.0+(latest on v17.10.0-ce)
@@ -84,7 +84,7 @@ nodes
 完成後接著編輯`group_vars/all.yml`，來根據需求設定參數，範例如下：
 ```yml
 # Kubenrtes version, only support 1.8.0+.
-kube_version: 1.8.2
+kube_version: 1.8.3
 
 # CRI plugin,
 # Supported runtime: docker, containerd.

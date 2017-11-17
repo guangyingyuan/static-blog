@@ -12,7 +12,7 @@ tags:
 [kube-ansible](https://github.com/kairen/kube-ansible) 提供自動化部署 Kubernetes High Availability 叢集於虛擬機與實體機上，並且支援部署 Ceph 叢集於 Kubernetes 中提供共享式儲存系統給 Pod 應用程式使用。該專案最主要是想要快速建立測試環境來進行 Kubernetes 練習與驗證。
 
 kube-ansible 提供了以下幾項功能：
-* Kubernetes 1.7.0+.
+* Kubernetes 1.8.0+.
 * Ceph on Kubernetes cluster.
 * Common addons.
 
