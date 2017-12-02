@@ -14,8 +14,7 @@ tags:
 本安裝各軟體版本如下：
 * Kubernetes v1.8.3
 * Etcd v3.2.9
-* Flannel v0.9.0
-* Docker v1.13.0+(latest on v17.10.0-ce)
+* Docker v1.13.0+
 
 <!--more-->
 
@@ -79,6 +78,9 @@ $ cd kube-ansible
 [kube-cluster:children]
 masters
 nodes
+
+[kube-addon:children]
+masters
 ```
 
 完成後接著編輯`group_vars/all.yml`，來根據需求設定參數，範例如下：

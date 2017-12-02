@@ -29,18 +29,20 @@ kube-ansible 支援了 Vagrant 腳本來快速提供 VirtualBox 環境，若想�
 ```sh
 $ git clone "https://github.com/kairen/kube-ansible.git"
 $ cd kube-ansible
-$ ./setup-vagrant -h
+$ ./tools/setup -h
 Usage : setup-vagrant [options]
 
- -b|--boss        Number of master.
- -w|--worker      Number of worker.
- -c|--cpu         Number of cores per vm.
- -m|--memory      Memory size per vm.
- -p|--provider    Virtual machine provider(virtualbox, libvirt).
- -o|--os-image    Virtual machine operation system(ubuntu16, centos7).
- -i|--interface   Network bind interface.
- -n|--network     Container Network plugin.
- -f|--force       Force deployment.
+ -b|--boss         Number of master.
+ -w|--worker       Number of worker.
+ -c|--cpu          Number of cores per vm.
+ -m|--memory       Memory size per vm.
+ -p|--provider     Virtual machine provider(virtualbox, libvirt).
+ -o|--os-image     Virtual machine operation system(ubuntu16, centos7).
+ -i|--interface    Network bind interface.
+ -n|--network      Container Network plugin.
+ -f|--force        Force deployment.
+ --combine-master  Combine number of worker into masters.
+ --combine-etcd    Combine number of worker into etcds.
 ```
 
 這邊執行以下指令來建立三台 Master 與三台 Node 的環境：
@@ -50,7 +52,7 @@ Cluster Size: 1 master, 2 worker.
      VM Size: 1 vCPU, 2048 MB
      VM Info: ubuntu16, virtualbox
          CNI: calico, Binding iface: eth1
-Start deploying?(y):y
+Start deploying?(y): y
 ```
 
 執行後需要等一點時間，當完成後就可以進入任何一台 Master 進行操作：

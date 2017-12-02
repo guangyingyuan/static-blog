@@ -9,9 +9,9 @@
         "Swift": 5,
         "Java": 6,
 		    "Python": 6,
-        "Go lang": 4,
+        "Go": 5,
 		    "OpenStack": 6,
-        "Ceph": 7,
+        "Ceph": 5,
         "Docker": 6,
         "Kubernetes": 6
     },

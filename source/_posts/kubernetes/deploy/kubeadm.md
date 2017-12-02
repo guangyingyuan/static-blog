@@ -13,10 +13,10 @@ tags:
 > 若想利用 Ansible 安裝的話，可以參考這邊 [kubeadm-ansible](https://github.com/kairen/kubeadm-ansible)。
 
 本環境安裝資訊：
-* Kubernetes v1.8.2
+* Kubernetes v1.8.4
 * Etcd v3
 * Flannel v0.9.0
-* Docker v17.10.0-ce
+* Docker v17.05.0-ce
 
 <!--more-->
 
@@ -69,8 +69,7 @@ EOF
 * Kubernetes v1.8 要求關閉系統 Swap，若不關閉則需要修改 kubelet 設定參數，這邊可以利用以下指令關閉：
 
 ```sh
-$ swapoff -a
-$ sysctl -w vm.swappiness=0
+$ swapoff -a && sysctl -w vm.swappiness=0
 ```
 > 記得`/etc/fstab`也要註解掉`SWAP`掛載。
 
@@ -79,15 +78,6 @@ $ sysctl -w vm.swappiness=0
 ```sh
 $ sudo apt-get update && sudo apt-get install -y kubelet kubeadm kubectl kubernetes-cni docker-engine
 ```
-
-接著需要修改`/etc/systemd/system/kubelet.service.d/10-kubeadm.conf`加入以下內容：
-```
-...
-Environment="KUBELET_EXTRA_ARGS=--fail-swap-on=false"
-...
-ExecStart=/usr/bin/kubelet ... $KUBELET_EXTRA_ARGS
-```
-> `...`為已存在參數與環境變數，請不要刪除。
 
 完成後 Reload daemon：
 ```sh
@@ -101,7 +91,7 @@ $ kubeadm token generate
 b0f7b8.8d1767876297d85c
 
 $ kubeadm init --service-cidr 10.96.0.0/12 \
-               --kubernetes-version v1.8.2 \
+               --kubernetes-version v1.8.4 \
                --pod-network-cidr 10.244.0.0/16 \
                --apiserver-advertise-address 172.16.35.12 \
                --token b0f7b8.8d1767876297d85c
@@ -115,7 +105,7 @@ kubeadm join --token b0f7b8.8d1767876297d85c 172.16.35.12:6443
 $ cp /etc/kubernetes/admin.conf ~/.kube/config
 $ kubectl get node
 NAME      STATUS    ROLES     AGE       VERSION
-master1   Ready     master    10m       v1.8.2
+master1   Ready     master    10m       v1.8.4
 ```
 
 當執行正確後要接著部署網路，但要注意`一個叢集只能用一種網路`，這邊採用 Flannel：
@@ -127,7 +117,8 @@ serviceaccount "flannel" configured
 configmap "kube-flannel-cfg" configured
 daemonset "kube-flannel-ds" configured
 ```
-> 需要注意這邊若`--pod-network-cidr=10.244.0.0/16`改變時，在`kube-flannel.yml`也不需修改`net-conf.json`。
+> * 若參數 `--pod-network-cidr=10.244.0.0/16` 改變時，在`kube-flannel.yml`檔案也需修改`net-conf.json`欄位的 CIDR。
+* 若使用 Virtualbox 的話，請修改`kube-flannel.yml`中的 command 綁定 iface，如`command: [ "/opt/bin/flanneld", "--ip-masq", "--kube-subnet-mgr", "--iface=eth1" ]`。
 
 確認 Flannel 部署正確：
 ```sh
@@ -155,15 +146,6 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 $ sudo apt-get update && sudo apt-get install -y kubelet kubeadm kubernetes-cni docker-engine
 ```
 
-接著需要修改`/etc/systemd/system/kubelet.service.d/10-kubeadm.conf`加入以下內容：
-```
-...
-Environment="KUBELET_EXTRA_ARGS=--fail-swap-on=false"
-...
-ExecStart=/usr/bin/kubelet ... $KUBELET_EXTRA_ARGS
-```
-> `...`為已存在參數與環境變數，請不要刪除。
-
 完成後 Reload daemon：
 ```sh
 $ systemctl daemon-reload
@@ -181,9 +163,14 @@ Run 'kubectl get nodes' on the master to see this machine join.
 ```sh
 $ kubectl get node
 NAME      STATUS    ROLES     AGE       VERSION
-master1   Ready     master    10m       v1.8.2
-node1     Ready     <none>    9m        v1.8.2
-node2     Ready     <none>    9m        v1.8.2
+master1   Ready     master    10m       v1.8.4
+node1     Ready     <none>    9m        v1.8.4
+node2     Ready     <none>    9m        v1.8.4
+```
+
+為了多加利用資源這邊透過 taint 來讓 masters 也會被排程執行容器：
+```sh
+$ kubectl taint nodes --all node-role.kubernetes.io/master-
 ```
 
 ## Add-ons 建立
