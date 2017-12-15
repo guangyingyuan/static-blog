@@ -230,7 +230,7 @@ $ cfssl gencert \
 $ ls apiserver*.pem
 apiserver-key.pem  apiserver.pem
 ```
-> 若節點 IP 不同，需要修改`apiserver-csr.json`的`hosts`。
+> 若節點 IP 不同，需要修改`-hostname`。
 
 #### Front proxy certificate
 下載`front-proxy-ca-csr.json`檔案，並產生 Front proxy CA 金鑰，Front proxy 主要是用在 API aggregator 上:
@@ -790,6 +790,7 @@ $ kubectl -n kube-system get po -l k8s-app=calico-policy
 NAME                                        READY     STATUS    RESTARTS   AGE
 calico-policy-controller-5ff8b4549d-tctmm   0/1       Pending   0          5s
 ```
+> 若節點 IP 不同，需要修改`calico-controller.yml`的`ETCD_ENDPOINTS`。
 
 在`master1`下載 Calico CLI 工具：
 ```sh
@@ -812,7 +813,8 @@ $ export CALICO_CONF_URL="https://kairen.github.io/files/manual-v1.8/network"
 $ wget "${CALICO_CONF_URL}/10-calico.conf" -O /etc/cni/net.d/10-calico.conf
 $ wget "${CALICO_CONF_URL}/calico-node.service" -O /lib/systemd/system/calico-node.service
 ```
-> 若部署的機器是使用虛擬機，如 Virtualbox 等的話，請修改`calico-node.service`檔案，並在`IP_AUTODETECTION_METHOD`(包含 IP6)部分指定綁定的網卡，以避免預設綁定到 NAT 網路上。
+> > 若節點 IP 不同，需要修改`10-calico.conf`的`etcd_endpoints`。
+> * 若部署的機器是使用虛擬機，如 Virtualbox 等的話，請修改`calico-node.service`檔案，並在`IP_AUTODETECTION_METHOD`(包含 IP6)部分指定綁定的網卡，以避免預設綁定到 NAT 網路上。
 
 之後在`所有`節點啟動 Calico-node:
 ```sh

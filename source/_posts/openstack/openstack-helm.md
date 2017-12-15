@@ -124,6 +124,8 @@ etcd_iface: ""
 
 insecure_registrys:
 - "172.22.132.253:5000" # 有需要的話
+
+ceph_cluster: true
 ```
 > * 這邊`insecure_registrys`為 deploy 節點的 Docker registry ip 與 port。
 > * Extra addons 部分針對需求開啟，預設不會開啟。
@@ -235,6 +237,11 @@ Address:	10.96.0.10#53
 Non-authoritative answer:
 Name:	kubernetes.default.svc.cluster.local
 Address: 10.96.0.1
+```
+
+接著安裝 Ceph 套件：
+```sh
+$ ansible-playbook storage.yml
 ```
 
 ## OpenStack-helm 叢集
@@ -404,7 +411,7 @@ $ kubectl exec -n ceph ${MON_POD} -- ceph -s
             43091 MB used, 2133 GB / 2291 GB avail
                  856 active+clean
 ```
-> Warn 這邊忽略，機器太少....。
+> Warn 這邊忽略，OSD 機器太少....。
 
 接著為了讓 Ceph 可以在其他 Kubernetes namespace 中存取 PVC，這邊要產生 client secret key 於 openstack namespace 中來提供給 OpenStack 元件使用，這邊執行以下 Chart 來產生：
 ```shell
