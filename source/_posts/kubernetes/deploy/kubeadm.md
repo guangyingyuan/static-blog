@@ -13,9 +13,9 @@ tags:
 > 若想利用 Ansible 安裝的話，可以參考這邊 [kubeadm-ansible](https://github.com/kairen/kubeadm-ansible)。
 
 本環境安裝資訊：
-* Kubernetes v1.8.4
+* Kubernetes v1.9.0
 * Etcd v3
-* Flannel v0.9.0
+* Flannel v0.9.1
 * Docker v17.05.0-ce
 
 <!--more-->
@@ -91,7 +91,7 @@ $ kubeadm token generate
 b0f7b8.8d1767876297d85c
 
 $ kubeadm init --service-cidr 10.96.0.0/12 \
-               --kubernetes-version v1.8.4 \
+               --kubernetes-version v1.9.0 \
                --pod-network-cidr 10.244.0.0/16 \
                --apiserver-advertise-address 172.16.35.12 \
                --token b0f7b8.8d1767876297d85c
@@ -190,6 +190,29 @@ kubernetes-dashboard   10.111.162.184   <nodes>       80:32546/TCP    33s
 ```
 
 最後就可以存取 [Kube Dashboard](https://172.16.35.12:6443/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/)。
+
+在 1.7 版本以後的 Dashboard 將不再提供所有權限，因此需要建立一個 service account 來綁定 cluster-admin role：
+```sh
+$ kubectl -n kube-system create sa dashboard
+$ kubectl create clusterrolebinding dashboard --clusterrole cluster-admin --serviceaccount=kube-system:dashboard
+$ kubectl -n kube-system get sa dashboard -o yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  creationTimestamp: 2017-11-27T17:06:41Z
+  name: dashboard
+  namespace: kube-system
+  resourceVersion: "69076"
+  selfLink: /api/v1/namespaces/kube-system/serviceaccounts/dashboard
+  uid: 56b880bf-d395-11e7-9528-448a5ba4bd34
+secrets:
+- name: dashboard-token-vg52j
+
+$ kubectl -n kube-system describe secrets dashboard-token-vg52j
+...
+token:      eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJkYXNoYm9hcmQtdG9rZW4tdmc1MmoiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZGFzaGJvYXJkIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiNTZiODgwYmYtZDM5NS0xMWU3LTk1MjgtNDQ4YTViYTRiZDM0Iiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50Omt1YmUtc3lzdGVtOmRhc2hib2FyZCJ9.bVRECfNS4NDmWAFWxGbAi1n9SfQ-TMNafPtF70pbp9Kun9RbC3BNR5NjTEuKjwt8nqZ6k3r09UKJ4dpo2lHtr2RTNAfEsoEGtoMlW8X9lg70ccPB0M1KJiz3c7-gpDUaQRIMNwz42db7Q1dN7HLieD6I4lFsHgk9NPUIVKqJ0p6PNTp99pBwvpvnKX72NIiIvgRwC2cnFr3R6WdUEsuVfuWGdF-jXyc6lS7_kOiXp2yh6Ym_YYIr3SsjYK7XUIPHrBqWjF-KXO_AL3J8J_UebtWSGomYvuXXbbAUefbOK4qopqQ6FzRXQs00KrKa8sfqrKMm_x71Kyqq6RbFECsHPA
+```
+> 複製`token`，然後貼到 Kubernetes dashboard。
 
 ## 簡單部署一個服務
 這邊利用 Weave 公司提供的服務來驗證系統，透過以下方式建立：
