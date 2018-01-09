@@ -9,10 +9,11 @@ tags:
 - Docker
 - Calico
 ---
-Kubernetes 提供了許多雲端平台與作業系統的安裝方式，本章將以`全手動安裝方式`來部署，主要是學習與了解 Kubernetes 建置流程。若想要瞭解更多平台的部署可以參考 [Picking the Right Solution](https://kubernetes.io/docs/getting-started-guides/)來選擇自己最喜歡的方式。
+Kubernetes 提供了許多雲端平台與作業系統的安裝方式，本章將以`全手動安裝方式`來部署 Kubernetes v1.8.x 版本，主要是學習與了解 Kubernetes 建置流程。若想要瞭解更多平台的部署可以參考 [Picking the Right Solution](https://kubernetes.io/docs/getting-started-guides/)來選擇自己最喜歡的方式。
 
 本次安裝版本為：
-* Kubernetes v1.8.2
+* Kubernetes v1.8.6
+* CNI v0.6.0
 * Etcd v3.2.9
 * Calico v2.6.2
 * Docker v17.10.0-ce
@@ -99,13 +100,13 @@ $ chmod +x /usr/local/bin/cfssl /usr/local/bin/cfssljson
 ### 建立叢集 CA 與 Certificates
 在這部分，將會需要產生 client 與 server 的各元件 certificates，並且替 Kubernetes admin user 產生 client 證書。
 
-建立`/etc/etcd/ssl`資料夾，然後進入目錄完成以下操作。
+首先在`master1`建立`/etc/etcd/ssl`資料夾，然後進入目錄完成以下操作。
 ```sh
 $ mkdir -p /etc/etcd/ssl && cd /etc/etcd/ssl
 $ export PKI_URL="https://kairen.github.io/files/manual-v1.8/pki"
 ```
 
-下載`ca-config.json`與`etcd-ca-csr.json`檔案，並產生 CA 金鑰：
+下載`ca-config.json`與`etcd-ca-csr.json`檔案，並從 CSR json 產生 CA 金鑰與 Certificate：
 ```sh
 $ wget "${PKI_URL}/ca-config.json" "${PKI_URL}/etcd-ca-csr.json"
 $ cfssl gencert -initca etcd-ca-csr.json | cfssljson -bare etcd-ca
@@ -113,7 +114,7 @@ $ ls etcd-ca*.pem
 etcd-ca-key.pem  etcd-ca.pem
 ```
 
-下載`etcd-csr.json`檔案，並產生 etcd certificate 證書：
+下載`etcd-csr.json`檔案，並產生 Etcd certificate 證書：
 ```sh
 $ wget "${PKI_URL}/etcd-csr.json"
 $ cfssl gencert \
@@ -186,7 +187,7 @@ Master 是 Kubernetes 的大總管，主要建置`apiserver`、`Controller manag
 首先透過網路取得所有需要的執行檔案：
 ```sh
 # Download Kubernetes
-$ export KUBE_URL="https://storage.googleapis.com/kubernetes-release/release/v1.8.2/bin/linux/amd64"
+$ export KUBE_URL="https://storage.googleapis.com/kubernetes-release/release/v1.8.6/bin/linux/amd64"
 $ wget "${KUBE_URL}/kubelet" -O /usr/local/bin/kubelet
 $ wget "${KUBE_URL}/kubectl" -O /usr/local/bin/kubectl
 $ chmod +x /usr/local/bin/kubelet /usr/local/bin/kubectl
@@ -200,7 +201,7 @@ $ wget -qO- --show-progress "${CNI_URL}/v0.6.0/cni-plugins-amd64-v0.6.0.tgz" | t
 ### 建立叢集 CA 與 Certificates
 在這部分，將會需要產生 client 與 server 的各元件 certificates，並且替 Kubernetes admin user 產生 client 證書。
 
-建立`pki`資料夾，然後進入目錄完成以下操作。
+一樣在`master1`建立`pki`資料夾，然後進入目錄完成以下操作。
 ```sh
 $ mkdir -p /etc/kubernetes/pki && cd /etc/kubernetes/pki
 $ export PKI_URL="https://kairen.github.io/files/manual-v1.8/pki"
@@ -542,6 +543,7 @@ $ mkdir -p /etc/systemd/system/kubelet.service.d
 $ wget "${KUBELET_URL}/kubelet.service" -O /lib/systemd/system/kubelet.service
 $ wget "${KUBELET_URL}/10-kubelet.conf" -O /etc/systemd/system/kubelet.service.d/10-kubelet.conf
 ```
+> 若`cluster-dns`或`cluster-domain`有改變的話，需要修改`10-kubelet.conf`。
 
 最後建立 var 存放資訊，然後啟動 kubelet 服務:
 ```sh
@@ -570,7 +572,7 @@ controller-manager   Healthy   ok
 
 $ kubectl get node
 NAME      STATUS     ROLES     AGE       VERSION
-master1   NotReady   master    4m        v1.8.2
+master1   NotReady   master    1m        v1.8.6
 
 $ kubectl -n kube-system get po
 NAME                              READY     STATUS    RESTARTS   AGE
@@ -622,7 +624,7 @@ $ for NODE in node1 node2; do
 首先透過網路取得所有需要的執行檔案：
 ```sh
 # Download Kubernetes
-$ export KUBE_URL="https://storage.googleapis.com/kubernetes-release/release/v1.8.2/bin/linux/amd64"
+$ export KUBE_URL="https://storage.googleapis.com/kubernetes-release/release/v1.8.6/bin/linux/amd64"
 $ wget "${KUBE_URL}/kubelet" -O /usr/local/bin/kubelet
 $ chmod +x /usr/local/bin/kubelet
 
@@ -640,6 +642,7 @@ $ mkdir -p /etc/systemd/system/kubelet.service.d
 $ wget "${KUBELET_URL}/kubelet.service" -O /lib/systemd/system/kubelet.service
 $ wget "${KUBELET_URL}/10-kubelet.conf" -O /etc/systemd/system/kubelet.service.d/10-kubelet.conf
 ```
+> 若`cluster-dns`或`cluster-domain`有改變的話，需要修改`10-kubelet.conf`。
 
 接著在所有`node`建立 var 存放資訊，然後啟動 kubelet 服務:
 ```sh
@@ -649,7 +652,7 @@ $ systemctl enable kubelet.service && systemctl start kubelet.service
 > P.S. 重複一樣動作來完成其他節點。
 
 ### 授權 Kubernetes Node
-當所有節點都完成後，在`master`節點，因為我們採用 TLS Bootstrapping，所需要建立一個 ClusterRoleBinding：
+當所有節點都完成後，在`master1`節點，因為我們採用 TLS Bootstrapping，所需要建立一個 ClusterRoleBinding：
 ```sh
 $ kubectl create clusterrolebinding kubelet-bootstrap \
     --clusterrole=system:node-bootstrapper \
@@ -677,9 +680,9 @@ node-csr-eq4q6ffOwT4yqYQNU6sT7mphPOQdFN6yulMVZeu6pkE   30s       kubelet-bootstr
 
 $ kubectl get no
 NAME      STATUS     ROLES     AGE       VERSION
-master1   NotReady   master    15m       v1.8.2
-node1     NotReady   <none>    8m        v1.8.2
-node2     NotReady   <none>    6s        v1.8.2
+master1   NotReady   master    21m       v1.8.6
+node1     NotReady   node      8s        v1.8.6
+node2     NotReady   node      8s        v1.8.6
 ```
 
 ## Kubernetes Core Addons 部署
@@ -746,6 +749,7 @@ audit-policy.yml  controller-manager.conf  kubelet.conf    manifests        sche
 在`master1`將`kube-proxy`相關檔案複製到 Node 節點上：
 ```sh
 $ for NODE in node1 node2; do
+    echo "--- $NODE ---"
     for FILE in pki/kube-proxy.pem pki/kube-proxy-key.pem kube-proxy.conf; do
       scp /etc/kubernetes/${FILE} ${NODE}:/etc/kubernetes/${FILE}
     done
@@ -860,23 +864,9 @@ kube-scheduler-master1                      1/1       Running   0          20m
 ### Dashboard addon
 [Dashboard](https://github.com/kubernetes/dashboard) 是 Kubernetes 社區官方開發的儀表板，有了儀表板後管理者就能夠透過 Web-based 方式來管理 Kubernetes 叢集，除了提升管理方便，也讓資源視覺化，讓人更直覺看見系統資訊的呈現結果。
 
-首先我們要建立`kubernetes-dashboard-certs`，來提供給 Dashboard TLS 使用：
+在`master1`透過 kubectl 來建立 kubernetes dashboard 即可：
 ```sh
-$ mkdir -p /etc/kubernetes/addons/certs && cd /etc/kubernetes/addons
-$ openssl genrsa -des3 -passout pass:x -out certs/dashboard.pass.key 2048
-$ openssl rsa -passin pass:x -in certs/dashboard.pass.key -out certs/dashboard.key
-$ openssl req -new -key certs/dashboard.key -out certs/dashboard.csr -subj '/CN=kube-dashboard'
-$ openssl x509 -req -sha256 -days 365 -in certs/dashboard.csr -signkey certs/dashboard.key -out certs/dashboard.crt
-$ rm certs/dashboard.pass.key
-$ kubectl create secret generic kubernetes-dashboard-certs\
-    --from-file=certs -n kube-system
-```
-
-接著在`master1`透過 kubectl 來建立 kubernetes dashboard 即可：
-```sh
-$ export ADDON_URL="https://kairen.github.io/files/manual-v1.8/addon"
-$ wget ${ADDON_URL}/kube-dashboard.yml.conf -O kube-dashboard.yml
-$ kubectl apply -f kube-dashboard.yml
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
 $ kubectl -n kube-system get po,svc -l k8s-app=kubernetes-dashboard
 NAME                                      READY     STATUS    RESTARTS   AGE
 po/kubernetes-dashboard-747c4f7cf-md5m8   1/1       Running   0          56s
@@ -884,7 +874,26 @@ po/kubernetes-dashboard-747c4f7cf-md5m8   1/1       Running   0          56s
 NAME                       TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
 svc/kubernetes-dashboard   ClusterIP   10.98.120.209   <none>        443/TCP   56s
 ```
-> P.S. 這邊會額外建立一個名稱為`anonymous-open-door` Cluster Role Binding，這僅作為方便測試時使用，在一般情況下不要開啟，不然就會直接被存取所有 API。
+
+這邊會額外建立一個名稱為`open-api` Cluster Role Binding，這僅作為方便測試時使用，在一般情況下不要開啟，不然就會直接被存取所有 API:
+```sh
+$ cat <<EOF | kubectl create -f -
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: open-api
+  namespace: ""
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - apiGroup: rbac.authorization.k8s.io
+    kind: User
+    name: system:anonymous
+EOF
+```
+> P.S. 管理者可以針對特定使用者來開放 API 存取權限，但這邊方便使用直接綁在 cluster-admin cluster role。
 
 完成後，就可以透過瀏覽器存取 [Dashboard](https://172.16.35.12:6443/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/)。
 
@@ -892,22 +901,9 @@ svc/kubernetes-dashboard   ClusterIP   10.98.120.209   <none>        443/TCP   5
 ```sh
 $ kubectl -n kube-system create sa dashboard
 $ kubectl create clusterrolebinding dashboard --clusterrole cluster-admin --serviceaccount=kube-system:dashboard
-$ kubectl -n kube-system get sa dashboard -o yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  creationTimestamp: 2017-11-27T17:06:41Z
-  name: dashboard
-  namespace: kube-system
-  resourceVersion: "69076"
-  selfLink: /api/v1/namespaces/kube-system/serviceaccounts/dashboard
-  uid: 56b880bf-d395-11e7-9528-448a5ba4bd34
-secrets:
-- name: dashboard-token-vg52j
-
-$ kubectl -n kube-system describe secrets dashboard-token-vg52j
-...
-token:      eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJkYXNoYm9hcmQtdG9rZW4tdmc1MmoiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZGFzaGJvYXJkIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiNTZiODgwYmYtZDM5NS0xMWU3LTk1MjgtNDQ4YTViYTRiZDM0Iiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50Omt1YmUtc3lzdGVtOmRhc2hib2FyZCJ9.bVRECfNS4NDmWAFWxGbAi1n9SfQ-TMNafPtF70pbp9Kun9RbC3BNR5NjTEuKjwt8nqZ6k3r09UKJ4dpo2lHtr2RTNAfEsoEGtoMlW8X9lg70ccPB0M1KJiz3c7-gpDUaQRIMNwz42db7Q1dN7HLieD6I4lFsHgk9NPUIVKqJ0p6PNTp99pBwvpvnKX72NIiIvgRwC2cnFr3R6WdUEsuVfuWGdF-jXyc6lS7_kOiXp2yh6Ym_YYIr3SsjYK7XUIPHrBqWjF-KXO_AL3J8J_UebtWSGomYvuXXbbAUefbOK4qopqQ6FzRXQs00KrKa8sfqrKMm_x71Kyqq6RbFECsHPA
+$ SECRET=$(kubectl -n kube-system get sa dashboard -o yaml | awk '/dashboard-token/ {print $3}')
+$ kubectl -n kube-system describe secrets ${SECRET} | awk '/token:/{print $2}'
+eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJkYXNoYm9hcmQtdG9rZW4tdzVocmgiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZGFzaGJvYXJkIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiYWJmMTFjYzMtZjRlYi0xMWU3LTgzYWUtMDgwMDI3NjdkOWI5Iiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50Omt1YmUtc3lzdGVtOmRhc2hib2FyZCJ9.Xuyq34ci7Mk8bI97o4IldDyKySOOqRXRsxVWIJkPNiVUxKT4wpQZtikNJe2mfUBBD-JvoXTzwqyeSSTsAy2CiKQhekW8QgPLYelkBPBibySjBhJpiCD38J1u7yru4P0Pww2ZQJDjIxY4vqT46ywBklReGVqY3ogtUQg-eXueBmz-o7lJYMjw8L14692OJuhBjzTRSaKW8U2MPluBVnD7M2SOekDff7KpSxgOwXHsLVQoMrVNbspUCvtIiEI1EiXkyCNRGwfnd2my3uzUABIHFhm0_RZSmGwExPbxflr8Fc6bxmuz-_jSdOtUidYkFIzvEWw2vRovPgs3MXTv59RwUw
 ```
 > 複製`token`，然後貼到 Kubernetes dashboard。
 

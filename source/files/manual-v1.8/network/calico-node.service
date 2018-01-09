@@ -22,8 +22,8 @@ ExecStart=/usr/bin/docker run --net=host --privileged --name=calico-node \
   -e FELIX_HEALTHENABLED=true \
   -e CALICO_IPV4POOL_CIDR=10.244.0.0/16 \
   -e CALICO_IPV4POOL_IPIP=always \
-  -e IP_AUTODETECTION_METHOD=interface=enp0s8 \
-  -e IP6_AUTODETECTION_METHOD=interface=enp0s8 \
+  -e IP_AUTODETECTION_METHOD=interface=eth1 \
+  -e IP6_AUTODETECTION_METHOD=interface=eth1 \
   -v /etc/etcd/ssl:/etc/etcd/ssl \
   -v /var/run/calico:/var/run/calico \
   -v /lib/modules:/lib/modules \

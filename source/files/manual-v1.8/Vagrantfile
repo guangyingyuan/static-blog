@@ -1,26 +1,43 @@
 
 Vagrant.require_version ">= 1.7.0"
 
+def set_vbox(vb, config)
+  vb.gui = false
+  vb.memory = 2024
+  vb.cpus = 1
+
+  case $os_image
+  when :centos7
+    config.vm.box = "bento/centos-7.3"
+  when :ubuntu16
+    config.vm.box = "bento/ubuntu-16.04"
+  end
+end
+
+def set_libvirt(lv, config)
+  lv.nested = true
+  lv.volume_cache = 'none'
+  lv.uri = 'qemu+unix:///system'
+  lv.memory = $system_memory
+  lv.cpus = $system_vcpus
+
+  case $os_image
+  when :centos7
+    config.vm.box = "centos/7"
+  when :ubuntu16
+    config.vm.box = "yk0/ubuntu-xenial"
+  end
+end
+
 $os_image = (ENV['OS_IMAGE'] || "ubuntu16").to_sym
 
 Vagrant.configure("2") do |config|
-
+  config.vm.provider "libvirt"
   config.vm.provider "virtualbox"
   master = 1
   node = 2
-  # Set virtualbox func
-  def set_vbox(vb, config)
-    vb.gui = false
-    vb.memory = 2024
-    vb.cpus = 1
 
-    case $os_image
-    when :centos7
-      config.vm.box = "bento/centos-7.2"
-    when :ubuntu16
-      config.vm.box = "bento/ubuntu-16.04"
-    end
-  end
+  config.vm.provision "shell", inline: "sudo swapoff -a && sudo sysctl -w vm.swappiness=0"
 
   private_count = 10
   (1..(master + node)).each do |mid|
@@ -35,6 +52,11 @@ Vagrant.configure("2") do |config|
       n.vm.provider :virtualbox do |vb, override|
         vb.name = "kube-#{n.vm.hostname}"
         set_vbox(vb, override)
+      end
+
+      n.vm.provider :libvirt do |lv, override|
+        lv.host = "kube-#{n.vm.hostname}"
+        set_libvirt(lv, override)
       end
       private_count += 1
     end
