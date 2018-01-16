@@ -283,6 +283,7 @@ kubectl label nodes ceph-mon=enabled --all
 kubectl label nodes ceph-osd=enabled --all
 kubectl label nodes ceph-mds=enabled --all
 kubectl label nodes ceph-rgw=enabled --all
+kubectl label nodes ceph-mgr=enabled --all
 kubectl label nodes openvswitch=enabled --all
 kubectl label nodes openstack-compute-node=enabled --all
 ```
@@ -293,6 +294,7 @@ kubectl label nodes kube-master1 ceph-mon-
 kubectl label nodes kube-master1 ceph-osd-
 kubectl label nodes kube-master1 ceph-mds-
 kubectl label nodes kube-master1 ceph-rgw-
+kubectl label nodes kube-master1 ceph-mgr-
 kubectl label nodes kube-master1 openvswitch-
 kubectl label nodes kube-master1 openstack-compute-node-
 ```
