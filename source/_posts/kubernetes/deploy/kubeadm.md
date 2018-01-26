@@ -79,11 +79,6 @@ $ swapoff -a && sysctl -w vm.swappiness=0
 $ sudo apt-get update && sudo apt-get install -y kubelet kubeadm kubectl kubernetes-cni docker-engine
 ```
 
-完成後 Reload daemon：
-```sh
-$ systemctl daemon-reload
-```
-
 進行初始化 Master，這邊需要進入`root`使用者執行以下指令：
 ```sh
 $ sudo su -
@@ -144,11 +139,6 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 首先更新 APT 來源，並且安裝 Kubernetes 元件與工具：
 ```sh
 $ sudo apt-get update && sudo apt-get install -y kubelet kubeadm kubernetes-cni docker-engine
-```
-
-完成後 Reload daemon：
-```sh
-$ systemctl daemon-reload
 ```
 
 完成後就可以開始加入 Node，這邊需要進入`root`使用者執行以下指令：
