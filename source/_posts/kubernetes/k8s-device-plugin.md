@@ -10,6 +10,7 @@ tags:
 ---
 [Device Plugins](https://kubernetes.io/docs/concepts/cluster-administration/device-plugins/) 是 Kubernetes v1.8 版本開始加入的 Alpha 功能，目標是結合 Extended Resource 來支援 GPU、FPGA、高效能 NIC、InfiniBand 等硬體設備介接的插件，這樣好處在於硬體供應商不需要修改 Kubernetes 核心程式，只需要依據 [Device Plugins 介面](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/resource-management/device-plugin.md)來實作特定硬體設備插件，就能夠提供給 Kubernetes Pod 使用。而本篇會稍微提及 Device Plugin 原理，並說明如何使用 NVIDIA device plugin。
 
+P.S. 傳統的`alpha.kubernetes.io/nvidia-gpu`將於 1.11 版本移除，因此與 GPU 相關的排程與部署原始碼都將從 Kubernetes 核心移除。
 <!--more-->
 
 ## Device Plugins 原理
