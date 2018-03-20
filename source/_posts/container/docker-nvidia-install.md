@@ -1,5 +1,5 @@
 ---
-title: 安裝 Nvidia Docker 2 來讓容器使用 GPU
+title: 安裝 NVIDIA Docker 2 來讓容器使用 GPU
 date: 2018-02-17 17:08:54
 layout: page
 categories:
@@ -7,9 +7,9 @@ categories:
 tags:
 - Container
 - Docker
-- Nvidia GPU
+- NVIDIA GPU
 ---
-本篇主要介紹如何使用 [Nvidia Docker v2](https://github.com/NVIDIA/nvidia-docker) 來讓容器使用 GPU，過去 Nvidia Docker v1 需要使用 nvidia-docker 來取代 docker 執行 GPU image，或是透過手動掛載 Nvidia driver 與 CUDA 來使 Docker 能夠編譯與執行 GPU 應用程式 image，而新版本的 Docker 則可以透過 --runtime 來選擇使用 Nvidia Docker v2 的 Runtime 來執行 GPU 應用。
+本篇主要介紹如何使用 [NVIDIA Docker v2](https://github.com/NVIDIA/nvidia-docker) 來讓容器使用 GPU，過去 NVIDIA Docker v1 需要使用 nvidia-docker 來取代 Docker 執行 GPU image，或是透過手動掛載 NVIDIA driver 與 CUDA 來使 Docker 能夠編譯與執行 GPU 應用程式 image，而新版本的 Docker 則可以透過 --runtime 來選擇使用 NVIDIA Docker v2 的 Runtime 來執行 GPU 應用。
 
 <!--more-->
 
@@ -27,7 +27,7 @@ $ sudo apt-get update
 $ sudo apt-get install -y docker-ce=17.12.1~ce-0~ubuntu
 ```
 
-接著透過 APT 安裝 Nvidia Driver(v390.30) 與 CUDA 9.1：
+接著透過 APT 安裝 NVIDIA Driver(v390.30) 與 CUDA 9.1：
 ```sh
 $ wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-repo-ubuntu1604_9.1.85-1_amd64.deb
 $ sudo dpkg -i cuda-repo-ubuntu1604_9.1.85-1_amd64.deb
@@ -35,7 +35,7 @@ $ sudo apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cud
 $ sudo apt-get update && sudo apt-get install -y cuda
 ```
 
-測試 Nvidia Dirver 與 CUDA 是否有安裝完成：
+測試 NVIDIA Dirver 與 CUDA 是否有安裝完成：
 ```sh
 $ cat /usr/local/cuda/version.txt
 CUDA Version 9.1.85
@@ -60,7 +60,7 @@ Tue Mar 13 06:10:39 2018
 +-----------------------------------------------------------------------------+
 ```
 
-確認上述無誤後，接著安裝 Nvidia Docker v2，這邊透過 APT 來進行安裝：
+確認上述無誤後，接著安裝 NVIDIA Docker v2，這邊透過 APT 來進行安裝：
 ```sh
 $ curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
 $ curl -s -L https://nvidia.github.io/nvidia-docker/ubuntu16.04/amd64/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
@@ -68,7 +68,7 @@ $ sudo apt-get update && sudo apt-get install -y nvidia-docker2
 $ sudo pkill -SIGHUP dockerd
 ```
 
-測試 Nvidia runtime，這邊下載 Nvidia image 來進行測試：
+測試 NVIDIA runtime，這邊下載 NVIDIA image 來進行測試：
 ```sh
 $ docker run --runtime=nvidia --rm nvidia/cuda nvidia-smi
 ...

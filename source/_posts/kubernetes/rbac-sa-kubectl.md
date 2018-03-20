@@ -39,7 +39,7 @@ kind: Config
 clusters:
 - cluster:
     certificate-authority-data: $CA_CERT
-    server: $SERVER
+    server: $API_SERVER
   name: cluster
 EOF
 

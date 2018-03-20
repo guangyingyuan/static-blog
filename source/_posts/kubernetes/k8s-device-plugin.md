@@ -6,7 +6,7 @@ categories:
 - Kubernetes
 tags:
 - Kubernetes
-- GPU
+- NVIDIA GPU
 ---
 [Device Plugins](https://kubernetes.io/docs/concepts/cluster-administration/device-plugins/) 是 Kubernetes v1.8 版本開始加入的 Alpha 功能，目標是結合 Extended Resource 來支援 GPU、FPGA、高效能 NIC、InfiniBand 等硬體設備介接的插件，這樣好處在於硬體供應商不需要修改 Kubernetes 核心程式，只需要依據 [Device Plugins 介面](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/resource-management/device-plugin.md)來實作特定硬體設備插件，就能夠提供給 Kubernetes Pod 使用。而本篇會稍微提及 Device Plugin 原理，並說明如何使用 NVIDIA device plugin。
 
@@ -40,7 +40,7 @@ kubelet_internal_checkpoint  kubelet.sock  nvidia.sock
 ## 事前準備
 安裝 Device Plugin 前，需要確保以下條件達成：
 * 所有節點正確安裝指定版本的 NVIDIA driver、CUDA、Docker、NVIDIA Docker。請參考 [安裝 Nvidia Docker 2](https://kairen.github.io/2018/02/17/container/docker-nvidia-install/)。
-* 所有節點以 kubeadm 部署成 Kubernetes v1.9+ 叢集。請參考 [用 kubeadm 部署 Kubernetes 叢集](https://kairen.github.io/2016/09/29/kubernetes/deploy/kubeadm/)
+* 所有節點以 kubeadm 部署成 Kubernetes v1.9+ 叢集。請參考 [用 kubeadm 部署 Kubernetes 叢集](https://kairen.github.io/2016/09/29/kubernetes/deploy/kubeadm/)。
 
 ## 安裝 NVIDIA Device Plugin
 若上述要求以符合，再開始前需要在`每台 GPU worker 節點`修改`/lib/systemd/system/docker.service`檔案，將 Docker default runtime 改成 nvidia，依照以下內容來修改：
