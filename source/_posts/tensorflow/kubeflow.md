@@ -1,5 +1,5 @@
 ---
-title: 利用 Kubeflow 來管理 TensorFlow 訓練
+title: 利用 Kubeflow 來管理 TensorFlow 應用程式
 date: 2018-3-15 17:08:54
 layout: page
 categories:
@@ -36,6 +36,14 @@ Kubeflow 目標是透過 Kubernetes 的特性使機器學習更加簡單與快�
 ## 事前準備
 使用 Kubeflow 之前，需要確保以下條件達成：
 * 所有節點正確安裝指定版本的 NVIDIA driver、CUDA、Docker、NVIDIA Docker，請參考 [安裝 Nvidia Docker 2](https://kairen.github.io/2018/02/17/container/docker-nvidia-install/)。
+* (option)所有 GPU 節點安裝 cuDNN v7.1.2 for CUDA 9.1，請至 [NVIDIA cuDNN](https://developer.nvidia.com/cudnn) 下載。
+
+```sh
+$ tar xvf cudnn-9.1-linux-x64-v7.1.tgz
+$ sudo cp cuda/include/cudnn.h /usr/local/cuda/include/
+$ sudo cp cuda/lib64/libcudnn* /usr/local/cuda/lib64/
+```
+
 * 所有節點以 kubeadm 部署成 Kubernetes v1.9+ 叢集，請參考 [用 kubeadm 部署 Kubernetes 叢集](https://kairen.github.io/2016/09/29/kubernetes/deploy/kubeadm/)。
 * Kubernetes 叢集需要安裝 NVIDIA Device Plugins，請參考 [安裝 Kubernetes NVIDIA Device Plugins](https://kairen.github.io/2018/03/01/kubernetes/k8s-device-plugin/)。
 * 建立 NFS server 並在 Kubernetes 節點安裝 NFS common，然後利用 Kubernetes 建立 PV 提供給 Kubeflow 使用：
@@ -44,27 +52,27 @@ Kubeflow 目標是透過 Kubernetes 的特性使機器學習更加簡單與快�
 # 在 master 執行
 $ sudo apt-get update && sudo apt-get install -y nfs-server
 $ sudo mkdir /nfs-data
-$ echo "/nfs-data *(rw,sync,no_root_squash,no_subtree_check)"
+$ echo "/nfs-data *(rw,sync,no_root_squash,no_subtree_check)" | sudo tee -a /etc/exports
 $ sudo /etc/init.d/nfs-kernel-server restart
 
 # 在 node 執行
 $ sudo apt-get update && sudo apt-get install -y nfs-common
 ```
 
-* 安裝 `ksonnet v0.8.0`(latest or dev build 有問題)，請參考以下：
+* 安裝`ksonnet 0.9.2`，請參考以下：
 
 ```sh
-$ wget https://github.com/ksonnet/ksonnet/releases/download/v0.8.0/ks_0.8.0_linux_amd64.tar.gz
-$ tar xvf ks_0.8.0_linux_amd64.tar.gz
-$ sudo cp ks_0.8.0_linux_amd64/ks /usr/local/bin/
+$ wget https://github.com/ksonnet/ksonnet/releases/download/v0.9.2/ks_0.9.2_linux_amd64.tar.gz
+$ tar xvf ks_0.9.2_linux_amd64.tar.gz
+$ sudo cp ks_0.9.2_linux_amd64/ks /usr/local/bin/
 $ ks version
-ksonnet version: 0.8.0
+ksonnet version: 0.9.2
 jsonnet version: v0.9.5
-client-go version: v1.6.8-beta.0+$Format:%h$
+client-go version: 1.8
 ```
 
 ## 部署 Kubeflow
-本節將說明如何利用 ksonnet 來部署 Kubeflow 到 Kubernetes 叢集中。首先初始化 ksonnet 應用程式目錄：
+本節將說明如何利用 ksonnet 來部署 Kubeflow 到 Kubernetes 叢集中。首先在`master`節點初始化 ksonnet 應用程式目錄：
 ```sh
 $ ks init my-kubeflow
 ```
@@ -154,13 +162,15 @@ EOF
 
 ![](/images/kubeflow/1.png)
 
-登入後點選`Start My Server`按鈕來建立 Server 的 Spawner options，這邊注意預設 image 為以下兩種：
+登入後點選`Start My Server`按鈕來建立 Server 的 Spawner options，預設會有多種映像檔可以使用：
 * CPU：gcr.io/kubeflow-images-staging/tensorflow-notebook-cpu。
 * GPU：gcr.io/kubeflow-images-staging/tensorflow-notebook-gpu。
 
-> P.S. 這邊建議使用以下映像檔做測試使用：
+> 這邊也使用以下 GCP 建構的映像檔做測試使用(GPU 當前為 CUDA 8)：
 * gcr.io/kubeflow/tensorflow-notebook-cpu:latest
 * gcr.io/kubeflow/tensorflow-notebook-gpu:latest
+
+> 若 CUDA 版本不同，請自行修改 [GCP Tensorflow Notebook image](https://github.com/GoogleCloudPlatform/container-engine-accelerators/blob/master/example/tensorflow-notebook-image) 或是 [Kubeflow Tensorflow Notebook image ](https://github.com/kubeflow/kubeflow/tree/master/components/k8s-model-server/images)重新建構。
 
 > 如果使用 GPU 請執行以下指令確認是否可被分配資源：
 ```sh
@@ -174,6 +184,7 @@ kube-gpu-node2     1
 最後點選`Spawn`來完成建立 Server，如下圖所示：
 
 ![](/images/kubeflow/2.png)
+> 這邊先用 CPU 進行測試，由於本篇是安裝 CUDA 9.1 + cuDNN 7，因此要自己建構映像檔。
 
 接著等 Kubernetes 下載映像檔後，就會正常啟動，如下圖所示：
 

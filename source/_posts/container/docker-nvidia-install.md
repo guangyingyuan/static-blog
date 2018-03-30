@@ -23,8 +23,7 @@ tags:
 ```sh
 $ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 $ echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial edge" | sudo tee /etc/apt/sources.list.d/docker.list
-$ sudo apt-get update
-$ sudo apt-get install -y docker-ce=17.12.1~ce-0~ubuntu
+$ sudo apt-get update && sudo apt-get install -y docker-ce=17.12.1~ce-0~ubuntu
 ```
 
 接著透過 APT 安裝 NVIDIA Driver(v390.30) 與 CUDA 9.1：

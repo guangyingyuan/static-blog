@@ -43,7 +43,7 @@ Helm 主要分為兩種元件，Helm Client 與 Tiller Server，兩者功能如�
 ## 安裝 Helm
 Helm 有許多種安裝方式，這邊個人比較喜歡用 binary 檔案來進行安裝：
 ```sh
-$ wget -qO- https://kubernetes-helm.storage.googleapis.com/helm-v2.4.1-linux-amd64.tar.gz | tar -zxf
+$ wget -qO- https://kubernetes-helm.storage.googleapis.com/helm-v2.8.1-linux-amd64.tar.gz | tar -zx
 $ sudo mv linux-amd64/helm /usr/local/bin/
 $ helm version
 ```
@@ -52,7 +52,9 @@ $ helm version
 ## 初始化 Helm
 在開始使用 Helm 之前，我們需要建置 Tiller Server 來對 Kubernetes 的管理，而 Helm CLI 內建也提供了快速初始化指令，如下：
 ```sh
-$ helm init
+$ kubectl -n kube-system create sa tiller
+$ kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
+$ helm init --service-account tiller
 $HELM_HOME has been configured at /root/.helm.
 
 Tiller (the helm server side component) has been installed into your Kubernetes Cluster.
@@ -74,9 +76,11 @@ svc/tiller-deploy   192.162.204.144   <none>        44134/TCP   3m
 ```sh
 $ export KUBECONFIG=/etc/kubernetes/admin.conf
 $ export HELM_HOST=$(kubectl describe svc/tiller-deploy -n kube-system | awk '/Endpoints/{print $2}')
+
+# wait for a few minutes
 $ helm version
-Client: &version.Version{SemVer:"v2.4.2", GitCommit:"82d8e9498d96535cc6787a6a9194a76161d29b4c", GitTreeState:"clean"}
-Server: &version.Version{SemVer:"v2.4.2", GitCommit:"82d8e9498d96535cc6787a6a9194a76161d29b4c", GitTreeState:"clean"}
+Client: &version.Version{SemVer:"v2.8.1", GitCommit:"6af75a8fd72e2aa18a2b278cfe5c7a1c5feca7f2", GitTreeState:"clean"}
+Server: &version.Version{SemVer:"v2.8.1", GitCommit:"6af75a8fd72e2aa18a2b278cfe5c7a1c5feca7f2", GitTreeState:"clean"}
 ```
 
 ## 部署 Chart Release 實例

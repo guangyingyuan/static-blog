@@ -13,10 +13,10 @@ tags:
 > 若想利用 Ansible 安裝的話，可以參考這邊 [kubeadm-ansible](https://github.com/kairen/kubeadm-ansible)。
 
 本環境安裝資訊：
-* Kubernetes v1.9.0
+* Kubernetes v1.9.6
 * Etcd v3
 * Flannel v0.9.1
-* Docker v17.05.0-ce
+* Docker v18.02.0-ce
 
 <!--more-->
 
@@ -37,15 +37,18 @@ tags:
 * 所有節點需要設定 APT Docker Repository：
 
 ```sh
-$ sudo apt-key adv --keyserver "hkp://p80.pool.sks-keyservers.net:80" --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-$ echo 'deb https://apt.dockerproject.org/repo ubuntu-xenial main' | sudo tee /etc/apt/sources.list.d/docker.list
+$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+$ sudo add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
 ```
 > CentOS 7 EPEL 有支援 Docker Package:
 ```sh
 $ sudo yum install -y epel-release
 ```
 
-* 所有節點需要設定 APT 與 Yum Kubernetes Repository：
+* 所有節點需要設定 APT 與 YUM Kubernetes Repository：
 
 ```sh
 $ curl -s "https://packages.cloud.google.com/apt/doc/apt-key.gpg" | sudo apt-key add -
@@ -76,7 +79,8 @@ $ swapoff -a && sysctl -w vm.swappiness=0
 ## Kubernetes Master 建立
 首先更新 APT 來源，並且安裝 Kubernetes 元件與工具：
 ```sh
-$ sudo apt-get update && sudo apt-get install -y kubelet kubeadm kubectl kubernetes-cni docker-engine
+$ export KUBE_VERSION="1.9.6"
+$ sudo apt-get update && sudo apt-get install -y kubelet=${KUBE_VERSION}-00 kubeadm=${KUBE_VERSION}-00 kubectl=${KUBE_VERSION}-00 docker-ce
 ```
 
 進行初始化 Master，這邊需要進入`root`使用者執行以下指令：
@@ -86,26 +90,26 @@ $ kubeadm token generate
 b0f7b8.8d1767876297d85c
 
 $ kubeadm init --service-cidr 10.96.0.0/12 \
-               --kubernetes-version v1.9.0 \
+               --kubernetes-version v${KUBE_VERSION} \
                --pod-network-cidr 10.244.0.0/16 \
-               --apiserver-advertise-address 172.16.35.12 \
-               --token b0f7b8.8d1767876297d85c
+               --token b0f7b8.8d1767876297d85c \
+               --apiserver-advertise-address 172.16.35.12
 # output               
 ...
-kubeadm join --token b0f7b8.8d1767876297d85c 172.16.35.12:6443
+kubeadm join --token b0f7b8.8d1767876297d85c 172.16.35.12:6443 --discovery-token-ca-cert-hash sha256:739d936954a752d44d2f2282dd645083259826f2c24a651608a6ac2081106cd7
 ```
 
 當出現如上面資訊後，表示 Master 初始化成功，不過這邊還是一樣透過 kubectl 測試一下：
 ```sh
-$ cp /etc/kubernetes/admin.conf ~/.kube/config
+$ mkdir ~/.kube && cp /etc/kubernetes/admin.conf ~/.kube/config
 $ kubectl get node
-NAME      STATUS    ROLES     AGE       VERSION
-master1   Ready     master    10m       v1.8.4
+NAME       STATUS     ROLES     AGE       VERSION
+master1    NotReady   master    4m        v1.9.6
 ```
 
 當執行正確後要接著部署網路，但要注意`一個叢集只能用一種網路`，這邊採用 Flannel：
 ```sh
-$ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.9.0/Documentation/kube-flannel.yml
+$ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.9.1/Documentation/kube-flannel.yml
 clusterrole "flannel" created
 clusterrolebinding "flannel" created
 serviceaccount "flannel" configured
@@ -114,6 +118,7 @@ daemonset "kube-flannel-ds" configured
 ```
 > * 若參數 `--pod-network-cidr=10.244.0.0/16` 改變時，在`kube-flannel.yml`檔案也需修改`net-conf.json`欄位的 CIDR。
 * 若使用 Virtualbox 的話，請修改`kube-flannel.yml`中的 command 綁定 iface，如`command: [ "/opt/bin/flanneld", "--ip-masq", "--kube-subnet-mgr", "--iface=eth1" ]`。
+* 其他 Pod Network 可以參考 [Installing a pod network](https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/#pod-network)。
 
 確認 Flannel 部署正確：
 ```sh
@@ -138,12 +143,13 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 ## Kubernetes Node 建立
 首先更新 APT 來源，並且安裝 Kubernetes 元件與工具：
 ```sh
-$ sudo apt-get update && sudo apt-get install -y kubelet kubeadm kubernetes-cni docker-engine
+$ export KUBE_VERSION="1.9.6"
+$ sudo apt-get update && sudo apt-get install -y kubelet=${KUBE_VERSION}-00 kubeadm=${KUBE_VERSION}-00 docker-ce
 ```
 
 完成後就可以開始加入 Node，這邊需要進入`root`使用者執行以下指令：
 ```sh
-$ kubeadm join --token b0f7b8.8d1767876297d85c 172.16.35.12:6443
+$ kubeadm join --token b0f7b8.8d1767876297d85c 172.16.35.12:6443 --discovery-token-ca-cert-hash sha256:739d936954a752d44d2f2282dd645083259826f2c24a651608a6ac2081106cd7
 # output
 ...
 Run 'kubectl get nodes' on the master to see this machine join.
@@ -153,9 +159,9 @@ Run 'kubectl get nodes' on the master to see this machine join.
 ```sh
 $ kubectl get node
 NAME      STATUS    ROLES     AGE       VERSION
-master1   Ready     master    10m       v1.8.4
-node1     Ready     <none>    9m        v1.8.4
-node2     Ready     <none>    9m        v1.8.4
+master1   Ready     master    10m       v1.9.6
+node1     Ready     <none>    9m        v1.9.6
+node2     Ready     <none>    9m        v1.9.6
 ```
 
 為了多加利用資源這邊透過 taint 來讓 masters 也會被排程執行容器：
