@@ -33,7 +33,7 @@ Kubernetes 提供了許多雲端平台與作業系統的安裝方式，本章將
 > * 所有操作全部用`root`使用者進行(方便用)，以 SRE 來說不推薦。
 > * 可以下載 [Vagrantfile](https://kairen.github.io/files/manual-v1.8/Vagrantfile) 來建立 Virtual box 虛擬機叢集。
 
-首先安裝前要確認以下幾項都已將準備完成：
+首先安裝前要確認以下幾項都已經準備完成：
 * 所有節點彼此網路互通，並且`master1` SSH 登入其他節點為 passwdless。
 * 所有防火牆與 SELinux 已關閉。如 CentOS：
 
