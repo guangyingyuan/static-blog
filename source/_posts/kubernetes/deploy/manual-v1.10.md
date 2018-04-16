@@ -9,7 +9,7 @@ tags:
 - Docker
 - Calico
 ---
-本篇延續過往`手動安裝方式`來部署 Kubernetes v1.10.x 版本的 High Availability 叢集，主要目的是學習 Kubernetes 安裝的一些元件關析與流程。若不想這麼累的話，可以參考 [Picking the Right Solution](https://kubernetes.io/docs/getting-started-guides/)來選擇自己最喜歡的方式。
+本篇延續過往`手動安裝方式`來部署 Kubernetes v1.10.x 版本的 High Availability 叢集，主要目的是學習 Kubernetes 安裝的一些元件關析與流程。若不想這麼累的話，可以參考 [Picking the Right Solution](https://kubernetes.io/docs/getting-started-guides/) 來選擇自己最喜歡的方式。
 
 本次安裝的軟體版本：
 * Kubernetes v1.10.0
@@ -20,17 +20,19 @@ tags:
 
 <!--more-->
 
+![](/images/kube/kubernetes-aa-ha.png)
+
 ## 節點資訊
 本教學將以下列節點數與規格來進行部署 Kubernetes 叢集，作業系統可採用`Ubuntu 16.x`與`CentOS 7.x`：
 
 | IP Address | Hostname | CPU | Memory |
 |------------|----------|-----|--------|
-|192.16.35.11| k8s-m1   | 1   | 2G     |
-|192.16.35.12| k8s-m2   | 1   | 2G     |
-|192.16.35.13| k8s-m3   | 1   | 2G     |
-|192.16.35.14| k8s-n1   | 1   | 2G     |
-|192.16.35.15| k8s-n2   | 1   | 2G     |
-|192.16.35.16| k8s-n2   | 1   | 2G     |
+|192.16.35.11| k8s-m1   | 1   | 4G     |
+|192.16.35.12| k8s-m2   | 1   | 4G     |
+|192.16.35.13| k8s-m3   | 1   | 4G     |
+|192.16.35.14| k8s-n1   | 1   | 4G     |
+|192.16.35.15| k8s-n2   | 1   | 4G     |
+|192.16.35.16| k8s-n2   | 1   | 4G     |
 
 另外由所有 master 節點提供一組 VIP `192.16.35.10`。
 
