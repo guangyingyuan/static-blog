@@ -249,6 +249,7 @@ modifying entry "uid=user2,ou=Users,dc=k8s,dc=com"
 $ git clone https://github.com/kairen/kube-ldap-authn.git
 $ cd kube-ldap-authn
 ```
+> 若想使用 Go 語言實作的版本，可以參考 [kube-ldap-webhook](https://github.com/kairen/kube-ldap-webhook).
 
 新增一個`config.py`檔案來提供相關設定內容：
 ```sh

@@ -12,7 +12,7 @@ tags:
 ---
 預啟動執行環境（Preboot eXecution Environment，PXE，也被稱為預執行環境)提供了一種使用網路介面（Network Interface）啟動電腦的機制。這種機制讓電腦的啟動可以不依賴本地資料儲存裝置（如硬碟）或本地已安裝的作業系統。
 
-![PXE](/images/pxe.png)
+![PXE](/images/linux/pxe.png)
 
 <!--more-->
 

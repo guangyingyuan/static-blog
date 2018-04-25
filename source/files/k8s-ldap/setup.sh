@@ -50,4 +50,19 @@ elif [[ ${HOSTNAME} =~ k8s-n ]]; then
   kubeadm join 192.16.35.11:6443 \
     --token b0f7b8.8d1767876297d85c \
     --discovery-token-unsafe-skip-ca-verification
+elif [[ ${HOSTNAME} =~ ldap-server ]]; then
+  docker run -d \
+    -p 389:389 -p 636:636 \
+    --env LDAP_ORGANISATION="Kubernetes LDAP" \
+    --env LDAP_DOMAIN="k8s.com" \
+    --env LDAP_ADMIN_PASSWORD="password" \
+    --env LDAP_CONFIG_PASSWORD="password" \
+    --name openldap-server \
+    osixia/openldap:1.2.0
+
+  docker run -d \
+    -p 443:443 \
+    --env PHPLDAPADMIN_LDAP_HOSTS=192.16.35.20 \
+    --name phpldapadmin \
+    osixia/phpldapadmin:0.7.1
 fi

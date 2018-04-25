@@ -12,6 +12,8 @@ tags:
 ---
 [Kubeflow](https://github.com/kubeflow/kubeflow) 是 Google 開源的機器學習工具，目標是簡化在 Kubernetes 上運行機器學習的過程，使之更簡單、可攜帶與可擴展。Kubeflow 目標不是在於重建其他服務，而是提供一個最佳開發系統來部署到各種基礎設施架構中，另外由於使用 Kubernetes 來做為基礎，因此只要有 Kubernetes 的地方，都能夠執行 Kubeflow。
 
+<center>![](/images/kubeflow/logo.png)</center>
+
 <!--more-->
 
 該工具能夠建立以下幾項功能：
