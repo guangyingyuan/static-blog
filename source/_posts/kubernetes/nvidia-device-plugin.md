@@ -81,6 +81,15 @@ nvidia-device-plugin-daemonset-ddnhd       1/1       Running   0          2m    
 ```
 
 ## 測試 GPU
+首先執行以下指令確認是否可被分配資源：
+```sh
+$ kubectl get nodes "-o=custom-columns=NAME:.metadata.name,GPU:.status.allocatable.nvidia\.com/gpu"
+NAME               GPU
+master1           <none>
+gpu-node1          1
+gpu-node2          1
+```
+
 當 NVIDIA Device Plugins 部署完成後，即可建立一個簡單範例來進行測試：
 ```sh
 $ cat <<EOF | kubectl create -f -

@@ -15,7 +15,7 @@ tags:
 
 安裝前需要確認滿足以下幾點：
 * GNU/Linux x86_64 with kernel version > 3.10
-* Docker CE or EE == v17.12
+* Docker CE or EE == v18.03.1
 * NVIDIA GPU with Architecture > Fermi (2.1)
 * NVIDIA drivers ~= 361.93 (untested on older versions)
 
@@ -23,7 +23,7 @@ tags:
 ```sh
 $ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 $ echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial edge" | sudo tee /etc/apt/sources.list.d/docker.list
-$ sudo apt-get update && sudo apt-get install -y docker-ce=17.12.1~ce-0~ubuntu
+$ sudo apt-get update && sudo apt-get install -y docker-ce=18.03.1~ce-0~ubuntu
 ```
 
 接著透過 APT 安裝 NVIDIA Driver(v390.30) 與 CUDA 9.1：
@@ -63,7 +63,7 @@ Tue Mar 13 06:10:39 2018
 ```sh
 $ curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
 $ curl -s -L https://nvidia.github.io/nvidia-docker/ubuntu16.04/amd64/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
-$ sudo apt-get update && sudo apt-get install -y nvidia-docker2
+$ sudo apt-get update && sudo apt-get install -y nvidia-docker2=2.0.3+docker18.03.1-1
 $ sudo pkill -SIGHUP dockerd
 ```
 

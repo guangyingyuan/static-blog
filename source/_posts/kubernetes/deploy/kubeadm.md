@@ -69,10 +69,13 @@ EOF
 ```
 
 * CentOS 7 要額外確認 SELinux 或 Firewall 關閉。
-* Kubernetes v1.8 要求關閉系統 Swap，若不關閉則需要修改 kubelet 設定參數，這邊可以利用以下指令關閉：
+* Kubernetes v1.8+ 要求關閉系統 Swap，若不關閉則需要修改 kubelet 設定參數，這邊可以利用以下指令關閉：
 
 ```sh
 $ swapoff -a && sysctl -w vm.swappiness=0
+
+# 不同機器有差異
+$ sed '/swap.img/d' -i  /etc/fstab
 ```
 > 記得`/etc/fstab`也要註解掉`SWAP`掛載。
 

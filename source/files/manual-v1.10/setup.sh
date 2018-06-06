@@ -57,3 +57,4 @@ net.bridge.bridge-nf-call-iptables = 1
 EOF
 sysctl -p /etc/sysctl.d/k8s.conf
 swapoff -a && sysctl -w vm.swappiness=0
+sed '/vagrant--vg-swap_1/d' -i  /etc/fstab
