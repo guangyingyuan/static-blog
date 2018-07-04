@@ -10,6 +10,7 @@ tags:
 - Monitoring
 - CNCF
 - Kubernetes
+- Prometheus
 ---
 [Prometheus Operator](https://github.com/coreos/prometheus-operator) 是 CoreOS 開源的一套用於管理在 Kubernetes 上的 Prometheus 控制器，目標當然就是簡化部署與維護 Prometheus 上的事情，其架構如下所示：
 

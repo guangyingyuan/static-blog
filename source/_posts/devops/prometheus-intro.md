@@ -9,7 +9,7 @@ tags:
 - DevOps
 - Monitoring
 - CNCF
-- Kubernetes
+- Prometheus
 ---
 Prometheus 是一套開放式原始碼的`系統監控警報框架`與`TSDB(Time Series Database)`，該專案是由 SoundCloud 的工程師(前 Google 工程師)建立，Prometheus 啟發於 Google 的 Borgmon 監控系統。目前 Prometheus 已貢獻到 CNCF 成為孵化專案(2016-)，其受歡迎程度僅次於 Kubernetes。
 
