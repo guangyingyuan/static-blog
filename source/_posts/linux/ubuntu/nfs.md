@@ -1,6 +1,6 @@
 ---
 title: NFS 簡單安裝與使用
-layout: default
+catalog: true
 comments: true
 date: 2015-11-24 12:23:01
 categories:

@@ -1,7 +1,7 @@
 ---
 title: 品嚐 Moby LinuxKit 的 Linux 作業系統
 date: 2017-4-23 17:08:54
-layout: page
+catalog: true
 categories:
 - Container
 tags:

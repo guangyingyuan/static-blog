@@ -1,6 +1,6 @@
 ---
 title: 利用 Keepalived 提供 VIP
-layout: default
+catalog: true
 comments: true
 date: 2016-03-29 12:23:01
 categories:

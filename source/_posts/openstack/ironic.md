@@ -1,6 +1,6 @@
 ---
 title: 利用 OpenStack Ironic 提供裸機部署服務
-layout: default
+catalog: true
 date: 2017-8-16 16:23:01
 categories:
 - OpenStack

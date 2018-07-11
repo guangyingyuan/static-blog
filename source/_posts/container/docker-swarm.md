@@ -1,7 +1,7 @@
 ---
 title: 簡單部署 Docker Swarm 測試叢集
 date: 2016-11-16 17:08:54
-layout: page
+catalog: true
 categories:
 - Container
 tags:

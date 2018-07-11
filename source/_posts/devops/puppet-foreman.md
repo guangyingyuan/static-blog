@@ -1,6 +1,6 @@
 ---
 title: Foreman 管理 Puppet
-layout: default
+catalog: true
 comments: true
 date: 2016-02-14 12:23:01
 categories:

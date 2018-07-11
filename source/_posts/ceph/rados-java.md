@@ -1,5 +1,5 @@
 ---
-layout: default
+catalog: true
 title: 利用 rados-java 存取 Ceph
 date: 2016-5-15 17:08:54
 categories:

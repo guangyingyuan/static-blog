@@ -1,6 +1,6 @@
 ---
 title: Ubuntu 16.04 安裝 TensorFlow GPU GTX 1060
-layout: default
+catalog: true
 date: 2017-03-12 16:23:01
 categories:
 - TensorFlow

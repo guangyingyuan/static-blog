@@ -1,7 +1,7 @@
 ---
 title: Kuberentes 是什麼？
 date: 2015-11-10 17:08:54
-layout: page
+catalog: true
 categories:
 - Kubernetes
 tags:

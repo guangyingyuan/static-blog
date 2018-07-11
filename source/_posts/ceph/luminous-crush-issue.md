@@ -1,5 +1,5 @@
 ---
-layout: default
+catalog: true
 title: Ceph Luminous CRUSH map 400000000000000 問題
 date: 2018-2-11 17:08:54
 categories:

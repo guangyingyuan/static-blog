@@ -1,7 +1,7 @@
 ---
 title: 利用 RBAC + SA 進行 Kubectl 權限控管
 date: 2018-1-8 17:08:54
-layout: page
+catalog: true
 categories:
 - Kubernetes
 tags:

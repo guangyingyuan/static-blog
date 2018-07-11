@@ -1,6 +1,6 @@
 ---
 title: Puppet 介紹與使用
-layout: default
+catalog: true
 comments: true
 date: 2016-02-13 12:23:01
 categories:

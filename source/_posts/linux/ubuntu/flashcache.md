@@ -1,6 +1,6 @@
 ---
 title: 用 Flashcache 建立高容量與高效能儲存
-layout: default
+catalog: true
 date: 2016-05-27 16:23:01
 categories:
 - Linux

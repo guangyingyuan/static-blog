@@ -1,7 +1,7 @@
 ---
 title: Kubernetes exec API 串接分析
 date: 2018-6-25 17:08:54
-layout: page
+catalog: true
 categories:
 - Kubernetes
 tags:

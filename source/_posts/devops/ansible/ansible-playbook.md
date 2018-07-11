@@ -1,6 +1,6 @@
 ---
 title: Ansible Playbooks
-layout: default
+catalog: true
 comments: true
 date: 2016-02-18 12:23:01
 categories:

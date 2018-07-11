@@ -1,6 +1,6 @@
 ---
 title: OpenStack 貢獻基本流程
-layout: default
+catalog: true
 date: 2016-04-01 16:23:01
 categories:
 - OpenStack

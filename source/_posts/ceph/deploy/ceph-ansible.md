@@ -1,5 +1,5 @@
 ---
-layout: default
+catalog: true
 title: Ceph Ansible 自動化建立 Ceph 叢集
 date: 2016-2-15 17:08:54
 categories:

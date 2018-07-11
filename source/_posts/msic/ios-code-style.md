@@ -1,6 +1,6 @@
 ---
 title: NYTime Objective-C 程式規範
-layout: default
+catalog: true
 comments: true
 date: 2013-11-03 12:23:01
 categories:

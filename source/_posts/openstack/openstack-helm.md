@@ -1,6 +1,6 @@
 ---
 title: Deploy OpenStack on Kubernetes using OpenStack-helm
-layout: default
+catalog: true
 date: 2017-11-29 16:23:01
 categories:
 - OpenStack

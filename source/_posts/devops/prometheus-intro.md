@@ -1,6 +1,6 @@
 ---
 title: Prometheus 介紹與基礎入門
-layout: default
+catalog: true
 comments: true
 date: 2018-06-10 12:23:01
 categories:

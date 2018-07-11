@@ -1,7 +1,7 @@
 ---
 title: Akka 基本介紹
 date: 2016-4-06 17:08:54
-layout: page
+catalog: true
 categories:
 - Spark
 tags:

@@ -1,7 +1,7 @@
 ---
 title: hyperkube 建立單機 Kubernetes(Unrecommended)
 date: 2016-01-13 17:08:54
-layout: page
+catalog: true
 categories:
 - Kubernetes
 tags:

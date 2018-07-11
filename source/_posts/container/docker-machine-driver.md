@@ -1,7 +1,7 @@
 ---
 title: Docker Machine Driver 使用
 date: 2015-12-06 17:08:54
-layout: page
+catalog: true
 categories:
 - Container
 tags:

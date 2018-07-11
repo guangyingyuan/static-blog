@@ -1,7 +1,7 @@
 ---
 title: Kuberentes Helm 介紹
 date: 2017-03-25 17:08:54
-layout: page
+catalog: true
 categories:
 - Kubernetes
 tags:

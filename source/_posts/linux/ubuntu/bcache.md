@@ -1,6 +1,6 @@
 ---
 title: 用 Bcache 來加速硬碟效能
-layout: default
+catalog: true
 date: 2016-07-05 16:23:01
 categories:
 - Linux

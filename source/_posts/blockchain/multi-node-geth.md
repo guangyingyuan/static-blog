@@ -1,7 +1,7 @@
 ---
 title: 建立 Go Ethereum 私有網路鏈
 date: 2017-05-25 17:08:54
-layout: page
+catalog: true
 categories:
 - Blockchain
 tags:

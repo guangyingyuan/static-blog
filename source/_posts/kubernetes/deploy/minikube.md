@@ -1,7 +1,7 @@
 ---
 title: Minikube 部署 Local 測試環境
 date: 2016-10-23 17:08:54
-layout: page
+catalog: true
 categories:
 - Kubernetes
 tags:

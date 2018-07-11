@@ -1,7 +1,7 @@
 ---
 title: 利用 LinuxKit 建立 Kubernetes 叢集
 date: 2017-07-22
-layout: page
+catalog: true
 categories:
 - Kubernetes
 tags:

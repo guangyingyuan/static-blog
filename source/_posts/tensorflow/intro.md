@@ -1,6 +1,6 @@
 ---
 title: TensorFlow 基本使用與分散式概念
-layout: default
+catalog: true
 date: 2017-04-10 16:23:01
 categories:
 - TensorFlow

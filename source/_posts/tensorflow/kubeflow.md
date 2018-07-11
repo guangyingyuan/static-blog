@@ -1,7 +1,7 @@
 ---
 title: 利用 Kubeflow 來管理 TensorFlow 應用程式
 date: 2018-3-15 17:08:54
-layout: page
+catalog: true
 categories:
 - TensorFlow
 tags:

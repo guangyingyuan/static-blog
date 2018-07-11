@@ -1,7 +1,7 @@
 ---
 title: Alluxio 分散式虛擬儲存系統
 date: 2016-5-06 17:08:54
-layout: page
+catalog: true
 categories:
 - Spark
 tags:

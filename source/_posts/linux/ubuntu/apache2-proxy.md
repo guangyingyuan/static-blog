@@ -1,7 +1,7 @@
 ---
 title: 簡單設定 Apache2 Proxy 與 VirtualHost
 date: 2015-11-04 17:08:54
-layout: page
+catalog: true
 categories:
 - Linux
 tags:

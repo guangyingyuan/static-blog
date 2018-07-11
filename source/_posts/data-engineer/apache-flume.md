@@ -1,7 +1,7 @@
 ---
 title: Apache Flume 快速上手
 date: 2016-4-04 17:08:54
-layout: page
+catalog: true
 categories:
 - Spark
 tags:

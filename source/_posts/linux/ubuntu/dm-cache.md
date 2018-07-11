@@ -1,6 +1,6 @@
 ---
 title: DM-cache 建立混和區塊裝置
-layout: default
+catalog: true
 date: 2016-04-21 16:23:01
 categories:
 - Linux

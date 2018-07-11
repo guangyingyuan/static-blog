@@ -1,7 +1,7 @@
 ---
 title: 只要用 kubeadm 小朋友都能部署 Kubernetes
 date: 2016-9-29 17:08:54
-layout: page
+catalog: true
 categories:
 - Kubernetes
 tags:

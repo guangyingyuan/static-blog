@@ -1,6 +1,6 @@
 ---
 title: SaltStack 介紹
-layout: default
+catalog: true
 comments: true
 date: 2016-02-12 12:23:01
 categories:

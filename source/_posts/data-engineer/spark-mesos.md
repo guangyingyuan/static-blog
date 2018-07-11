@@ -1,7 +1,7 @@
 ---
 title: Spark on Mesos 多節點部署
 date: 2015-10-12 17:08:54
-layout: page
+catalog: true
 categories:
 - Spark
 tags:

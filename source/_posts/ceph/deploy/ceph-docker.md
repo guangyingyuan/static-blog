@@ -1,5 +1,5 @@
 ---
-layout: default
+catalog: true
 title: Docker 快速部署 Ceph 測試叢集
 date: 2016-2-11 17:08:54
 categories:

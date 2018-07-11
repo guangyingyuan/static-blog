@@ -1,6 +1,6 @@
 ---
 title: DRBD 進行跨節點的區塊儲存備份
-layout: default
+catalog: true
 date: 2016-04-01 16:23:01
 categories:
 - Linux

@@ -1,6 +1,6 @@
 ---
 title: 多租戶 Kubernetes 部署方案 Stackube
-layout: default
+catalog: true
 date: 2017-12-20 16:23:01
 categories:
 - OpenStack

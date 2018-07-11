@@ -1,7 +1,7 @@
 ---
 title: 監控 Go Ethereum 的區塊鏈狀況
 date: 2017-05-26 17:08:54
-layout: page
+catalog: true
 categories:
 - Blockchain
 tags:

@@ -1,7 +1,7 @@
 ---
 title: 智能合約(Smart contracts)
 date: 2017-05-28 17:08:54
-layout: page
+catalog: true
 categories:
 - Blockchain
 tags:

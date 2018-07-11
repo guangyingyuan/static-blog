@@ -1,7 +1,7 @@
 ---
 title: 使用 kubefed 建立 Kubernetes Federation(On-premises)
 date: 2018-3-21 17:08:54
-layout: page
+catalog: true
 categories:
 - Kubernetes
 tags:

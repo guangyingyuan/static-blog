@@ -1,7 +1,7 @@
 ---
 title: Spark Standalone 模擬分散式運算
 date: 2015-9-18 17:08:54
-layout: page
+catalog: true
 categories:
 - Spark
 tags:

@@ -1,7 +1,7 @@
 ---
 title: Kubernetes v1.10.x HA 全手動苦工安裝教學(TL;DR)
 date: 2018-04-05 17:08:54
-layout: page
+catalog: true
 categories:
 - Kubernetes
 tags:
@@ -365,7 +365,7 @@ $ kubectl config use-context system:kube-scheduler@kubernetes \
 ```
 
 #### Master Kubelet Certificate
-接著在所有`k8s-m1`節點下載`kubelet-csr.json`檔案，並產生憑證：
+接著在`k8s-m1`節點下載`kubelet-csr.json`檔案，並產生所有`master`節點的憑證：
 ```sh
 $ wget "${PKI_URL}/kubelet-csr.json"
 $ for NODE in k8s-m1 k8s-m2 k8s-m3; do
@@ -402,11 +402,6 @@ $ for NODE in k8s-m2 k8s-m3; do
 $ for NODE in k8s-m1 k8s-m2 k8s-m3; do
     echo "--- $NODE ---"
     ssh ${NODE} "cd /etc/kubernetes/pki && \
-      kubectl config set-cluster kubernetes \
-        --certificate-authority=ca.pem \
-        --embed-certs=true \
-        --server=${KUBE_APISERVER} \
-        --kubeconfig=../kubelet.conf && \
       kubectl config set-cluster kubernetes \
         --certificate-authority=ca.pem \
         --embed-certs=true \
@@ -747,7 +742,7 @@ k8s-n3    NotReady   node      29s       v1.10.0
 當完成上面所有步驟後，接著需要部署一些插件，其中如`Kubernetes DNS`與`Kubernetes Proxy`等這種 Addons 是非常重要的。
 
 ### Kubernetes Proxy
-[Kube-proxy](https://github.com/kubernetes/kubernetes/tree/master/cluster/addons/kube-proxy) 是實現 Service 的關鍵插件，kube-proxy 會在每台節點上執行，然後監聽 API Server 的 Service 與 Endpoint 資源物件的改變，然後來依據變化執行 iptables 來實現網路的轉發。這邊我們會需要建議一個 DaemonSet 來執行，並且建立一些需要的 Certificates。
+[Kube-proxy](https://github.com/kubernetes/kubernetes/tree/master/cluster/addons/kube-proxy) 是實現 Service 的關鍵插件，kube-proxy 會在每台節點上執行，然後監聽 API Server 的 Service 與 Endpoint 資源物件的改變，然後來依據變化執行 iptables 來實現網路的轉發。
 
 在`k8s-m1`下載`kube-proxy.yml`來建立 Kubernetes Proxy Addon：
 ```sh
@@ -864,7 +859,6 @@ NAME                   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
 kubernetes-dashboard   ClusterIP   10.111.22.111   <none>        443/TCP   12s
 ```
 
-
 這邊會額外建立一個名稱為`open-api` Cluster Role Binding，這僅作為方便測試時使用，在一般情況下不要開啟，不然就會直接被存取所有 API:
 ```sh
 $ cat <<EOF | kubectl create -f -
@@ -924,7 +918,7 @@ svc/monitoring-influxdb    ClusterIP   10.109.245.142   <none>        8083/TCP,8
 ![](/images/kube/monitoring-grafana.png)
 
 ### Ingress Controller
-[Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/)是利用 Nginx 或 HAProxy 等負載平衡器來曝露叢集內服務的元件，Ingress 主要透過設定 Ingress 規格來定義 Domain Name 映射 Kubernetes 內部 Service，這種方式可以避免掉使用過多的 NodePort 問題。
+[Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/)是利用 Nginx 或 HAProxy 等負載平衡器來曝露叢集內服務的元件，Ingress 主要透過設定 Ingress 規則來定義 Domain Name 映射 Kubernetes 內部 Service，這種方式可以避免掉使用過多的 NodePort 問題。
 
 在`k8s-m1`透過 kubectl 來建立 Ingress Controller 即可：
 ```sh

@@ -1,6 +1,6 @@
 ---
 title: Ansible Dynamic Inventory
-layout: default
+catalog: true
 comments: true
 date: 2016-02-17 14:23:01
 categories:

@@ -1,5 +1,5 @@
 ---
-layout: default
+catalog: true
 title: Ceph 使用 SPDK 加速 NVMe SSD
 date: 2016-12-03 17:08:54
 categories:

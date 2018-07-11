@@ -1,7 +1,7 @@
 ---
 title: 利用 Browser Solidity 部署智能合約
 date: 2017-05-27 17:08:54
-layout: page
+catalog: true
 categories:
 - Blockchain
 tags:

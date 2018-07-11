@@ -1,6 +1,6 @@
 ---
 title: 基本物件導向概念
-layout: default
+catalog: true
 comments: true
 date: 2014-06-03 12:23:01
 categories:

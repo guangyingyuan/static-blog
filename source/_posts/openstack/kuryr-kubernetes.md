@@ -1,6 +1,6 @@
 ---
 title: 利用 Kuryr 整合 OpenStack 與 Kubernetes 網路
-layout: default
+catalog: true
 date: 2017-08-29 16:23:01
 categories:
 - OpenStack

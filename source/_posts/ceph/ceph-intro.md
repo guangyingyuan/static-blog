@@ -1,5 +1,5 @@
 ---
-layout: default
+catalog: true
 title: Ceph 分散式儲存系統介紹
 date: 2015-11-19 17:08:54
 categories:

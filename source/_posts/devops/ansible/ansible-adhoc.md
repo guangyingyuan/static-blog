@@ -1,6 +1,6 @@
 ---
 title: Ansible Ad-Hoc 指令與 Modules
-layout: default
+catalog: true
 comments: true
 date: 2016-02-17 12:23:01
 categories:

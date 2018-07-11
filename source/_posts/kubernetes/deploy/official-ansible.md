@@ -1,7 +1,7 @@
 ---
 title: 透過官方 Ansible 部署 Kubernetes(Unrecommended)
 date: 2016-2-24 17:08:54
-layout: page
+catalog: true
 categories:
 - Kubernetes
 tags:

@@ -1,7 +1,7 @@
 ---
 title: Kubespray 部署實體機 Kubernetes v1.6 叢集
 date: 2017-3-17 17:08:54
-layout: page
+catalog: true
 categories:
 - Kubernetes
 tags:

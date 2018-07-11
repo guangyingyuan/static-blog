@@ -1,7 +1,7 @@
 ---
 title: Go 語言環境安裝
 date: 2016-8-19 17:08:54
-layout: default
+catalog: true
 categories:
 - Golang
 tags:

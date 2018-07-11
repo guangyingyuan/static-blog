@@ -1,5 +1,5 @@
 ---
-layout: default
+catalog: true
 title: Ceph FS 基本操作
 date: 2015-11-21 17:08:54
 categories:

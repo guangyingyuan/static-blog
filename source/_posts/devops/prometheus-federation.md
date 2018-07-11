@@ -1,6 +1,6 @@
 ---
 title: 了解 Prometheus Federation 功能
-layout: default
+catalog: true
 comments: true
 date: 2018-06-29 12:23:01
 categories:
@@ -39,15 +39,15 @@ Prometheus Federation 允許一台 Prometheus Server 從另一台 Prometheus Ser
 | Name              | Role      | Port |
 |-------------------|-----------|------|
 | Prometheus-global | Master    | 9090 |
-| Prometheus-node   | Collector | 9091 | 
-| Prometheus-docker | Collector | 9092 | 
+| Prometheus-node   | Collector | 9091 |
+| Prometheus-docker | Collector | 9092 |
 
 ### 事前準備
 開始安裝前需要確保以下條件已達成：
 
 * 安裝與設定 Dockerd 提供 Metrics：
 
-```shell=
+```sh
 $ curl -fsSL "https://get.docker.com/" | sh
 
 # 編輯 /etc/docker/daemon.json 加入下面內容
@@ -64,19 +64,19 @@ $ curl 127.0.0.1:9323/metrics
 
 * 透過 Docker 部署 Node Exporter：
 
-```shell=
+```sh
 $ docker run -d \
   --net="host" \
   --pid="host" \
   --name node-exporter \
   quay.io/prometheus/node-exporter
-  
+
 $ curl 127.0.0.1:9100/metrics
 ```
 
 * 在模擬節點下載 Prometheus 伺服器執行檔：
 
-```shell=
+```sh
 $ wget https://github.com/prometheus/prometheus/releases/download/v2.3.0/prometheus-2.3.0.linux-amd64.tar.gz
 $ tar xvfz prometheus-*.tar.gz
 $ mv prometheus-2.3.0.linux-amd64 prometheus-2.3.0
@@ -140,7 +140,7 @@ scrape_configs:
 > * 設定`honor_labels`是避免資料衝突。
 
 完成後，開啟三個 Terminal 來啟動 Prometheus Server：
-```shell=
+```sh
 # 啟動收集 Docker metrics 的 Prometheus server
 $ ./prometheus --config.file=prometheus-docker.yml \
      --storage.tsdb.path=./data-docker \
@@ -162,7 +162,7 @@ $ ./prometheus --config.file=prometheus-global.yml \
 
 ### 部署 Grafana
 在測試節點透過 Docker 部署 Grafana 來提供資料視覺化用：
-```shell=
+```sh
 $ docker run \
   -d \
   -p 3000:3000 \

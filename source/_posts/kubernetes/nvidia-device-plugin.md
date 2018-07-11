@@ -1,7 +1,7 @@
 ---
 title: Kubernetes NVIDIA Device Plugins
 date: 2018-3-01 17:08:54
-layout: page
+catalog: true
 categories:
 - Kubernetes
 tags:

@@ -1,7 +1,7 @@
 ---
 title: Vagrant CoreOS 部署 Kubernetes 測試叢集(Unrecommended)
 date: 2016-2-23 17:08:54
-layout: page
+catalog: true
 categories:
 - Kubernetes
 tags:

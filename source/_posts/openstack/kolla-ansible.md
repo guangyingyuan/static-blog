@@ -1,6 +1,6 @@
 ---
 title:  OpenStack Kolla 初體驗
-layout: default
+catalog: true
 date: 2016-07-21 16:23:01
 categories:
 - OpenStack

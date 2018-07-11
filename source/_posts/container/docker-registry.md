@@ -1,7 +1,7 @@
 ---
 title: 自己建立 Docker Registry
 date: 2016-1-02 17:08:54
-layout: page
+catalog: true
 categories:
 - Container
 tags:

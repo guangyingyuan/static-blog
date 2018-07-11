@@ -1,7 +1,7 @@
 ---
 title: 簡單部署 DC/OS 於 CentOS 上
 date: 2016-08-17 17:08:54
-layout: page
+catalog: true
 categories:
 - Spark
 tags:

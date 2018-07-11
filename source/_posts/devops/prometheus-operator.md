@@ -1,6 +1,6 @@
 ---
 title: Prometheus Operator 介紹與安裝
-layout: default
+catalog: true
 comments: true
 date: 2018-06-23 12:23:01
 categories:
@@ -101,7 +101,7 @@ spec:
 
 * 在 Kubernetes 叢集部署 Helm 與 Tiller server。
 
-```shell=
+```sh
 $ wget -qO- https://kubernetes-helm.storage.googleapis.com/helm-v2.8.1-linux-amd64.tar.gz | tar -zx
 $ sudo mv linux-amd64/helm /usr/local/bin/
 $ kubectl -n kube-system create sa tiller
@@ -111,7 +111,7 @@ $ helm init --service-account tiller
 
 * 在`k8s-m1`透過 kubectl 來建立 Ingress Controller 即可：
 
-```shell=
+```sh
 $ kubectl create ns ingress-nginx
 $ wget https://kairen.github.io/files/manual-v1.10/addon/ingress-controller.yml.conf -O ingress-controller.yml
 $ sed -i ingress-controller.yml 's/192.16.35.10/172.22.132.10/g'
@@ -123,13 +123,13 @@ Prometheus Operator 提供了多種方式部署至 Kubernetes 上，一般會使
 
 #### 手動(腳本)部署
 透過 Git 取得最新版本腳本：
-```shell=
+```sh
 $ git clone https://github.com/camilb/prometheus-kubernetes.git
 $ cd prometheus-kubernetes
 ```
 
 接著執行`deploy`腳本來部署到 Kubernetes：
-```shell=
+```sh
 $ ./deploy
 Check for uncommitted changes
 
@@ -187,7 +187,7 @@ Done
 > 沒有輸入部分請直接按`Enter`。
 
 當確認看到 Done 後就可以查看 `monitoring` namespace：
-```shell=
+```sh
 $ kubectl -n monitoring get po
 NAME                                  READY     STATUS    RESTARTS   AGE
 alertmanager-main-0                   2/2       Running   0          4m
@@ -206,7 +206,7 @@ prometheus-operator-f596c68cf-wrpqc   1/1       Running   0          4m
 ```
 
 查看 Kubernetes CRDs 與 SM：
-```shell=
+```sh
 $ kubectl -n monitoring get crd
 NAME                                          AGE
 alertmanagers.monitoring.coreos.com           4m
@@ -228,7 +228,7 @@ prometheus-operator       1m
 ```
 
 接著修改 Service 的 Grafana 的 Type：
-```shell=
+```sh
 $ kubectl -n monitoring edit svc grafana
 # 修改成 NodePort
 ```
@@ -252,7 +252,6 @@ spec:
           servicePort: 3000
 ```
 
-:::info
 這邊也可以建立 Prometheus Ingress 來使用 Web-based console。
 ```yaml=
 apiVersion: extensions/v1beta1
@@ -272,7 +271,6 @@ spec:
           serviceName: prometheus-k8s
           servicePort: 9090
 ```
-:::
 
 最後就可以存取 Grafana 來查看 Metric 視覺化資訊了。
 
@@ -280,12 +278,12 @@ spec:
 
 #### Helm
 首先透過 Helm 加入 coreos 的 repo：
-```shell=
+```sh
 $ helm repo add coreos https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
 ```
 
 然後透過 kubectl 建立一個 Namespace 來管理 Prometheus，並用 Helm 部署 Prometheus Operator：
-```shell=
+```sh
 $ kubectl create namespace monitoring
 $ helm install coreos/prometheus-operator \
     --name prometheus-operator \
@@ -294,7 +292,7 @@ $ helm install coreos/prometheus-operator \
 ```
 
 接著部署 Prometheus、AlertManager 與 Grafana：
-```shell=
+```sh
 # Prometheus
 $ helm install coreos/prometheus --name prometheus \
     --set serviceMonitorsSelector.app=prometheus \
@@ -309,12 +307,12 @@ $ helm install coreos/grafana --name grafana --namespace=monitoring
 ```
 
 部署 kube-prometheus 來提供 Kubernetes 監測的 Exporter 與 ServiceMonitor：
-```shell=
+```sh
 $ helm install coreos/kube-prometheus --name kube-prometheus --namespace=monitoring
 ```
 
 完成後檢查安裝結果：
-```shell=
+```sh
 $ kubectl -n monitoring get po,svc
 NAME                                                       READY     STATUS    RESTARTS   AGE
 pod/alertmanager-alertmanager-0                            2/2       Running   0          1m

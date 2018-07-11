@@ -1,7 +1,7 @@
 ---
 title: Spark on Hadoop YARN 單機安裝
 date: 2015-9-19 17:08:54
-layout: page
+catalog: true
 categories:
 - Spark
 tags:

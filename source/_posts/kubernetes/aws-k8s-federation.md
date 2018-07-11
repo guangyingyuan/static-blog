@@ -1,7 +1,7 @@
 ---
 title: 在 AWS 上建立跨地區的 Kubernetes Federation 叢集
 date: 2018-4-21 17:08:54
-layout: page
+catalog: true
 categories:
 - Kubernetes
 tags:

@@ -1,6 +1,6 @@
 ---
 title: TensorFlow on Docker
-layout: default
+catalog: true
 date: 2016-010-01 16:23:01
 categories:
 - TensorFlow

@@ -1,7 +1,7 @@
 ---
 title: 安裝 NVIDIA Docker 2 來讓容器使用 GPU
 date: 2018-02-17 17:08:54
-layout: page
+catalog: true
 categories:
 - Container
 tags:

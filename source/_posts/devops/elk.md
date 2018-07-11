@@ -1,6 +1,6 @@
 ---
 title: 用 ELK 做監控系統
-layout: default
+catalog: true
 comments: true
 date: 2016-01-03 12:23:01
 categories:

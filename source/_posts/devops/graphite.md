@@ -1,6 +1,6 @@
 ---
 title: 利用 Graphite 監控系統資料
-layout: default
+catalog: true
 comments: true
 date: 2016-02-11 12:23:01
 categories:

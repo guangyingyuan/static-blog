@@ -1,5 +1,5 @@
 ---
-layout: default
+catalog: true
 title: 使用 ceph-deploy 工具部署 Ceph 叢集
 date: 2015-11-20 17:08:54
 categories:

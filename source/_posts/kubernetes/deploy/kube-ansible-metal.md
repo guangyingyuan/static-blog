@@ -1,7 +1,7 @@
 ---
 title: kube-ansible 快速部署實體機 HA 叢集
 date: 2017-02-19 17:08:54
-layout: page
+catalog: true
 categories:
 - Kubernetes
 tags:

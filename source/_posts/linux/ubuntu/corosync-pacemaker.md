@@ -1,6 +1,6 @@
 ---
 title: Pacemaker + Corosync 做服務 HA
-layout: default
+catalog: true
 date: 2016-5-26 16:23:01
 categories:
 - Linux

@@ -1,6 +1,6 @@
 ---
 title: 使用 HAProxy 進行負載平衡
-layout: default
+catalog: true
 date: 2016-03-28 16:23:01
 categories:
 - Linux

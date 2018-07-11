@@ -1,6 +1,6 @@
 ---
 title: Ubuntu PXE 安裝與設定
-layout: default
+catalog: true
 comments: true
 date: 2015-10-11 12:23:01
 categories:

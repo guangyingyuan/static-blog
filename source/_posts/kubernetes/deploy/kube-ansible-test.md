@@ -1,7 +1,7 @@
 ---
 title: kube-ansible 快速部署 HA 測試環境
 date: 2017-2-17 17:08:54
-layout: page
+catalog: true
 categories:
 - Kubernetes
 tags:

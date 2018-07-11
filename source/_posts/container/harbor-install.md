@@ -1,7 +1,7 @@
 ---
 title: Enterprise 的 Docker registry 平台 Harbor
 date: 2017-5-10 17:08:54
-layout: page
+catalog: true
 categories:
 - Container
 tags:

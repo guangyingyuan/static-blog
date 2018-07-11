@@ -1,7 +1,7 @@
 ---
 title: Building Spark Source Code
 date: 2016-6-24 17:08:54
-layout: page
+catalog: true
 categories:
 - Spark
 tags:

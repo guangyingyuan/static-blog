@@ -1,7 +1,7 @@
 ---
 title: 使用 Kops 部署 Kubernetes 至公有雲(AWS)
 date: 2018-04-18 17:08:54
-layout: page
+catalog: true
 categories:
 - Kubernetes
 tags:

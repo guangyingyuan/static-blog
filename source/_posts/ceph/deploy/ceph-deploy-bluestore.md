@@ -1,5 +1,5 @@
 ---
-layout: default
+catalog: true
 title: Using bluestore in Kraken
 date: 2016-11-28 17:08:54
 categories:
