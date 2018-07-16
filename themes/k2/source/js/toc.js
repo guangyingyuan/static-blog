@@ -8,11 +8,10 @@ if (toc != null) {
 		 var event = e || window.event,
 		     target = event.target || event.srcElement;
 		 var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-		 if (scrollTop >  tocPosition -60) {
+		 if (scrollTop >  tocPosition -20) {
 		     toc.classList.add("toc-fixed");
 		 } else {
 		     toc.classList.remove("toc-fixed");
 		 }
 	}
 }
-

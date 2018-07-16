@@ -34,7 +34,7 @@ linkedin_username: k2r2bai
 anchorjs: true
 
 # Disqus settings
-# disqus_username: k2r2bai
+disqus_username: k2r2bai
 
 # Sidebar settings
 sidebar: true
@@ -80,12 +80,12 @@ post_asset_folder: true
 relative_link: false
 future: true
 highlight:
-  enable: false
-  line_number: false
+  enable: true
+  line_number: true
   auto_detect: false
   tab_replace: false
 
-highlightjs: true
+highlightjs: false
 
 # Category & Tag
 default_category: uncategorized

@@ -97,6 +97,7 @@ EOF
 
 $ sysctl -p /etc/sysctl.d/k8s.conf
 ```
+> 關於`bridge-nf-call-iptables`的啟用取決於是否將容器連接到`Linux bridge`或使用其他一些機制(如 SDN vSwitch)。
 
 * Kubernetes v1.8+ 要求關閉系統 Swap，請在`所有節點`利用以下指令關閉：
 
