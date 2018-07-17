@@ -2,6 +2,7 @@
 title: Kubernetes v1.10.x HA 全手動苦工安裝教學(TL;DR)
 date: 2018-04-05 17:08:54
 catalog: true
+header-img: /images/kube/bg.png
 categories:
 - Kubernetes
 tags:
@@ -36,7 +37,7 @@ tags:
 
 另外由所有 master 節點提供一組 VIP `192.16.35.10`。
 
-> * 這邊`m`為主要控制節點，`n`為應用程式工作節點。
+> * 這邊`m`為 K8s Master 節點，`n`為 K8s Node 節點。
 > * 所有操作全部用`root`使用者進行(方便用)，以 SRE 來說不推薦。
 > * 可以下載 [Vagrantfile](https://kairen.github.io/files/manual-v1.10/Vagrantfile) 來建立 Virtualbox 虛擬機叢集。不過需要注意機器資源是否足夠。
 

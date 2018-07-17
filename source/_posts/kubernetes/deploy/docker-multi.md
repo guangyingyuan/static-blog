@@ -1,5 +1,5 @@
 ---
-title: hyperkube 建立多節點 Kubernetes(Unrecommended)
+title: hyperkube 建立多節點 Kubernetes
 date: 2016-01-14 17:08:54
 catalog: true
 categories:

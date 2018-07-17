@@ -2,6 +2,7 @@
 title: Kubernetes v1.6.x 全手動苦工安裝教學
 date: 2016-12-16 17:08:54
 catalog: true
+header-img: /images/kube/bg.png
 categories:
 - Kubernetes
 tags:

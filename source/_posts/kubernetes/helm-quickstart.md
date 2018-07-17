@@ -32,7 +32,7 @@ Helm 主要分為兩種元件，Helm Client 與 Tiller Server，兩者功能如�
 * **Tiller Server**：主要負責接收來至 Client 的指令，並透過 kube-apiserver 與 Kubernetes 叢集做溝通，根據 Chart 定義的內容，來產生與管理各種對應 API 物件的 Kubernetes 部署檔案(又稱為 `Release`)。
 
 兩者溝通架構圖如下所示：
-<center>![](/images/kube/helm-peer.png)</center>
+![](/images/kube/helm-peer.png)
 
 ## 事前準備
 安裝前需要確認環境滿足以下幾膽：
@@ -176,17 +176,13 @@ demo-jenkins  192.169.143.140  <pending>    8080:30152/TCP,50000:31806/TCP  1s
 ...
 ```
 > P.S. `install` 指令可以安裝來至`Chart repository`、`壓縮檔 Chart`、`一個 Chart 目錄`與`Chart URL`。
-
 > 這邊 install 可以額外透過以下兩種方式來覆寫參數，在這之前可以先透過`helm inspect values <chart>`來取得使用的變數。
 * **--values**：指定一個 YAML 檔案來覆寫設定。
-
 >```sh
 $ echo -e 'Master:\n  AdminPassword: r00tme' > config.yaml
 $ helm install -f config.yaml stable/jenkins
 ```
-
 > * **--sets**：指定一對 Key/value 指令來覆寫。
-
 > ```sh
 $ helm install --set Master.AdminPassword=r00tme stable/jenkins
 ```

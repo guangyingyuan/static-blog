@@ -1,5 +1,5 @@
 ---
-title: 透過官方 Ansible 部署 Kubernetes(Unrecommended)
+title: 透過官方 Ansible 部署 Kubernetes
 date: 2016-2-24 17:08:54
 catalog: true
 categories:
@@ -11,7 +11,7 @@ tags:
 ---
 Kubernetes 提供了許多雲端平台與作業系統的安裝方式，本篇將使用官方 Ansible Playbook 來部署 Kubernetes 到 CentOS 7 系統上，其中 Kubernetes 將額外部署 Dashboard 與 DNS 等 Add-ons。其他更多平台的部署可以參考 [Creating a Kubernetes Cluster](https://kubernetes.io/docs/getting-started-guides/)。
 
-<center>![](/images/kube/kube-ansible.png)</center>
+![](/images/kube/kube-ansible.png)
 
 本次安裝版本為：
 * Kubernetes v1.5.2

@@ -2,7 +2,7 @@
 title: 利用 Keepalived 提供 VIP
 catalog: true
 comments: true
-date: 2016-03-29 12:23:01
+date: 2015-10-29 12:23:01
 categories:
 - Linux
 tags:
@@ -120,4 +120,9 @@ vrrp_instance VI_1 {
         172.16.1.101 # 提供的 VIP
     }
 }
+```
+
+最後在兩台節點啟動 Keepalived：
+```sh
+$ sudo service keepalived start
 ```

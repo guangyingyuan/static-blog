@@ -166,24 +166,24 @@ rbd image 'bd':
 	stripe unit: 4096 kB
 	stripe count: 1
 ```
-> P.S. 這邊由於 Kernel 版本問題有些特性無法支援，因此在 conf 檔只設定使用 layering, striping。
 
+以下為目前支援的特性：
+
+| 屬性名稱         | 說明                                   | Bit Code |
+|----------------|----------------------------------------|----------|
+| layering       | 支援分層                                | 1         |
+| striping       | 支援串連(v2)                            | 2         |
+| exclusive-lock | 支援互斥鎖定                             | 4         |
+| object-map     | 支援物件映射(相依於 exclusive-lock )      | 8         |
+| fast-diff      | 支援快速計算差異(相依於 object-map )       | 16       |
+| deep-flatten   | 支援快照扁平化操作                        | 32        |
+| journaling     | 支援紀錄 I/O 操作(相依於 exclusive-lock ) | 64        |
+
+> P.S. 這邊由於 Kernel 版本問題有些特性無法支援，因此在 conf 檔只設定使用 layering, striping。
 > P.S. 若預設未修改 feature 設定的話，可以透過以下指令修改:
 ```sh
 $ rbd feature disable rbd/bd <feature_name>
 ```
-
-> 以下為目前支援的特性：
-
-> | 屬性名稱         | 說明                                   | Bit Code |
-  |----------------|----------------------------------------|----------|
-  | layering       | 支援分層                                | 1         |
-  | striping       | 支援串連(v2)                            | 2         |
-  | exclusive-lock | 支援互斥鎖定                             | 4         |
-  | object-map     | 支援物件映射(相依於 exclusive-lock )      | 8         |
-  | fast-diff      | 支援快速計算差異(相依於 object-map )       | 16        |
-  | deep-flatten   | 支援快照扁平化操作                        | 32         |
-  | journaling     | 支援紀錄 I/O 操作(相依於 exclusive-lock ) | 64         |
 
 接著就可以透過 Linux mkfs 指令來格式化 rbd：
 ```sh

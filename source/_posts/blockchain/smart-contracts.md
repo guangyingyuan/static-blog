@@ -16,7 +16,7 @@ tags:
 
 <!--more-->
 
-### Smart Sponsor
+## Smart Sponsor
 本節將說明一智能合約範例，透過建構一個合約來允許以下賬戶持有人進行互動。
 * 一個慈善機構舉行籌款活動，我們稱之為 **thebenefactor**。
 * 一個受贊助的 runner 想為慈善機構募款，我們稱之為 **therunner**。
@@ -109,11 +109,8 @@ contract smartSponsor {
 }
 ```
 > * 一個`Pledge`結構模型的捐贈，儲存著贊助商的帳戶 ID、承若押金，以及一些訊息字串。
-
 > * 這個`pledges`陣列儲存了一個承若方的列表。
-
 > * 合約中的所有成員變數都是公開的，所以`getters`將自動被建立。
-
 > * `throw`被稱為某些函式(functions)，用以防止資料被寫入錯誤的資料到該區塊鏈中。
 
 ## 參考連結

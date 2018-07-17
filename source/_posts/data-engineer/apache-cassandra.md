@@ -25,7 +25,7 @@ Cassandra 擁有幾個特點，也因為這些特點讓許多人選擇使用該�
 
 <!--more-->
 
-<center>![](/images/spark/cassandra_arch.png)</center>
+![](/images/spark/cassandra_arch.png)
 
 若要瞭解更多 Cassandra 可以閱讀 [Cassandra Wiki
 ](http://wiki.apache.org/cassandra/GettingStarted)。

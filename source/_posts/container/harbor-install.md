@@ -98,7 +98,6 @@ $ sudo ./install.sh
 DOCKER_OPTS="--insecure-registry <your harbor.cfg hostname>"
 ```
 > 其他細節，請參考：[Test an insecure registry](https://docs.docker.com/registry/insecure/#deploying-a-plain-http-registry)。
-
 > 若在`Ubuntu 16.04`的作業系統版本，需要修改`/lib/systemd/system/docker.service`檔案，並加入一下內容。另外在 CentOS 7.x 版本則不需要加入`-H fd://`資訊：
 ```sh
 EnvironmentFile=/etc/default/docker

@@ -11,7 +11,7 @@ tags:
 ---
 Ceph FS 底層的部分同樣是由 RADOS(OSDs + Monitors + MDSs) 提供，在上一層同樣與 librados 溝通，最上層則是有不同的 library 將其轉換成標準的 POSIX 檔案系統供使用。
 
-<center>![](/images/ceph/cephfs.png)</center>
+![](/images/ceph/cephfs.png)
 
 <!--more-->
 

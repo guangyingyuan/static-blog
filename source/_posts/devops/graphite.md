@@ -97,9 +97,8 @@ USE_REMOTE_USER_AUTHENTICATION = True
 TIME_ZONE = 'UTC'
 SECRET_KEY = 'some-secret-key'
 ```
-> `TIME_ZONE` 可以查詢 [Wikipedia’s timezone database](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
-
-> `SECRET_KEY`可以使用`openssl rand -hex 10`指令來建立。
+> * `TIME_ZONE` 可以查詢 [Wikipedia’s timezone database](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
+> * `SECRET_KEY`可以使用`openssl rand -hex 10`指令來建立。
 
 初始化資料庫：
 ```sh

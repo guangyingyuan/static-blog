@@ -12,7 +12,7 @@ tags:
 ---
 [Kubeflow](https://github.com/kubeflow/kubeflow) 是 Google 開源的機器學習工具，目標是簡化在 Kubernetes 上運行機器學習的過程，使之更簡單、可攜帶與可擴展。Kubeflow 目標不是在於重建其他服務，而是提供一個最佳開發系統來部署到各種基礎設施架構中，另外由於使用 Kubernetes 來做為基礎，因此只要有 Kubernetes 的地方，都能夠執行 Kubeflow。
 
-<center>![](/images/kubeflow/logo.png)</center>
+![](/images/kubeflow/logo.png)
 
 <!--more-->
 
@@ -168,13 +168,13 @@ EOF
 * CPU：gcr.io/kubeflow-images-staging/tensorflow-notebook-cpu。
 * GPU：gcr.io/kubeflow-images-staging/tensorflow-notebook-gpu。
 
-> 這邊也使用以下 GCP 建構的映像檔做測試使用(GPU 當前為 CUDA 8)：
+這邊也使用以下 GCP 建構的映像檔做測試使用(GPU 當前為 CUDA 8)：
 * gcr.io/kubeflow/tensorflow-notebook-cpu:latest
 * gcr.io/kubeflow/tensorflow-notebook-gpu:latest
 
-> 若 CUDA 版本不同，請自行修改 [GCP Tensorflow Notebook image](https://github.com/GoogleCloudPlatform/container-engine-accelerators/blob/master/example/tensorflow-notebook-image) 或是 [Kubeflow Tensorflow Notebook image ](https://github.com/kubeflow/kubeflow/tree/master/components/k8s-model-server/images)重新建構。
+若 CUDA 版本不同，請自行修改 [GCP Tensorflow Notebook image](https://github.com/GoogleCloudPlatform/container-engine-accelerators/blob/master/example/tensorflow-notebook-image) 或是 [Kubeflow Tensorflow Notebook image ](https://github.com/kubeflow/kubeflow/tree/master/components/k8s-model-server/images)重新建構。
 
-> 如果使用 GPU 請執行以下指令確認是否可被分配資源：
+如果使用 GPU 請執行以下指令確認是否可被分配資源：
 ```sh
 $ kubectl get nodes "-o=custom-columns=NAME:.metadata.name,GPU:.status.allocatable.nvidia\.com/gpu"
 NAME               GPU

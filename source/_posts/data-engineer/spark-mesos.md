@@ -13,7 +13,7 @@ Spark + Mesos 叢集是由多個主節點與工作節點組合而成，它實作
 
 <!--more-->
 
-<center>![](/images/spark/mesos.png)</center>
+![](/images/spark/mesos.png)
 
 在 Mesos 上所執行的應用程式都被稱為`框架（Framework）`，該框架會被 Mesos 以 API 方式處理資源的提供，並將任務提交給 Mesos。其任務執行流程有以下幾個步驟構成：
 
@@ -22,7 +22,7 @@ Spark + Mesos 叢集是由多個主節點與工作節點組合而成，它實作
 * Framework Scheduler 回應任務以及每個任務的資源需求
 * Master 將任務發送到適當的 Slave 執行器（Executor）
 
-<center>![](/images/spark/mesos-framework.jpg)</center>
+![](/images/spark/mesos-framework.jpg)
 
 ## 事前準備
 以下為節點配置：

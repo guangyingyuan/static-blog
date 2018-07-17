@@ -11,7 +11,7 @@ tags:
 ---
 Puppet 是一個開放原始碼專案，基於 Ruby 的系統組態管理工具，採用 Client/Server 的部署架構。是一個為了實現資料中心自動化管理，而被設計的組態管理軟體，它使用跨平台語言規範，管理組態檔案、使用者、軟體套件與系統服務等。用戶端預設每個半小時會與伺服器溝通一次，來確定是否有更新。當然也可以配置主動觸發來強制用戶端更新。這樣可以把平常的系統管理工作程式碼化，透過程式碼化的好處是可以分享、保存與避免重複勞動，也可以快速恢復以及快速的大規模環境部署伺服器。
 
-<center>![puppet-dataflow.png](/images/devops/puppet-dataflow.png)</center>
+![puppet-dataflow.png](/images/devops/puppet-dataflow.png)
 
 **優點：**
 * 成熟的組態管理軟體。
@@ -257,9 +257,8 @@ $ puppet cert sign puppetnode.example.com
 Notice: Signed certificate request for puppetnode.example.com
 Notice: Removing file Puppet::SSL::CertificateRequest puppetnode.example.com at '/var/lib/puppet/ssl/ca/requests/puppetnode.example.com.pem'
 ```
-> 也可以使用`puppet cert sign --all`來一次簽署多個。
-
-> 若想要移除可以使用`puppet cert clean hostname`。
+> * 也可以使用`puppet cert sign --all`來一次簽署多個。
+> * 若想要移除可以使用`puppet cert clean hostname`。
 
 簽署成功後，可以用以下指令查看：
 ```sh

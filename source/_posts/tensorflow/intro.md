@@ -17,12 +17,12 @@ TensorFlow 其實在意思上是要用兩個部分來解釋，Tensor 與 Flow：
 * **Tensor**：是中文翻譯是`張量`，其實就是一個`n`維度的陣列或列表。如一維 Tensor 就是向量，二維 Tensor 就是矩陣等等.
 * **Flow**：是指 Graph 運算過程中的資料流.
 
-<center>![](/images/tf/tf-logo.png)</center>
+![](/images/tf/tf-logo.png)
 
 ## Data Flow Graphs
 資料流圖(Data Flow Graphs)是一種有向圖的節點(Node)與邊(Edge)來描述計算過程。圖中的節點表示數學操作，亦表示資料 I/O 端點; 而邊則表示節點之間的關析，用來傳遞操作之間互相使用的多維陣列(Tensors)，而 Tensor 是在圖中流動的資料表示。一旦節點相連的邊傳來資料流，這時節點就會被分配到運算裝置上異步(節點之間)或同步(節點之內)的執行。
 
-<center>![](https://www.tensorflow.org/images/tensors_flowing.gif)</center>
+![](https://www.tensorflow.org/images/tensors_flowing.gif)
 
 ## TensorFlow 基本使用
 在開始進行 TensorFlow 之前，需要了解幾個觀念：
@@ -376,7 +376,10 @@ def main(_):
 if __name__ == "__main__":
     tf.app.run()
 ```
-> `tf.train.replica_device_setter(ps_tasks=0, ps_device='/job:ps', worker_device='/job:worker', merge_devices=True, cluster=None, ps_ops=None)` 指定方式。
+> 若想指定 Device 可以用以下方式：
+```python
+tf.train.replica_device_setter(ps_tasks=0, ps_device='/job:ps', worker_device='/job:worker', merge_devices=True, cluster=None, ps_ops=None)
+```
 
 撰寫完成後，透過以下指令來進行測試：
 ```shell=

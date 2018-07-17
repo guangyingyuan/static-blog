@@ -1,7 +1,7 @@
 ---
-title: 使用 HAProxy 進行負載平衡
+title: 利用 HAProxy 建立服務負載平衡
 catalog: true
-date: 2016-03-28 16:23:01
+date: 2015-11-28 16:23:01
 categories:
 - Linux
 tags:

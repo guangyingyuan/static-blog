@@ -13,7 +13,7 @@ Ansible 是最近越來越夯多 DevOps 自動化組態管理軟體，從 2013 �
 
 Ansible 架構圖如下所示，使用者透過 Ansible 編配操控公有與私有雲或 CMDB（組態管理資料庫）中的主機，其中 Ansible 編排是由`Inventory(主機與群組規則)`、`API`、`Modules(模組)`與`Plugins(插件)`組合而成。
 
-<center>![](/images/devops/ansible-arch.jpg)</center>
+![](/images/devops/ansible-arch.jpg)
 <!--more-->
 
 [Ansible](https://github.com/ansible/ansible) 與其他管理工具最大差異在於不需要任何 Agent，預設使用 SSH 來做遠端操控與配置，並採用 YAML 格式來描述配置資訊。
@@ -99,7 +99,6 @@ ansible-slave-1
 ansible-slave-2
 ansible-slave-3
 ```
-
 > 若要參考更多資訊，可看 [Invetory File](http://docs.ansible.com/ansible/intro_inventory.html)。
 
 ### 基本功能操作

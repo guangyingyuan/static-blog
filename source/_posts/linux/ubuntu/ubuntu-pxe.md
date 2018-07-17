@@ -16,7 +16,6 @@ tags:
 
 <!--more-->
 
-
 PXE 伺服器必須要提供至少含有 DHCP 以及 TFTP :
 * DHCP 服務必須要能夠提供用戶端的網路參數之外，還得要告知用戶端 TFTP 所在的位置為何才行
 * TFTP 則是提供用戶端 boot loader 及 kernel file 下載點的重要服務

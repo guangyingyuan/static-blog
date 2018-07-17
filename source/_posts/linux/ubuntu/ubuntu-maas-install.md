@@ -2,7 +2,7 @@
 title: Ubuntu Metal as a Service 安裝
 catalog: true
 comments: true
-date: 2015-12-04 12:23:01
+date: 2015-11-04 12:23:01
 categories:
 - Linux
 tags:

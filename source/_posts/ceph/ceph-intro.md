@@ -11,7 +11,7 @@ tags:
 ---
 Ceph 提供了`Ceph 物件儲存`以及`Ceph 區塊儲存`，除此之外 Ceph 也提供了自身的`Ceph 檔案系統`，所有的 Ceph 儲存叢集的部署都開始於 Ceph 各節點，透過網路與 Ceph 的叢集溝通。最簡單的 Ceph 儲存叢集至少要建立一個 Monitor 與兩個 OSD（Object storage daemon），但是當需要運行 Ceph 檔案系統時，就需要再加入Metadata伺服器。
 
-<center>![Ceph](/images/ceph/ceph.jpeg)</center>
+![Ceph](/images/ceph/ceph.jpeg)
 
 <!--more-->
 
@@ -26,7 +26,7 @@ Ceph 提供了`Ceph 物件儲存`以及`Ceph 區塊儲存`，除此之外 Ceph �
 
 Ceph 的設計也實作了`容錯性`來防止`單一節點故障問題（SOPF）`，並假設，大規模（PB 級）中儲存的故障是一種常態，而非異常。最後，它的設計沒有假設特定的工作負荷，而是包含了可變的分散式工作負荷的適應能力，從而提供最佳的效能。它以[POSIX](http://zh.wikipedia.org/wiki/POSIX) 兼容為目標完成這些工作，允許它透明的部署於那些依賴於 POSIX 語義上現有的應用(通過Ceph增強功能)。最後，Ceph 是開源分散式儲存和 Linux 主流核心的一部分。
 
-<center>![完整架構](/images/ceph/stack.png)</center>
+![完整架構](/images/ceph/stack.png)
 
 其中最底層的 RADOS 是由 OSD、Monitor 與 MDS 三種所組成。
 
@@ -39,11 +39,11 @@ Ceph 生態系統可以大致劃分為四部分（圖1）：
 * **物件儲存叢集** (以物件方式儲存資料與 metadata，實現其它主要職責)
 * **叢集監控** (實現監控功能)
 
-<center>![part](/images/ceph/part.png)</center>
+![part](/images/ceph/part.png)
 
 如圖所示，客戶使用 metadata 伺服器，執行 metadata 操作(來確定資料位置)。metadata 伺服器管理資料位置，以及在何處儲存取新資料。值得注意的是，metadata 儲存在一個儲存叢集上（標記為 "metadata I/O"）。實際的檔案 I/O 發生在客戶和物件儲存叢集之間。這樣一來，提供了更高層次的 POSIX 功能(例如，開啟、關閉、重新命名)就由 metadata 伺服器管理，不過 POSIX 功能（例如讀和寫）則直接由物件儲存叢集管理。
 
-<center>![figure2.gif](/images/ceph/figure2.gif)</center>
+![figure2.gif](/images/ceph/figure2.gif)
 
 上面分層視圖說明了，一系列伺服器透過一個客戶端介面存取 Ceph 生態圈系統，這就明白了 metadata 伺服器和物件級儲存之間的關係。分散式儲存系統可以在一些層面中查看，包括一個儲存設備的格式（Extent and B-tree-based Object File System [EBOFS]或者一個備選），還有一個設計用於管理資料複製、故障檢測、復原，以及隨後資料遷移的覆蓋管理層，叫做`Reliable Autonomic Distributed Object Storage（RADOS）`。最後，監視器用於區別元件中的故障，包括隨後的通知。
 
@@ -51,7 +51,7 @@ Ceph 生態系統可以大致劃分為四部分（圖1）：
 ### 簡單的 Ceph 生態系統
 了解 Ceph 概念架構後，我們來探討另一個層次，了解在 Ceph 中實現的主要元件。 Ceph 和傳統檔案系統之間的重要差異之一，就是智能部分都用在了生態環境，而不是檔案系統本身。
 
-<center>![architecture](/images/ceph/architecture.png)</center>
+![architecture](/images/ceph/architecture.png)
 
 圖中顯示了一個簡單的Ceph生態系統。Ceph Client 是 Ceph 檔案系統的用戶。Ceph Metadata Daemon 提供了 metadata 伺服器，而 Ceph Object Storage Daemon 提供了實際儲存（對資料和 metadata 兩者）。最後 Ceph Monitor 提供了叢集管理。要注意的是 Ceph 客戶，物件儲存端點，metadata 伺服器（根據檔案系統的容量）可以有許多，而且至少有一對冗餘的監視器。那麼這個檔案系統是如何分散的呢？
 
@@ -64,7 +64,7 @@ Ceph 生態系統可以大致劃分為四部分（圖1）：
 ### Ceph Metadata Server（MDS）
 作為處理 Ceph File System 的 metadata 之用，若僅使用 Block or Object storage，就不會用到這部分功能。
 
-<center>![metadata](/images/ceph/metadata.png)</center>
+![metadata](/images/ceph/metadata.png)
 
 > **P.S 若只使用 Ceph Object Storage 與 Ceph Block Device 的話，將不需要部署 MDS 節點。**
 
@@ -87,7 +87,7 @@ Ceph 包含實施叢集映射管理的監控者，但是故障管理的一些要
 
 主要功能為實際資料（object）的儲存，處理資料複製、恢復、回填（backfilling, 通常發生於新 OSD 加入時）與重新平衡（發生於新 OSD 加入 CRUSH map 時），並向 Monitor 提供鄰近 OSD 的心跳檢查資訊。
 
-<center>![osd](/images/ceph/osd.png)</center>
+![osd](/images/ceph/osd.png)
 
 ### CRUSH
 Ceph 透過 CRUSH（Controlled, Scalable, Decentralized Placement of Replicated Data） 演算法來計算資料儲存位置，來確認如何儲存和檢索資料，CRUSH 授權 Ceph client 可以直接連接 OSD，而不再是透過集中式伺服器或者中介者來儲存與讀取資料。該演算法與架構特性使 Ceph 可以避免單一節點故障問題、效能瓶頸與擴展的限制。
@@ -107,7 +107,7 @@ CRUSH 主要提供了以下功能：
 ### Pools
 Pool 是儲存物件邏輯分區。Ceph Client 從 Monitor 取得 Cluster map，並把物件寫入 Pool。Pool 的副本數、CRUSH Ruleset 和 PG 數量決定著 Ceph 該如何放置資料。
 
-<center>![](/images/ceph/pool-flow.png)</center>
+![](/images/ceph/pool-flow.png)
 
 一個 Pool 可以設定許多參數，但最少需要正確設定以下資訊：
 * 物件擁有權與存取權限
@@ -117,7 +117,7 @@ Pool 是儲存物件邏輯分區。Ceph Client 從 Monitor 取得 Cluster map，
 ### Placement Group
 Ceph 把物件映射到放置群組（PG），PG 是一種邏輯的物件 Pool 片段，這些物件會組成一個群組後，再存到 OSD 中。PG 減少了各物件存入對應的 OSD 時 metadata 的數量，更多的 PG（如：每個OSD 有 100 個群組）可以使`負載平衡`更好。
 
-<center>![pg](/images/ceph/pg.png)</center>
+![pg](/images/ceph/pg.png)
 
 > **P.S 多個 PG 也可以對應到同一個 OSD，因此 PG 與 OSD 其實是種多對多的關係。**
 

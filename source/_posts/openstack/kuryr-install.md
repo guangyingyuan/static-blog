@@ -40,13 +40,12 @@ DNS2="8.8.8.4"
 ```sh
 $ sudo yum update -y
 ```
-> 完成後檢查是否是最新版本，可以透過以下方式查看 Kernel：
+> * 完成後檢查是否是最新版本，可以透過以下方式查看 Kernel：
 ```sh
 $ uname -r
 3.10.0-327.13.1.el7.x86_64
 ```
-
-> 如果不是以上版本，請執行以下指令：
+> * 如果不是以上版本，請執行以下指令：
 ```sh
 $ sudo yum upgrade --assumeyes --tolerant
 $ sudo yum update --assumeyes

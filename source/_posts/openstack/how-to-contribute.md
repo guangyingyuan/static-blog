@@ -43,7 +43,7 @@ git config --global gitreview.username "yourgerritusername"
 
 ### 貢獻程式碼（已 openstack-manuals 為例）
 一個基本的貢獻流程如下圖所示：
-<center>![](/images/openstack/contribute_flow.jpg)</center>
+![](/images/openstack/contribute_flow.jpg)
 
 首先透過 git clone 來下載程式專案，並設定 review：
 ```sh

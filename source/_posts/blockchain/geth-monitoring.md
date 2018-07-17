@@ -7,7 +7,6 @@ categories:
 tags:
 - Ethereum
 - Blockchain
-- Go lang
 ---
 Ethereum 提供了一個 Web-based 的監控儀表板，可以部署該儀表板，並透過 Clinet 端傳送 Ethereum 節點的資訊，來查看整個區塊鏈狀態。本節將說明如何安裝監控儀表板於 Linux 與 Docker 容器中。
 
@@ -47,7 +46,6 @@ $ grunt
 $ PORT="3000" WS_SECRET="admin" npm start
 ```
 > 接著就可以開啟 [eth-netstats](http://localhost:3000)。
-
 > 在沒有任何 Clinet 節點連上情況下，會是一個空的網頁。
 
 撰寫一個腳本`eth-netstats.sh`放置到背景服務執行：
@@ -119,13 +117,9 @@ $ sudo npm install && sudo npm install -g pm2
 ]
 ```
 > * `RPC_HOST`為 ethereum 的 rpc ip address。
-
 > * `RPC_PORT`為 ethereum 的 rpc port。
-
 > * `INSTANCE_NAME`為 ethereum 的監控實例名稱。
-
 > * `WS_SERVER`為 eth-netstats 的 URL。
-
 > * `WS_SECRET`為 eth-netstats 的 secret。
 
 確認完成後，即可啟動服務：
@@ -150,7 +144,6 @@ $ docker run -d \
             kairen/ethstats
 ```
 > 接著就可以開啟 [eth-netstats](http://localhost:3000)。
-
 > 在沒有任何 Clinet 節點連上情況下，會是一個空的網頁。
 
 #### Docker Client side

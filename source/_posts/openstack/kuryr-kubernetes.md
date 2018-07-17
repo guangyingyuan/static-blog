@@ -317,13 +317,12 @@ $ sudo mkdir -p /etc/cni/net.d/
 
 完成後，更新 oslo 與 vif python 函式庫：
 ```shell=
-
 $ sudo pip install 'oslo.privsep>=1.20.0' 'os-vif>=1.5.0'
 ```
 
 最後重新啟動相關服務：
-```
-sudo systemctl daemon-reload && systemctl restart kubelet.service
+```shell=
+$ sudo systemctl daemon-reload && systemctl restart kubelet.service
 ```
 
 ## 測試結果

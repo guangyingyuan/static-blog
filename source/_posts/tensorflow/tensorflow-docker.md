@@ -11,7 +11,7 @@ tags:
 ---
 本篇主要整理使用 Docker 來執行 TensorFlow 的一些問題，這邊 Google 官方已經提供了相關的映像檔提供使用，因此會簡單說明安裝過程與需求。
 
-<center>![](/images/tf/docker-tf.png)</center>
+![](/images/tf/docker-tf.png)
 
 <!--more-->
 

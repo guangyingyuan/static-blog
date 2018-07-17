@@ -1,5 +1,5 @@
 ---
-title: 整合 OpenLDAP 進行 Kubernetes 身份認證
+title: 整合 Open LDAP 進行 Kubernetes 身份認證
 date: 2018-4-15 17:08:54
 catalog: true
 categories:

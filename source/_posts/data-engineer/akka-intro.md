@@ -29,7 +29,7 @@ Akka 是基於 [Actor](https://zh.wikipedia.org/wiki/%E5%8F%83%E8%88%87%E8%80%85
 * 提供異步（Async）非阻塞、高效能的事件驅動程式模型。
 * 非常輕量的事件處理（每 GB Heap 記憶體有幾百萬的 Actor）
 
-<center>![](/images/spark/single_play.png)</center>
+![](/images/spark/single_play.png)
 
 Actor 是一個運算實體，在開發程式中就是對實體之間所回應接受到的訊息做互動，同時並行的`傳送有限數量的訊息給其他 Actor`、`建立有限數量的 Actor` 以及`設計指定接收到下一個訊息時的行為`。
 

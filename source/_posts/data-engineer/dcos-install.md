@@ -187,13 +187,10 @@ resolvers:
 ssh_port: 22
 ssh_user: <username>
 ```
-> `<agent-private-ip-1>` 修改成 `10.0.0.103`。
-
-> `<agent-private-ip-2>` 修改成 `10.0.0.104`。
-
-> `<master-private-ip-1>` 修改成 `10.0.0.102`。
-
-> `<username>` 修改成 `cloud-user`。P.S 這邊是用 cloud image。
+> * `<agent-private-ip-1>` 修改成 `10.0.0.103`。
+> * `<agent-private-ip-2>` 修改成 `10.0.0.104`。
+> * `<master-private-ip-1>` 修改成 `10.0.0.102`。
+> * `<username>` 修改成 `cloud-user`。P.S 這邊是用 cloud image。
 
 完成後複製 Bootstrap 節點的 SSH 私有金鑰到目錄底下：
 ```sh

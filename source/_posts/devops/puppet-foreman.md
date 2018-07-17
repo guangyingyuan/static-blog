@@ -25,7 +25,6 @@ Foreman 是一個 Puppet 的生命周期管理系統，類似 puppet-dashboard�
 * Foreman
 * Puppet master and agent
 * Apache Web Server with SSL and Passenger module
-*
 
 下載 Foreman 可以依照以下指令進行：
 ```sh

@@ -1,5 +1,5 @@
 ---
-title: Vagrant CoreOS 部署 Kubernetes 測試叢集(Unrecommended)
+title: Vagrant CoreOS 部署 Kubernetes 測試叢集
 date: 2016-2-23 17:08:54
 catalog: true
 categories:

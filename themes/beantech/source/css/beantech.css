@@ -740,7 +740,7 @@ img::-moz-selection {
   background: transparent;
 }
 body {
-  webkit-tap-highlight-color: #0085a1;
+  webkit-tap-highlight-color: #000000;
 }
 /* Hux add tags support */
 .tags {

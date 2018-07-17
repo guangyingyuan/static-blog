@@ -21,7 +21,7 @@ Flume 架構中主要有以下幾個核心:
 * **Channel**：轉換 Event 的一個臨時儲存空間，保有從 Source 傳送過來的 Event。
 * **Sink**:從 Channel 中讀取並且移除 Event，將 Event 傳遞到 Flow Pipeline 的下一個 Agent（如果存在的話）。
 
-<center>![](/images/spark/flume_architecture.png)</center>
+![](/images/spark/flume_architecture.png)
 
 ## 安裝 Apache Flume
 本節將說明如何部署 Apache Flume，其中包含單機與多機部署方式。
@@ -107,7 +107,7 @@ OK
 ### 多節點部署
 本節說明多機部署方式，流程為 Agent1 和 Agent2 主要是兩個來源蒐集端，本身會監聽且接收 Flume 本地端的訊息，然後將資料整合到 Collector 做資料日誌整理
 
-<center>![](/images/spark/flume_cluster.png)</center>
+![](/images/spark/flume_cluster.png)
 
 部署節點角色規則如下:
 
@@ -193,14 +193,14 @@ a1.sinks.k1.type=logger
 a1.sinks.k1.channel=c1
 ```
 
-最後分別啓動`Agent`和`Collector`的 Flume
->Agent:
+最後分別啓動`Agent`和`Collector`的 Flume：
+
+Agent:
 ```sh
 $ bin/flume-ng agent -n agent1 -c conf -f flume-client.properties -Dflume.root.logger=DEBUG,console
 ```
 
-
->Collector:
+Collector:
 ```sh
 $ bin/flume-ng agent -n a1 -c conf -f flume-server.properties -Dflume.root.logger=DEBUG,console
 ```

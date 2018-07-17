@@ -14,9 +14,8 @@
     "hexo-generator-seo-friendly-sitemap": "0.0.20",
     "hexo-generator-tag": "^0.2.0",
     "hexo-renderer-ejs": "^0.2.0",
-    "hexo-renderer-markdown-it": "^3.4.1",
+    "hexo-renderer-marked": "^0.3.2",
     "hexo-renderer-stylus": "^0.3.3",
-    "hexo-toc": "^1.0.8",
     "hexo-server": "^0.3.2"
   }
 }

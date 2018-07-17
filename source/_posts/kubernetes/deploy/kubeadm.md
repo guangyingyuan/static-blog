@@ -2,6 +2,7 @@
 title: 只要用 kubeadm 小朋友都能部署 Kubernetes
 date: 2016-9-29 17:08:54
 catalog: true
+header-img: /images/kube/bg.png
 categories:
 - Kubernetes
 tags:
@@ -110,27 +111,27 @@ NAME       STATUS     ROLES     AGE       VERSION
 master1    NotReady   master    4m        v1.9.6
 ```
 
-當執行正確後要接著部署網路，但要注意`一個叢集只能用一種網路`，這邊採用 Flannel：
+當叢集正確部署後，要接著部署 Pod 網路，但要注意`一個叢集只能用一種 Pod 網路(除非用 multus-cni)`，這邊採用 Flannel：
 ```sh
-$ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.9.1/Documentation/kube-flannel.yml
-clusterrole "flannel" created
-clusterrolebinding "flannel" created
-serviceaccount "flannel" configured
-configmap "kube-flannel-cfg" configured
-daemonset "kube-flannel-ds" configured
+$ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.10.0/Documentation/kube-flannel.yml
+clusterrole.rbac.authorization.k8s.io/flannel created
+clusterrolebinding.rbac.authorization.k8s.io/flannel created
+serviceaccount/flannel created
+configmap/kube-flannel-cfg created
+daemonset.extensions/kube-flannel-ds created
 ```
 > * 若參數 `--pod-network-cidr=10.244.0.0/16` 改變時，在`kube-flannel.yml`檔案也需修改`net-conf.json`欄位的 CIDR。
-* 若使用 Virtualbox 的話，請修改`kube-flannel.yml`中的 command 綁定 iface，如`command: [ "/opt/bin/flanneld", "--ip-masq", "--kube-subnet-mgr", "--iface=eth1" ]`。
-* 其他 Pod Network 可以參考 [Installing a pod network](https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/#pod-network)。
+> * 若使用 Virtualbox 的話，請修改`kube-flannel.yml`中的 command 綁定 iface，如`command: [ "/opt/bin/flanneld", "--ip-masq", "--kube-subnet-mgr", "--iface=eth1" ]`。
+> * 其他 Pod Network 可以參考 [Installing a pod network](https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/#pod-network)。
 
+接著透過 kubectl 查看 Flannel 是否正確在每個 Node 部署：
 確認 Flannel 部署正確：
 ```sh
-$ kubectl get po -n kube-system
-NAME                                         READY     STATUS    RESTARTS   AGE
-kube-flannel-ds-3b66l                        1/1       Running   0          9s
-kube-flannel-ds-m6874                        1/1       Running   0          9s
-kube-flannel-ds-vmb38                        1/1       Running   0          9s
-...
+$ kubectl -n kube-system get po -l app=flannel -o wide
+NAME                    READY     STATUS    RESTARTS   AGE       IP              NODE
+kube-flannel-ds-2ssnj   1/1       Running   0          58s       172.22.132.10   k8s-m1
+kube-flannel-ds-pgfpd   1/1       Running   0          58s       172.22.132.11   k8s-m2
+kube-flannel-ds-vmt2h   1/1       Running   0          58s       172.22.132.12   k8s-m3
 
 $ ip -4 a show flannel.1
 5: flannel.1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1450 qdisc noqueue state UNKNOWN group default
@@ -140,7 +141,10 @@ $ ip -4 a show flannel.1
 $ route -n
 Kernel IP routing table
 Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
-10.244.0.0      0.0.0.0         255.255.0.0     U     0      0        0 flannel.1
+...
+10.244.0.0      0.0.0.0         255.255.255.0   U     0      0        0 cni0
+10.244.1.0      10.244.1.0      255.255.255.0   UG    0      0        0 flannel.1
+10.244.2.0      10.244.2.0      255.255.255.0   UG    0      0        0 flannel.1
 ```
 
 ## Kubernetes Node 建立

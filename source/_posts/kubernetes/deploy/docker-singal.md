@@ -1,5 +1,5 @@
 ---
-title: hyperkube 建立單機 Kubernetes(Unrecommended)
+title: hyperkube 建立單機 Kubernetes
 date: 2016-01-13 17:08:54
 catalog: true
 categories:

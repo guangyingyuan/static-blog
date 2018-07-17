@@ -11,7 +11,7 @@ tags:
 ---
 本節將介紹如何透過 [ceph-docker](https://github.com/ceph/ceph-docker) 工具安裝一個測試的 Ceph 環境，一個最簡單的 Ceph 儲存叢集至少要`1 Monitor`與`3 OSD`。另外部署 MDS 與 RGW 來進行簡單測試。
 
-<center>![](/images/ceph/docker-ceph.jpg)</center>
+![](/images/ceph/docker-ceph.jpg)
 
 <!--more-->
 

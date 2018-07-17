@@ -7,11 +7,10 @@ categories:
 tags:
 - Ethereum
 - Blockchain
-- Go lang
 ---
 Ethereum 專案是以區塊鏈原理，並進一步增加容納值、儲存資料，並且能封裝程式碼來建立智能合約(Smart Contracts)，形成區塊鏈應用程式，來執行運算任務。類似於比特幣(Bitcoin)，Ethereum 也具有一種貨幣，它叫做`乙太幣(Ether)`。乙太幣是開採於儲存在共享一致性的區塊鏈前驗證交易節點。乙太幣可以在賬戶(公有金鑰, Pubilc keys)與智能合約(Smart Contracts)之間進行轉移。
 
-<center>![ethereum-logo](/images/blockchain/ethereum-logo.png)</center>
+![ethereum-logo](/images/blockchain/ethereum-logo.png)
 
 本節將說明如何透過 Ubuntu 部署 Go Ethereum。並利用簡單的指令來進行 Demo。
 
@@ -100,7 +99,6 @@ Starting private geth
 $ geth attach ipc:data/geth.ipc
 ```
 > 也可以透過 HTTP 方式 attach，`geth attach http://localhost:8545`。
-
 > 若一開始建立沒有 RPC，但想要加入 RPC 可以 attach 後，輸入以下 function：
 ```sh
 > admin.startRPC("0.0.0.0", 8545, "*", "web3,db,net,eth")
@@ -211,7 +209,6 @@ true
 true
 ```
 > 這邊需要一點時間產生 DAG，可以開一個新的命令列透過`screen -x geth`查看。
-
 > 經過一段時間後，當 DAG 完成並開始採擴時就可以`miner.stop()`。
 
 接著在`geth-1`查看賬戶的乙太幣：
@@ -341,7 +338,7 @@ contract SimpleStorage {
 
 接著將內容貼到 [browser-solidity](https://ethereum.github.io/browser-solidity) 進行編譯成 JavaScript。如快照畫面所示。
 
-<center>![](/images/blockchain/snapshot-contract.png)</center>
+![](/images/blockchain/snapshot-contract.png)
 
 透過這個 IDE 可以將 Solidity 語言轉換成 web3 code(JavaScript)，複製 web3 code 的內容，並儲存成`SimpleStorage.js`檔案放置到`geth-1`上。接著 attach 進入 geth 執行以下指令：
 ```sh
@@ -350,4 +347,4 @@ contract SimpleStorage {
 
 若有自行安裝`browser-solidity`的話，則可以使用如下圖一樣的方式連接。
 
-<center>![](/images/blockchain/snapshot-dash-web3-provider.png)</center>
+![](/images/blockchain/snapshot-dash-web3-provider.png)

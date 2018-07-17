@@ -55,6 +55,14 @@ show_count: true
 featured-tags: true
 featured-condition-size: 12
 
+friends: [
+    {
+        title: "KaiRen",
+        href: "https://kairen.github.io"
+    }
+]
+
+
 ######################
 # Custom Setting END #
 ######################
@@ -80,12 +88,12 @@ post_asset_folder: true
 relative_link: false
 future: true
 highlight:
-  enable: true
-  line_number: true
+  enable: false
+  line_number: false
   auto_detect: false
-  tab_replace: false
+  tab_replace:
 
-highlightjs: false
+highlightjs: true
 
 # Category & Tag
 default_category: uncategorized
@@ -111,21 +119,13 @@ archive_generator:
   monthly: true
   daily: false
 
-# Markdown-it config
-## Docs: https://github.com/celsomiranda/hexo-renderer-markdown-it/wiki
-# markdown:
-#   render:
-#     html: true
-#     xhtmlOut: false
-#     breaks: true
-#     linkify: false
-#     typographer: true
-#     quotes: '“”‘’'
-
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
 theme: beantech
+
+sitemap:
+  path: sitemap.xml
 
 deploy:
   type: git
