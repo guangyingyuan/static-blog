@@ -19,7 +19,7 @@ layout: layout
                 <span class="fa fa-tag listing-seperator" id="<%= tag.name %>">
                     <span class="tag-text"><%= tag.name %></span>
                 </span>
-                <% tag.posts.map(function(post){  %>
+                <% tag.posts.sort('date').reverse().map(function(post){  %>
                   <!-- <li class="listing-item">
                   <time datetime="{{ post.date | date:"%Y-%m-%d" }}">{{ post.date | date:"%Y-%m-%d" }}</time>
                   <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
@@ -27,6 +27,7 @@ layout: layout
                  <div class="post-preview">
                      <a href="<%- config.root %><%- post.path %>">
                         <h2 class="post-title">
+                            <%= post.date.format('YYYY-MM-DD') %>
                             <%- post.title || "Untitled" %>
                         </h2>
                         <% if (post.subtitle && post.subtitle.length) { %>
