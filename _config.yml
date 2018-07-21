@@ -25,6 +25,7 @@ signature: false
 signature-img: ""
 
 # SNS settings
+RSS: true
 github_username: kairen
 twitter_username: k2r2bai
 facebook_username: k2r2bai
@@ -42,9 +43,9 @@ sidebar-about-description: "Hi, I'm KaiRen(aka Kyle). A RDSS software engineer a
 sidebar-avatar: images/profile.png
 widgets:
 - short-about
-# - category
 - recent-posts
 - featured-tags
+- friends-blog
 
 # widget behavior
 ## Archive
@@ -57,11 +58,18 @@ featured-condition-size: 12
 
 friends: [
     {
-        title: "KaiRen",
-        href: "https://kairen.github.io"
+        title: "威猛邱牛",
+        href: "http://hwchiu.com"
+    },
+    {
+        title: "吃草爸爸的部落格",
+        href: "http://www.evanlin.com"
+    },
+    {
+        title: "跟我一樣可悲的同事",
+        href: "https://ellis-wu.github.io"
     }
 ]
-
 
 ######################
 # Custom Setting END #
@@ -123,6 +131,14 @@ archive_generator:
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
 theme: beantech
+
+plugin:
+- hexo-generator-feed
+
+feed:
+type: atom
+path: atom.xml
+limit: 20
 
 sitemap:
   path: sitemap.xml
