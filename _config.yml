@@ -58,16 +58,28 @@ featured-condition-size: 12
 
 friends: [
     {
-        title: "威猛邱牛",
-        href: "http://hwchiu.com"
+        title: "威猛邱牛的部落格",
+        href: "https://hwchiu.com"
     },
     {
         title: "吃草爸爸的部落格",
         href: "http://www.evanlin.com"
     },
     {
-        title: "跟我一樣可悲的同事",
+        title: "跟我一樣可悲的同事部落格",
         href: "https://ellis-wu.github.io"
+    },
+    {
+        title: "小飛機的部落格",
+        href: "https://blog.pichuang.com.tw"
+    },
+    {
+        title: "超猛姍蓉的部落格",
+        href: "https://bestsamina.github.io/"
+    },
+    {
+        title: "郭大俠的部落格",
+        href: "https://igene.tw"
     }
 ]
 

@@ -203,7 +203,7 @@ $ ls ${PKI_DIR}/ca*.pem
 接著依照以下小節來建立各元件的 TLS 憑證。
 
 #### API Server
-透過以下指令產生 Kubernetes API Server 憑證：
+此憑證將被用於 API Server 與 Kubelet Client 溝通使用。首先透過以下指令產生 Kubernetes API Server 憑證：
 ```sh
 $ cfssl gencert \
   -ca=${PKI_DIR}/ca.pem \
@@ -725,7 +725,7 @@ $ cd ~/k8s-manual-files
 在`k8s-m1`透過 kubeclt 執行下面指令來建立，並檢查是否部署成功：
 ```sh
 $ export KUBE_APISERVER=https://172.22.132.9:6443
-$ sed -i "s/\${KUBE_APISERVER}/${KUBE_APISERVER}/g"
+$ sed -i "s/\${KUBE_APISERVER}/${KUBE_APISERVER}/g" addons/kube-proxy/kube-proxy-cm.yml
 $ kubectl -f addons/kube-proxy/
 
 $ kubectl -n kube-system get po -l k8s-app=kube-proxy
@@ -760,7 +760,7 @@ TCP  10.96.0.1:443 rr
 
 在`k8s-m1`透過 kubeclt 執行下面指令來建立，並檢查是否部署成功：
 ```sh
-$ kubectl create -f coredns/
+$ kubectl create -f addons/coredns/
 
 $ kubectl -n kube-system get po -l k8s-app=kube-dns
 NAME                       READY     STATUS    RESTARTS   AGE
@@ -769,15 +769,15 @@ coredns-589dd74cb6-d42ft   0/1       Pending   0          3m
 ```
 
 這邊會發現 Pod 處於`Pending`狀態，這是由於 Kubernetes 的叢集網路沒有建立，因此所有節點會處於`NotReady`狀態，而這也導致 Kubernetes Scheduler 無法替 Pod 找到適合節點而處於`Pending`，為了解決這個問題，下節將說明與建立 Kubernetes 叢集網路。
-> 若 Pod 是被 DaemonSet 管理的話，則不會 Pending，不過若沒有設定`hostNetwork`則會出問題。
+> 若 Pod 是被 DaemonSet 管理，且設定使用`hostNetwork`的話，則不會處於`Pending`狀態。
 
 ## Kubernetes 叢集網路
 Kubernetes 在預設情況下與 Docker 的網路有所不同。在 Kubernetes 中有四個問題是需要被解決的，分別為：
 
 * **高耦合的容器到容器溝通**：透過 Pods 與 Localhost 的溝通來解決。
 * **Pod 到 Pod 的溝通**：透過實現網路模型來解決。
-* **Pod 到 Service 溝通**：由 Services object 結合 kube-proxy 解決。
-* **外部到 Service 溝通**：一樣由 Services object 結合 kube-proxy 解決。
+* **Pod 到 Service 溝通**：由 Service objects 結合 kube-proxy 解決。
+* **外部到 Service 溝通**：一樣由 Service objects 結合 kube-proxy 解決。
 
 而 Kubernetes 對於任何網路的實現都需要滿足以下基本要求(除非是有意調整的網路分段策略)：
 
@@ -790,7 +790,7 @@ Kubernetes 在預設情況下與 Docker 的網路有所不同。在 Kubernetes �
 * **CNI plugins**：以 appc/CNI 標準規範所實現的網路，詳細可以閱讀 [CNI Specification](https://github.com/containernetworking/cni/blob/master/SPEC.md)。
 * **Kubenet plugin**：使用 CNI plugins 的 bridge 與 host-local 來實現基本的 cbr0。這通常被用在公有雲服務上的 Kubernetes 叢集網路。
 
-> 如果了解如何選擇可以閱讀 Chris Love 的 [Choosing a CNI Network Provider for Kubernetes](https://chrislovecnm.com/kubernetes/cni/choosing-a-cni-provider/) 文章。
+> 如果想了解如何選擇可以閱讀 Chris Love 的 [Choosing a CNI Network Provider for Kubernetes](https://chrislovecnm.com/kubernetes/cni/choosing-a-cni-provider/) 文章。
 
 ### 網路部署與設定
 從上述了解 Kubernetes 有多種網路能夠選擇，而本教學選擇了 [Calico](https://www.projectcalico.org/) 作為叢集網路的使用。Calico 是一款純 Layer 3 的網路，其好處是它整合了各種雲原生平台(Docker、Mesos 與 OpenStack 等)，且 Calico 不採用 vSwitch，而是在每個 Kubernetes 節點使用 vRouter 功能，並透過 Linux Kernel 既有的 L3 forwarding 功能，而當資料中心複雜度增加時，Calico 也可以利用 BGP route reflector 來達成。
@@ -1040,6 +1040,8 @@ eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW5
 ```sh
 $ kubectl apply -f addons/prometheus/
 $ kubectl apply -f addons/prometheus/operator/
+
+# 這邊要等 operator 起來並建立好 CRDs 才能進行
 $ kubectl apply -f addons/prometheus/alertmanater/
 $ kubectl apply -f addons/prometheus/node-exporter/
 $ kubectl apply -f addons/prometheus/kube-state-metrics/
@@ -1089,7 +1091,7 @@ ingress.extensions/prometheus-ing   prometheus.monitoring.k8s.local   172.22.132
 > 另外這邊也推薦用 [Weave Scope](https://github.com/weaveworks/scope) 來監控容器的網路 Flow 拓樸圖。
 
 ### Metrics Server
-[Metrics Server](https://github.com/kubernetes-incubator/metrics-server) 是實現了資源 Metrics API 的元件，其目標是取代 Heapster 作為 Pod 與 Node 提供資源的 Usage metrics，該元件會從每個 Kubernetes 節點上的 Kubelet 所公開的 Summary API 中收集 Metrics。
+[Metrics Server](https://github.com/kubernetes-incubator/metrics-server) 是實現了 Metrics API 的元件，其目標是取代 Heapster 作為 Pod 與 Node 提供資源的 Usage metrics，該元件會從每個 Kubernetes 節點上的 Kubelet 所公開的 Summary API 中收集 Metrics。
 
 首先在`k8s-m1`測試一下 kubectl top 指令：
 ```sh

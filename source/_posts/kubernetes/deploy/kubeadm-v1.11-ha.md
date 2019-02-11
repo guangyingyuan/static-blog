@@ -15,8 +15,6 @@ tags:
 
 <!--more-->
 
-
-
 ## Kubernetes 部署資訊
 Kubernetes 部署的版本資訊：
 
@@ -34,7 +32,6 @@ Kubernetes 部署的網路資訊：
 * **Service DNS IP**: 10.96.0.10
 * **DNS DN**: cluster.local
 * **Kubernetes API VIP**: 172.22.132.9
-* **Kubernetes Ingress VIP**: 172.22.132.8
 
 ## 節點資訊
 本教學採用以下節點數與機器規格進行部署裸機(Bare-metal)，作業系統採用`Ubuntu 16+`(理論上 CentOS 7+ 也行)進行測試：
@@ -635,7 +632,6 @@ NAME                 TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        A
 service/kubernetes   ClusterIP   10.96.0.1        <none>        443/TCP        3h
 service/nginx        NodePort    10.102.191.102   <none>        80:31780/TCP   6s
 ```
-
 
 透過 cURL 檢查 NGINX 服務是否正常：
 ```sh

@@ -262,7 +262,7 @@ server.join()
 > 也可以透過`tf.train.Server.create_local_server()` 來建立 Local Server
 
 當確認程式沒有任何問題後，就可以透過以下方式啟動：
-```shell=
+```bash
 $ python server.py
 2017-04-10 18:19:41.953448: I tensorflow/core/common_runtime/gpu/gpu_device.cc:977] Creating TensorFlow device (/gpu:0) -> (device: 0, name: GeForce GTX 650, pci bus id: 0000:01:00.0)
 2017-04-10 18:19:41.983913: I tensorflow/core/distributed_runtime/rpc/grpc_channel.cc:200] Initialize GrpcChannelCache for job local -> {0 -> localhost:2222}
@@ -382,7 +382,7 @@ tf.train.replica_device_setter(ps_tasks=0, ps_device='/job:ps', worker_device='/
 ```
 
 撰寫完成後，透過以下指令來進行測試：
-```shell=
+```bash
 $ python liner_dist.py --job_name=ps --task_index=0
 $ python liner_dist.py --job_name=worker --task_index=0
 $ python liner_dist.py --job_name=worker --task_index=1
@@ -423,7 +423,7 @@ with tf.Session(graph=g1) as sess_cpu:
 ```
 
 執行後會看到當前目錄產生`tmp_mnist` logs 檔案，這時候就可以透過 thensorboard 來視覺化訓練結果：
-```shell=
+```bash
 $ tensorboard --logdir=run1:./tmp/1 --port=6006
 ```
 > run1 是當有多次 log 被載入時做為區別用。

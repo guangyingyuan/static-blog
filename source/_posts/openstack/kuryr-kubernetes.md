@@ -17,13 +17,13 @@ tags:
 
 Kuryr-Kubernetes 整合有兩個主要組成部分：
 1. **Kuryr Controller**:
-Controller 主要目的是監控 Kubernetes API 的來獲取 Kubernetes 資源的變化，然後依據 Kubernetes 資源的需求來執行子資源的分配和資源管理。
+Controller 主要目的是監控 Kubernetes API 來獲取 Kubernetes 資源的變化，然後依據 Kubernetes 資源的需求來執行子資源的分配和資源管理。
 2. **Kuryr CNI**：主要是依據 Kuryr Controller 分配的資源來綁定網路至 Pods 上。
 
 本篇我們將說明如何利用`DevStack`與`Kubespray`建立一個簡單的測試環境。
 
 ## 環境資源與事前準備
-準備兩台實體機器，這邊測試的作業系統為`CentOS 7.x`，該環境將在扁平的網路下進行。
+準備兩台實體機器，這邊測試的作業系統為`CentOS 7.x`，該環境將在扁平(flat)的網路下進行。
 
 | IP Address 1    |  Role      |
 | --------        | --------   |
@@ -31,12 +31,12 @@ Controller 主要目的是監控 Kubernetes API 的來獲取 Kubernetes 資源�
 | 172.24.0.80     | compute, k8s-node1 |
 
 更新每台節點的 CentOS 7.x packages:
-```shell=
+```bash
 $ sudo yum --enablerepo=cr update -y
 ```
 
 然後關閉 firewalld 以及 SELinux 來避免實現發生問題：
-```shell=
+```bash
 $ sudo setenforce 0
 $ sudo systemctl disable firewalld && sudo systemctl stop firewalld
 ```
@@ -45,19 +45,19 @@ $ sudo systemctl disable firewalld && sudo systemctl stop firewalld
 首先進入`172.24.0.34（controller）`，並且執行以下指令。
 
 然後執行以下指令來建立 DevStack 專用使用者：
-```shell=
+```bash
 $ sudo useradd -s /bin/bash -d /opt/stack -m stack
 $ echo "stack ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/stack
 ```
 > 選用 DevStack 是因為現在都是用 Systemd 來管理服務，不用再用 screen 了，雖然都很方便。
 
 接著切換至該使用者環境來建立 OpenStack：
-```shell=
+```bash
 $ sudo su - stack
 ```
 
 下載 DevStack 安裝套件：
-```shell=
+```bash
 $ git clone https://git.openstack.org/openstack-dev/devstack
 $ cd devstack
 ```
@@ -79,7 +79,7 @@ MULTI_HOST=1
 > 修改 HOST_IP 為自己的 IP 位置。
 
 完成後，執行以下指令開始部署：
-```shell=
+```bash
 $ ./stack.sh
 ```
 
@@ -88,19 +88,19 @@ $ ./stack.sh
 進入到`172.24.0.80（compute）`，並且執行以下指令。
 
 然後執行以下指令來建立 DevStack 專用使用者：
-```shell=
+```bash
 $ sudo useradd -s /bin/bash -d /opt/stack -m stack
 $ echo "stack ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/stack
 ```
 > 選用 DevStack 是因為現在都是用 Systemd 來管理服務，不用再用 screen 了，雖然都很方便。
 
 接著切換至該使用者環境來建立 OpenStack：
-```shell=
+```bash
 $ sudo su - stack
 ```
 
 下載 DevStack 安裝套件：
-```shell=
+```bash
 $ git clone https://git.openstack.org/openstack-dev/devstack
 $ cd devstack
 ```
@@ -133,7 +133,7 @@ VNCSERVER_PROXYCLIENT_ADDRESS=$VNCSERVER_LISTEN
 > 修改 SERVICE_HOST 為 Master 的IP位置。
 
 完成後，執行以下指令開始部署：
-```shell=
+```bash
 $ ./stack.sh
 ```
 
@@ -141,13 +141,13 @@ $ ./stack.sh
 首先確認所有節點之間不需要 SSH 密碼即可登入，接著進入到`172.24.0.34（k8s-master）`並且執行以下指令。
 
 接著安裝所需要的套件：
-```shell=
+```bash
 $ sudo yum -y install software-properties-common ansible git gcc python-pip python-devel libffi-devel openssl-devel
 $ sudo pip install -U kubespray
 ```
 
 完成後，新增 kubespray 設定檔：
-```shell=
+```bash
 $ cat <<EOF >  ~/.kubespray.yml
 kubespray_git_repo: "https://github.com/kubernetes-incubator/kubespray.git"
 # Logging options
@@ -156,7 +156,7 @@ EOF
 ```
 
 然後利用 kubespray-cli 快速產生環境的`inventory`檔，並修改部分內容：
-```shell=
+```bash
 $ sudo -i
 $ kubespray prepare --masters master --etcds master --nodes node1
 ```
@@ -183,12 +183,12 @@ kube-master
 ```
 
 完成後，即可利用 kubespray-cli 指令來進行部署：
-```shell=
+```bash
 $ kubespray deploy --verbose -u root -k .ssh/id_rsa -n calico
 ```
 
 經過一段時間後就會部署完成，這時候檢查節點是否正常：
-```shell=
+```bash
 $ kubectl get no
 NAME      STATUS         AGE       VERSION
 master    Ready,master   2m        v1.7.4
@@ -208,18 +208,18 @@ node1     Ready          2m        v1.7.4
 進入到`172.24.0.34（controller）`，並且執行以下指令。
 
 首先在節點安裝所需要的套件：
-```shell=
+```bash
 $ sudo yum -y install  gcc libffi-devel python-devel openssl-devel install python-pip
 ```
 
 然後下載 kuryr-kubernetes 並進行安裝：
-```shell=
+```bash
 $ git clone http://git.openstack.org/openstack/kuryr-kubernetes
 $ pip install -e kuryr-kubernetes
 ```
 
 新增`kuryr.conf`至`/etc/kuryr`目錄：
-```shell=
+```bash
 $ cd kuryr-kubernetes
 $ ./tools/generate_config_file_samples.sh
 $ sudo mkdir -p /etc/kuryr/
@@ -262,7 +262,7 @@ service_subnet = {id_of_subnet_for_k8s_services}
 ```
 
 完成後執行 kuryr-k8s-controller：
-```shell=
+```bash
 $ kuryr-k8s-controller --config-file /etc/kuryr/kuryr.conf
 ```
 
@@ -270,18 +270,18 @@ $ kuryr-k8s-controller --config-file /etc/kuryr/kuryr.conf
 進入到`172.24.0.80（node1）`並且執行以下指令。
 
 首先在節點安裝所需要的套件：
-```shell=
+```bash
 $ sudo yum -y install  gcc libffi-devel python-devel openssl-devel python-pip
 ```
 
 然後安裝 Kuryr-CNI 來提供給 kubelet 使用：
-```shell=
+```bash
 $ git clone http://git.openstack.org/openstack/kuryr-kubernetes
 $ sudo pip install -e kuryr-kubernetes
 ```
 
 新增`kuryr.conf`至`/etc/kuryr`目錄：
-```shell=
+```bash
 $ cd kuryr-kubernetes
 $ ./tools/generate_config_file_samples.sh
 $ sudo mkdir -p /etc/kuryr/
@@ -298,7 +298,7 @@ api_root = http://172.24.0.34:8080
 ```
 
 建立 CNI bin 與 Conf 目錄：
-```shell=
+```bash
 $ sudo mkdir -p /opt/cni/bin
 $ sudo ln -s $(which kuryr-cni) /opt/cni/bin/
 $ sudo mkdir -p /etc/cni/net.d/
@@ -316,12 +316,12 @@ $ sudo mkdir -p /etc/cni/net.d/
 ```
 
 完成後，更新 oslo 與 vif python 函式庫：
-```shell=
+```bash
 $ sudo pip install 'oslo.privsep>=1.20.0' 'os-vif>=1.5.0'
 ```
 
 最後重新啟動相關服務：
-```shell=
+```bash
 $ sudo systemctl daemon-reload && systemctl restart kubelet.service
 ```
 

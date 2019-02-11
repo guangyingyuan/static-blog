@@ -99,13 +99,13 @@ spec:
 
 ### 部署 DNS 系統
 首先透過 Git 取得部署用檔案：
-```shell=
+```bash
 $ git clone https://github.com/kairen/k8s-external-coredns.git
 $ cd k8s-external-coredns
 ```
 
 執行以下指令修改一些部署檔案：
-```shell=
+```bash
 $ sudo sed -i "s/172.22.132.10/${MASTER_IP}/g" ingress-controller/ingress-controller.yaml
 $ sudo sed -i "s/172.22.132.10/${MASTER_IP}/g" dns/coredns/coredns-svc-udp.yml
 $ sudo sed -i "s/172.22.132.10/${MASTER_IP}/g" dns/coredns/coredns-svc-tcp.yml
@@ -114,7 +114,7 @@ $ sudo sed -i "s/k8s.local/${DOMAIN_NAME}/g" dns/coredns/coredns-cm.yml
 > 這邊因為方便在我環境測試，所以檔案沒改 IP 跟 Domain Name。
 
 完成後開始部署至 Kubernetes 中，首先部署 Ingress Controller：
-```shell=
+```bash
 $ kubectl create -f ingress-controller/
 namespace "ingress-nginx" created
 deployment.extensions "default-http-backend" created
@@ -145,7 +145,7 @@ pod/nginx-ingress-controller-6c9fcdf8d9-fmnlf   1/1       Running   0          2
 ![](https://i.imgur.com/wThG3PC.png)
 
 接著部署 CoreDNS 服務：
-```shell=
+```bash
 $ kubectl create -f dns/
 namespace "dns" created
 
@@ -173,7 +173,7 @@ service/coredns-udp    LoadBalancer   10.97.40.197     172.22.132.10   53:30477/
 ![](https://i.imgur.com/p6vkPPw.png)
 
 透過 dig 測試 SOA 結果：
-```shell=
+```bash
 $ dig @172.22.132.10 SOA k8s.local +noall +answer
 
 ; <<>> DiG 9.10.6 <<>> @172.22.132.10 SOA k8s.local +noall +answer
@@ -183,7 +183,7 @@ k8s.local.		300	IN	SOA	ns.dns.k8s.local. hostmaster.k8s.local. 1530255393 7200 1
 ```
 
 接著部署 ExternalDNS 來提供自動註冊 Kubernetes record 至 CoreDNS：
-```shell=
+```bash
 $ kubectl create -f dns/external-dns/
 serviceaccount "external-dns" created
 clusterrole.rbac.authorization.k8s.io "external-dns" created
@@ -196,7 +196,7 @@ external-dns-94647696b-m494c   1/1       Running   0          38s
 ```
 
 檢查 ExternalDNS Pod 是否正確：
-```shell=
+```bash
 $ kubectl -n dns logs -f external-dns-94647696b-m494c
 ...
 time="2018-06-29T06:58:35Z" level=info msg="Connected to cluster at https://10.96.0.1:443"
@@ -213,7 +213,7 @@ time="2018-06-29T06:58:35Z" level=debug msg="No endpoints could be generated fro
 * wensleydale.k8s.local 將導到`文斯勒德起司`起司頁面。
 
 開始前，先用 dig 來測試使用的 DN 是否能被解析：
-```shell=
+```bash
 $ dig @172.22.132.10 A stilton.k8s.local +noall +answer
 
 ; <<>> DiG 9.10.6 <<>> @172.22.132.10 A stilton.k8s.local +noall +answer
@@ -223,7 +223,7 @@ $ dig @172.22.132.10 A stilton.k8s.local +noall +answer
 > 可以發現沒有任何 A Record 回傳。
 
 執行下述指令來完成部署：
-```shell=
+```bash
 $ kubectl create -f apps/cheese/
 deployment.extensions "stilton" created
 deployment.extensions "cheddar" created
@@ -250,7 +250,7 @@ ingress.extensions/cheese   stilton.k8s.local,cheddar.k8s.local,wensleydale.k8s.
 ```
 
 確認完成部署後，透過 nslookup 來確認能夠解析 Domain Name：
-```shell=
+```bash
 $ dig @172.22.132.10 A stilton.k8s.local +noall +answer
 
 ; <<>> DiG 9.10.6 <<>> @172.22.132.10 A stilton.k8s.local +noall +answer

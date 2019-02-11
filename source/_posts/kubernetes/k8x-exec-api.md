@@ -13,7 +13,7 @@ tags:
 
 ## Exec API Endpoint
 首先了解一下 Kubernetes exec API endpoint，由於 Kubernetes 官方文件並未提供相關資訊，因此這邊透過 kubectl 指令來了解 API 的結構：
-```shell=
+```bash
 $ cat <<EOF | kubectl create -f -
 apiVersion: v1
 kind: Pod
@@ -64,7 +64,7 @@ Execute 是利用 SPDY 與 WebSocket 協定進行串流溝通的 API，其中 SP
 
 下面簡單以發送`ls`指令為例：
 
-```shell=
+```bash
 # 傳送`ls`指令，必須 buf[0] 自行塞入 0 字元來表示 stdin。
 buf = [0 108 115 10]
 

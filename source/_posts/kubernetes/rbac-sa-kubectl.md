@@ -83,7 +83,7 @@ $ kubectl create rolebinding dev-view-pod \
 
 
 透過 kubectl 確認權限設定沒問題：
-```shell=
+```bash
 $ kubectl --kubeconfig=dev.conf get po
 Error from server (Forbidden): pods is forbidden: User "system:serviceaccount:dev:dev" cannot list pods in the namespace "default"
 
